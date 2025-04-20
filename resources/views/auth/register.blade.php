@@ -1,36 +1,53 @@
-<form method="POST" action="{{ route('register') }}">
-    @csrf
-    <div>
-        <label for="name">Full Name:</label>
-        <input type="text" name="name" required>
-    </div>
-    <div>
-        <label for="username">Username:</label>
-        <input type="text" name="username" required>
-    </div>
-    <div>
-        <label for="dob_day">Day:</label>
-        <input type="number" name="dob_day" min="1" max="31" required>
-    </div>
-    <div>
-        <label for="dob_month">Month:</label>
-        <input type="number" name="dob_month" min="1" max="12" required>
-    </div>
-    <div>
-        <label for="dob_year">Year:</label>
-        <input type="number" name="dob_year" min="1900" max="{{ date('Y') }}" required>
-    </div>
-    <div>
-        <label for="email">Email:</label>
-        <input type="email" name="email" required>
-    </div>
-    <div>
-        <label for="password">Password:</label>
-        <input type="password" name="password" required>
-    </div>
-    <div>
-        <label for="password_confirmation">Confirm Password:</label>
-        <input type="password" name="password_confirmation" required>
-    </div>
-    <button type="submit">Register</button>
-</form>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <section class="wrapper">
+        <div class="form signup">
+            <header>Signup</header>
+            <form method="POST" action="{{ route('register') }}">
+                @csrf
+                <input type="text" name="name" placeholder="Full Name" required />
+                <input type="text" name="username" placeholder="Username" required />
+                <input type="email" name="email" placeholder="Email address" required />
+                <input type="password" name="password" placeholder="Password" required />
+                <input type="password" name="password_confirmation" placeholder="Confirm Password" required />
+                <div class="checkbox">
+                    <input type="checkbox" id="signupCheck" required />
+                    <label for="signupCheck">I accept all terms & conditions</label>
+                </div>
+                <input type="submit" value="Signup" />
+            </form>
+        </div>
+
+        <div class="form login">
+            <header>Login</header>
+            <form action="#">
+                <input type="text" placeholder="Email address" required />
+                <input type="password" placeholder="Password" required />
+                <a href="#">Forgot password?</a>
+                <input type="submit" value="Login" />
+            </form>
+        </div>
+
+        <script>
+            const wrapper = document.querySelector(".wrapper"),
+                signupHeader = document.querySelector(".signup header"),
+                loginHeader = document.querySelector(".login header");
+            loginHeader.addEventListener("click", () => {
+                wrapper.classList.add("active");
+            });
+            signupHeader.addEventListener("click", () => {
+                wrapper.classList.remove("active");
+            });
+        </script>
+    </section>
+
+</body>
+</html>
