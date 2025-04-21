@@ -14,14 +14,14 @@ class CreateCartTable extends Migration
     public function up()
     {
         Schema::create('cart', function (Blueprint $table) {
-            $table->id(); // Auto-incrementing ID
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // User ID foreign key
-            $table->foreignId('item_id'); // Item ID, assuming it references another table (e.g., products, services)
-            $table->string('item_type'); // Item type (if polymorphic)
+            $table->id(); 
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); 
+            $table->foreignId('item_id'); 
+            $table->string('item_type'); 
             $table->unique(['user_id', 'item_id', 'item_type']);
-            $table->decimal('price', 10, 2); // Price of the item
-            $table->integer('quantity'); // Quantity of the item
-            $table->timestamps(); // Created at and updated at timestamps
+            $table->decimal('price', 10, 2); 
+            $table->integer('quantity'); 
+            $table->timestamps(); 
         });
     }
 

@@ -16,12 +16,12 @@ class CreateMapsTable extends Migration
     public function up()
     {
         Schema::create('maps', function (Blueprint $table) {
-            $table->id(); // Auto-incrementing ID
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // User ID foreign key
-            $table->string('title'); // Title column
-            $table->string('image'); // Image column (URL or file path)
-            $table->text('description')->nullable(); // Description column, nullable
-            $table->timestamps(); // Created at and updated at timestamps
+            $table->id(); 
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); 
+            $table->string('title'); 
+            $table->string('image'); 
+            $table->text('description')->nullable(); 
+            $table->timestamps(); 
         });
     }
 

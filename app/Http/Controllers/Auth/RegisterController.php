@@ -53,7 +53,9 @@ class RegisterController extends Controller
 
     // Send verification email
     Mail::to($temporaryUser->email)->send(new EmailVerification($verificationCode));
-
+    if (Mail::failures()) {
+        \Log::error('Mail failed to send', ['errors' => Mail::failures()]);
+    }
     // Redirect to the verification code input page
     return redirect()->route('verify.code.form')->with('status', 'Please check your email for the verification code to complete your registration.');
 }
