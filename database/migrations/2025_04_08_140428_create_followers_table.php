@@ -14,11 +14,11 @@ class CreateFollowersTable extends Migration
     public function up()
     {
         Schema::create('followers', function (Blueprint $table) {
-            $table->id(); // Auto-incrementing ID
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // User ID foreign key
-            $table->foreignId('follower_id')->constrained('users')->onDelete('cascade'); // Follower ID foreign key
+            $table->id(); 
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); 
+            $table->foreignId('follower_id')->constrained('users')->onDelete('cascade'); 
             $table->unique(['user_id', 'follower_id']);
-            $table->timestamps(); // Created at and updated at timestamps
+            $table->timestamps(); 
         });
     }
 
