@@ -164,12 +164,12 @@ form input[type="submit"] {
 
 .dob-inputs {
     display: flex;
-    gap: 85px;
+    gap: 50px;
     margin-top: 5px;
 }
 
 .dob-inputs input {
-    width: 80px;
+    width: 103px;
     padding: 8px;
     text-align: center;
 }
