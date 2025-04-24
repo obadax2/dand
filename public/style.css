@@ -3,7 +3,6 @@
 
 html {
     height: 100%;
-    background-color: aliceblue;
 }
 
 nav {
@@ -38,5 +37,20 @@ nav ul li a:hover {
     background: rgba(255, 255, 255, 0.1);
     color: rgba(0, 35, 122, 0.7);
 }
+
+
+table {
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+
+.table-home, .main-home {
+    font-family: 'Poppins', sans-serif;
+}
+
 
 

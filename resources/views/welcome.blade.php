@@ -27,9 +27,7 @@
         </ul>
     </nav>
     <div class="container">
-        <h1>Welcome to Our Application!</h1>
-        <p>Please register to get started.</p>
-        <a href="{{ route('register') }}" class="btn">Register</a>
+
     </div>
 </body>
 
