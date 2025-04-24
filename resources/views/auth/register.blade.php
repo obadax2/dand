@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style2.css">
 </head>
 <body>
     <section class="wrapper">
@@ -15,6 +15,14 @@
                 @csrf
                 <input type="text" name="name" placeholder="Full Name" required />
                 <input type="text" name="username" placeholder="Username" required />
+                <div class="dob">
+                    <div class="dob-inputs">
+                        <input type="text" name="dob_day" placeholder="Day" required maxlength="2" />
+                        <input type="text" name="dob_month" placeholder="Month" required maxlength="2" />
+                        <input type="text" name="dob_year" placeholder="Year" required maxlength="4" />
+                    </div>
+                </div>
+
                 <input type="email" name="email" placeholder="Email address" required />
                 <input type="password" name="password" placeholder="Password" required />
                 <input type="password" name="password_confirmation" placeholder="Confirm Password" required />
