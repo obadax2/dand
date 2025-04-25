@@ -48,13 +48,20 @@
                         <td>
                             <form action="{{ route('users.role.update', $user) }}" method="POST" class="d-inline">
                                 @csrf
-                                <select name="role" required>
-                                    <option value="user" {{ $user->role === 'user' ? 'selected' : '' }}>User</option>
-                                    <option value="hr" {{ $user->role === 'hr' ? 'selected' : '' }}>HR</option>
-                                    <option value="admin" {{ $user->role === 'admin' ? 'selected' : '' }}>Admin
-                                    </option>
-                                </select>
-                                <button type="submit" class="btn btn-warning btn-sm">Update Role</button>
+                                <div id="checklist">
+                                    <input value="user" name="role" type="radio" id="role-user" {{ $user->role === 'user' ? 'checked' : '' }}>
+                                    <label for="role-user">User</label>
+
+                                    <input value="hr" name="role" type="radio" id="role-hr" {{ $user->role === 'hr' ? 'checked' : '' }}>
+                                    <label for="role-hr">HR</label>
+
+                                    <input value="admin" name="role" type="radio" id="role-admin" {{ $user->role === 'admin' ? 'checked' : '' }}>
+                                    <label for="role-admin">Admin</label>
+
+                                    <button type="submit" class="btn btn-primary btn-sm">Update Role</button>
+
+                                </div>
+
                             </form>
 
                             @if ($user->role === 'admin')
