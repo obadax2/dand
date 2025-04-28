@@ -23,6 +23,7 @@ class User extends Authenticatable
         'dob_day',   // Include any other fields you want to add
         'dob_month',
         'dob_year',
+        'banned',
         'email_verified_at', // also add this if it is included in your insert
     ];
 

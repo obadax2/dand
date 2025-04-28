@@ -21,13 +21,22 @@ class LoginController extends Controller
             'username' => 'required|string',
             'password' => 'required|string',
         ]);
-
+    
         // Attempt to log the user in
         if (Auth::attempt(['username' => $request->username, 'password' => $request->password])) {
-            // Authentication passed, redirect to intended page
-            return redirect()->intended('home'); // Change 'home' to your desired path
+            // Authentication passed, retrieve the authenticated user
+            $user = Auth::user();
+    
+            // Redirect based on user role
+            if ($user->role === 'admin') {
+                return redirect()->route('admin.dashboard'); // Change this to your actual admin route
+            } elseif ($user->role === 'hr') {
+                return redirect()->route('users.index'); // Change this to your actual users route
+            } else {
+                return redirect()->intended('home'); // Default redirection for other roles
+            }
         }
-
+    
         // Authentication failed, redirect back
         return redirect()->back()->withErrors([
             'username' => 'The provided credentials do not match our records.',

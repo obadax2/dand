@@ -7,8 +7,8 @@
     <title>User Management</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-<link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
 </head>
 
 <body>
@@ -17,6 +17,17 @@
         @if (session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
         @endif
+
+        <!-- Poll Creation Form -->
+        <h2>Create a Poll</h2>
+        <form action="{{ route('polls.store') }}" method="POST" class="mb-4">
+            @csrf
+            <div class="mb-3">
+                <label for="pollTitle" class="form-label">Poll Title</label>
+                <input type="text" name="title" id="pollTitle" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-success">Create Poll</button>
+        </form>
 
         <form action="{{ route('users.index') }}" method="GET" class="mb-4">
             <div class="input-group">
@@ -49,19 +60,20 @@
                             <form action="{{ route('users.role.update', $user) }}" method="POST" class="d-inline">
                                 @csrf
                                 <div id="checklist">
-                                    <input value="user" name="role" type="radio" id="role-user" {{ $user->role === 'user' ? 'checked' : '' }}>
+                                    <input value="user" name="role" type="radio" id="role-user"
+                                        {{ $user->role === 'user' ? 'checked' : '' }}>
                                     <label for="role-user">User</label>
 
-                                    <input value="hr" name="role" type="radio" id="role-hr" {{ $user->role === 'hr' ? 'checked' : '' }}>
+                                    <input value="hr" name="role" type="radio" id="role-hr"
+                                        {{ $user->role === 'hr' ? 'checked' : '' }}>
                                     <label for="role-hr">HR</label>
 
-                                    <input value="admin" name="role" type="radio" id="role-admin" {{ $user->role === 'admin' ? 'checked' : '' }}>
+                                    <input value="admin" name="role" type="radio" id="role-admin"
+                                        {{ $user->role === 'admin' ? 'checked' : '' }}>
                                     <label for="role-admin">Admin</label>
 
                                     <button type="submit" class="btn btn-primary btn-sm">Update Role</button>
-
                                 </div>
-
                             </form>
 
                             @if ($user->role === 'admin')
