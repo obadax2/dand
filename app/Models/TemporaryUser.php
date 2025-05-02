@@ -9,8 +9,7 @@ class TemporaryUser extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'username', 'dob_day', 'dob_month', 'dob_year', 'email', 'verification_code'
+        'name', 'username', 'dob_day', 'dob_month', 'dob_year', 'email', 'verification_code', 'password'
     ];
-
     // You can add any relationships or custom methods here as needed
 }

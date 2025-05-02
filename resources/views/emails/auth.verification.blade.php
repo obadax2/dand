@@ -11,7 +11,7 @@
         <div>{{ session('status') }}</div>
     @endif
 
-
+    <p>Your verification code: <strong>{{ $verificationCode }}</strong></p>
 
     <form method="POST" action="{{ route('verify.email') }}">
         @csrf

@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\PollController;
 use App\Http\Controllers\AdminController;
 use App\Http\Middleware\CheckUserBanStatus;
+use App\Http\Controllers\StoryController;
 
 // Route for the welcome page
 Route::get('/', function () {
@@ -20,6 +21,8 @@ Route::middleware(['auth', CheckUserBanStatus::class])->group(function () {
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
     Route::post('/polls', [PollController::class, 'store'])->name('polls.store');
     Route::post('/users/{user}/ban', [UserController::class, 'ban'])->name('users.ban');
+    Route::get('/stories/create', [StoryController::class, 'create'])->name('stories.create');
+Route::post('/stories/store', [StoryController::class, 'store'])->name('stories.store');
 });
 
 // Admin routes

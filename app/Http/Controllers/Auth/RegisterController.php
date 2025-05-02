@@ -3,15 +3,14 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\TemporaryUser; // New model for temporary user storage
-use App\Models\User; // Make sure to include the User model
+use App\Models\TemporaryUser; // Temporary user storage
+use App\Models\User; // Main user model
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\EmailVerification;
-use Illuminate\Support\Facades\Log;
 
 class RegisterController extends Controller
 {
@@ -22,6 +21,7 @@ class RegisterController extends Controller
 
     public function register(Request $request)
 {
+    // Validate input
     $validator = Validator::make($request->all(), [
         'name' => 'required|string|max:255',
         'username' => 'required|string|max:255|unique:temporary_users',
@@ -29,9 +29,9 @@ class RegisterController extends Controller
         'dob_month' => 'required|integer|between:1,12',
         'dob_year' => 'required|integer|min:1900|max:' . date('Y'),
         'email' => 'required|string|email|max:255|unique:temporary_users',
+        'password' => 'required|string|min:8|confirmed',
     ]);
 
-    // Check if validation fails
     if ($validator->fails()) {
         return redirect()->back()
             ->withErrors($validator)
@@ -41,7 +41,7 @@ class RegisterController extends Controller
     // Generate verification code
     $verificationCode = Str::random(40);
 
-    // Store temporary user details
+    // Store temporary user data
     $temporaryUser = TemporaryUser::create([
         'name' => $request->name,
         'username' => $request->username,
@@ -50,14 +50,19 @@ class RegisterController extends Controller
         'dob_year' => $request->dob_year,
         'email' => $request->email,
         'verification_code' => $verificationCode,
+        'password' => Hash::make($request->password),
     ]);
 
     // Send verification email
-    Mail::to($temporaryUser->email)->send(new EmailVerification($verificationCode));
-    if (Mail::failures()) {
-        Log::error('Mail failed to send', ['errors' => Mail::failures()]);
+    try {
+        Mail::to($temporaryUser->email)->send(new EmailVerification($verificationCode));
+        \Log::info('Attempted to send email to ' . $temporaryUser->email);
+    } catch (\Exception $e) {
+        \Log::error('Mail failed to send', ['error' => $e->getMessage()]);
+        // Optional: you can add flash message here if needed
     }
-    // Redirect to the verification code input page
+
+    // Always redirect to verification page, regardless of email success
     return redirect()->route('verify.code.form')->with('status', 'Please check your email for the verification code to complete your registration.');
 }
     public function verifyEmail(Request $request)
@@ -65,28 +70,27 @@ class RegisterController extends Controller
         $request->validate([
             'verification_code' => 'required|string',
         ]);
-
+    
         $temporaryUser = TemporaryUser::where('verification_code', $request->verification_code)->first();
-
-        if ($temporaryUser) {
-            // Create the actual user
-            $user = User::create([
-                'name' => $temporaryUser->name,
-                'username' => $temporaryUser->username,
-                'dob_day' => $temporaryUser->dob_day,
-                'dob_month' => $temporaryUser->dob_month,
-                'dob_year' => $temporaryUser->dob_year,
-                'email' => $temporaryUser->email,
-                'password' => Hash::make('your_default_password_if_needed'), // You can modify this later to allow users to set their own password
-                'email_verified_at' => now(), // Mark as verified
-            ]);
-
-            // Optionally, delete the temporary record after creating the user
-            $temporaryUser->delete();
-
-            return redirect()->route('login')->with('status', 'Registration completed successfully. You can log in now.');
+    
+        if (!$temporaryUser) {
+            return back()->withErrors(['verification_code' => 'Invalid verification code.']);
         }
-
-        return redirect()->back()->withErrors(['verification_code' => 'Invalid verification code.']);
+    
+        // Create User
+        $user = User::create([
+            'name' => $temporaryUser->name,
+            'username' => $temporaryUser->username,
+            'dob_day' => $temporaryUser->dob_day,
+            'dob_month' => $temporaryUser->dob_month,
+            'dob_year' => $temporaryUser->dob_year,
+            'email' => $temporaryUser->email,
+            'password' => $temporaryUser->password,
+            'email_verified_at' => now(),
+        ]);
+    
+        $temporaryUser->delete();
+    
+        return redirect()->route('login')->with('status', 'Registration completed successfully.');
     }
 }
