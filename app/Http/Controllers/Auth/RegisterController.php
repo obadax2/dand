@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\EmailVerification;
+use Illuminate\Support\Facades\Log;
 
 class RegisterController extends Controller
 {
@@ -56,9 +57,9 @@ class RegisterController extends Controller
     // Send verification email
     try {
         Mail::to($temporaryUser->email)->send(new EmailVerification($verificationCode));
-        \Log::info('Attempted to send email to ' . $temporaryUser->email);
+        Log::info('Attempted to send email to ' . $temporaryUser->email);
     } catch (\Exception $e) {
-        \Log::error('Mail failed to send', ['error' => $e->getMessage()]);
+        Log::error('Mail failed to send', ['error' => $e->getMessage()]);
         // Optional: you can add flash message here if needed
     }
 
@@ -70,13 +71,13 @@ class RegisterController extends Controller
         $request->validate([
             'verification_code' => 'required|string',
         ]);
-    
+
         $temporaryUser = TemporaryUser::where('verification_code', $request->verification_code)->first();
-    
+
         if (!$temporaryUser) {
             return back()->withErrors(['verification_code' => 'Invalid verification code.']);
         }
-    
+
         // Create User
         $user = User::create([
             'name' => $temporaryUser->name,
@@ -88,9 +89,9 @@ class RegisterController extends Controller
             'password' => $temporaryUser->password,
             'email_verified_at' => now(),
         ]);
-    
+
         $temporaryUser->delete();
-    
+
         return redirect()->route('login')->with('status', 'Registration completed successfully.');
     }
 }

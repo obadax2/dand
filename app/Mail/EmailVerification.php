@@ -19,7 +19,7 @@ class EmailVerification extends Mailable
 
     public function build()
     {
-        return $this->view('auth.verify_code')
+        return $this->view('emails.verification')
                     ->with([
                         'verificationCode' => $this->verificationCode,
                     ]);
