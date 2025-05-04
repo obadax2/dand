@@ -22,7 +22,7 @@ class RegisterController extends Controller
 
     public function register(Request $request)
 {
-    // Validate input
+  
     $validator = Validator::make($request->all(), [
         'name' => 'required|string|max:255',
         'username' => 'required|string|max:255|unique:temporary_users',
@@ -39,10 +39,8 @@ class RegisterController extends Controller
             ->withInput();
     }
 
-    // Generate verification code
-    $verificationCode = Str::random(40);
+    $verificationCode = Str::random(5);
 
-    // Store temporary user data
     $temporaryUser = TemporaryUser::create([
         'name' => $request->name,
         'username' => $request->username,
@@ -54,16 +52,15 @@ class RegisterController extends Controller
         'password' => Hash::make($request->password),
     ]);
 
-    // Send verification email
     try {
         Mail::to($temporaryUser->email)->send(new EmailVerification($verificationCode));
         Log::info('Attempted to send email to ' . $temporaryUser->email);
     } catch (\Exception $e) {
         Log::error('Mail failed to send', ['error' => $e->getMessage()]);
-        // Optional: you can add flash message here if needed
+    
     }
 
-    // Always redirect to verification page, regardless of email success
+  
     return redirect()->route('verify.code.form')->with('status', 'Please check your email for the verification code to complete your registration.');
 }
     public function verifyEmail(Request $request)

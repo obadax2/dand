@@ -7,30 +7,65 @@ use App\Models\Story;
 use App\Models\Character;
 use App\Models\Map;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\Session; // Add this line
+use App\Models\User;
 class StoryController extends Controller
 {
-    // Show the form
+    // Show the initial form
     public function create()
     {
         return view('stories.create');
     }
 
-    // Handle form submission
-    public function store(Request $request)
+    // Handle the initial prompt submission and display generated content
+    public function generate(Request $request)
     {
-        // Validate input
+        // Validate the initial prompt
         $request->validate([
             'prompt' => 'required|string|max:255',
         ]);
 
         $prompt = $request->input('prompt');
 
-        // Placeholder for AI call - replace with actual API integration later
-        // Example: $aiResponse = $this->callAI($prompt);
-        // For now, mock data:
-        $aiResponse = [
-            'story_title' => 'Generated Story Title',
+      
+        $aiGeneratedContent = "Once upon a time, in a land far, far away...";
+   
+        // Store the generated content in the session to carry it to the next step
+        Session::put('generated_content', $aiGeneratedContent);
+
+        // Return the view with the generated content and the form to complete the story
+        return view('stories.create', [
+            'generatedContent' => $aiGeneratedContent,
+            'prompt' => $prompt // Pass the prompt back as well if needed
+        ]);
+    }
+
+    // Handle the final story save with title and genre
+    public function store(Request $request)
+    {
+        // Validate the final input
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'genre' => 'required|string|max:255',
+            // We don't need to validate 'content' as it's coming from the session
+        ]);
+
+        // Retrieve the generated content from the session
+        $content = Session::get('generated_content');
+
+        // Check if content exists in session (should always be there if flow is correct)
+        if (!$content) {
+            return redirect()->route('stories.create')->with('error', 'Generated content not found. Please try again.');
+        }
+
+        $title = $request->input('title');
+        $genre = $request->input('genre');
+
+        // --- Placeholder for generating characters and map (optional) ---
+        // If your AI generates characters and maps based on the content, you might
+        // want to call the AI again here or process the generated content to extract them.
+        // For simplicity in this example, we'll use mock data again.
+        $aiResponseForCharactersAndMap = [
             'characters' => [
                 ['name' => 'Hero', 'description' => 'Brave hero of the story', 'image_url' => null],
                 ['name' => 'Villain', 'description' => 'Evil villain', 'image_url' => null],
@@ -41,18 +76,20 @@ class StoryController extends Controller
                 'description' => 'A mysterious forest with hidden secrets.',
             ],
         ];
+        // --- End of Placeholder ---
+
 
         // Save story
         $story = Story::create([
             'user_id' => Auth::id(),
-            'title' => $aiResponse['story_title'],
-            'content' => $prompt, // or AI-generated content
-            'genre' => 'Fantasy', // or derive from AI response
+            'title' => $title,
+            'content' => $content,
+            'genre' => $genre,
             'status' => 'draft',
         ]);
 
-        // Save characters
-        foreach ($aiResponse['characters'] as $char) {
+        // Save characters (using the mock data for now)
+        foreach ($aiResponseForCharactersAndMap['characters'] as $char) {
             Character::create([
                 'story_id' => $story->id,
                 'name' => $char['name'],
@@ -61,23 +98,99 @@ class StoryController extends Controller
             ]);
         }
 
-        // Save map
+        // Save map (using the mock data for now)
         Map::create([
             'user_id' => Auth::id(),
-            'title' => $aiResponse['map']['title'],
-            'image' => $aiResponse['map']['image'],
-            'description' => $aiResponse['map']['description'],
+            'title' => $aiResponseForCharactersAndMap['map']['title'],
+            'image' => $aiResponseForCharactersAndMap['map']['image'],
+            'description' => $aiResponseForCharactersAndMap['map']['description'],
         ]);
 
-        return redirect()->route('stories.create')->with('success', 'Story created successfully!');
+        // Clear the generated content from the session after saving
+        Session::forget('generated_content');
+
+        return redirect()->route('stories.create')->with('success', 'Story saved successfully!');
     }
 
     // Placeholder for AI API call
     /*
     private function callAI($prompt)
     {
-        // Implement your AI API call here
-        // Return parsed response
+        // Implement your AI API call here to get text content
+        // Return the generated text content
     }
     */
+    public function drafts()
+    {
+        // Ensure the user is authenticated
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'Please log in to view your drafts.');
+        }
+
+        $user = Auth::user();
+
+        // Fetch the user's stories with status 'draft'
+        $draftStories = $user->stories()->where('status', 'draft')->get();
+
+        // Pass the draft stories to a view
+        return view('stories.drafts', compact('draftStories'));
+    }
+    public function edit(Story $story)
+    {
+        // Ensure the authenticated user owns this story
+        if ($story->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.'); // Or redirect with an error message
+        }
+
+        // Pass the story data to the edit view
+        return view('stories.edit', compact('story'));
+    }
+
+    /**
+     * Update the specified story in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Story  $story
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, Story $story)
+    {
+        // Ensure the authenticated user owns this story
+        if ($story->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.'); // Or redirect with an error message
+        }
+
+        // Validate the incoming request data
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'genre' => 'required|string|max:255',
+            'content' => 'required|string', // Content is now directly editable
+            'status' => 'required|string|in:draft,published', // Allow changing status
+        ]);
+
+        // Update the story attributes
+        $story->title = $request->input('title');
+        $story->genre = $request->input('genre');
+        $story->content = $request->input('content');
+        $story->status = $request->input('status'); // Update status if needed
+
+        // Save the changes
+        $story->save();
+
+        // Redirect back to the drafts page or show a success message
+        return redirect()->route('stories.drafts')->with('success', 'Story updated successfully!');
+    }
+    public function destroy(Story $story)
+    {
+        // Ensure the authenticated user owns this story
+        if ($story->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.'); // Or redirect with an error message
+        }
+
+        // Delete the story
+        $story->delete();
+
+        // Redirect back to the drafts page with a success message
+        return redirect()->route('stories.drafts')->with('success', 'Story deleted successfully!');
+    }
 }

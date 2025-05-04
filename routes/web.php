@@ -21,8 +21,15 @@ Route::middleware(['auth', CheckUserBanStatus::class])->group(function () {
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
     Route::post('/polls', [PollController::class, 'store'])->name('polls.store');
     Route::post('/users/{user}/ban', [UserController::class, 'ban'])->name('users.ban');
+    Route::get('/stories/drafts', [StoryController::class, 'drafts'])->name('stories.drafts');
+
     Route::get('/stories/create', [StoryController::class, 'create'])->name('stories.create');
-Route::post('/stories/store', [StoryController::class, 'store'])->name('stories.store');
+    Route::post('/stories/generate', [StoryController::class, 'generate'])->name('stories.generate');
+    Route::post('/stories', [StoryController::class, 'store'])->name('stories.store');
+        
+        Route::get('/stories/{story}/edit', [StoryController::class, 'edit'])->name('stories.edit');
+        Route::put('/stories/{story}', [StoryController::class, 'update'])->name('stories.update');
+        Route::delete('/stories/{story}', [StoryController::class, 'destroy'])->name('stories.destroy'); 
 });
 
 // Admin routes

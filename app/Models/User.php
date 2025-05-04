@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasMany; 
 
 class User extends Authenticatable
 {
@@ -17,14 +18,15 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
-        'username',  // Add username here
+        'username',
         'email',
         'password',
-        'dob_day',   // Include any other fields you want to add
+        'dob_day',
         'dob_month',
         'dob_year',
         'banned',
-        'email_verified_at', // also add this if it is included in your insert
+        'email_verified_at',
+       
     ];
 
     /**
@@ -49,19 +51,36 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-    
-    public function isAdmin()
+
+    /**
+     * Check if the user has the 'admin' role.
+     */
+    public function isAdmin(): bool
     {
         return $this->role === 'admin';
     }
 
-    public function isHR()
+    /**
+     * Check if the user has the 'hr' role.
+     */
+    public function isHR(): bool
     {
         return $this->role === 'hr';
     }
-    
-    public function isUser()
+
+    /**
+     * Check if the user has the 'user' role.
+     */
+    public function isUser(): bool
     {
         return $this->role === 'user';
+    }
+
+    /**
+     * Get the stories for the user.
+     */
+    public function stories(): HasMany
+    {
+        return $this->hasMany(Story::class);
     }
 }
