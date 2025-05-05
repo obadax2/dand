@@ -12,6 +12,9 @@
 <body>
     <nav>
         <ul>
+            {{-- <li class="logo">
+                <img src="site-logo.png" alt="Logo"> <!-- Placeholder logo -->
+            </li> --}}
             <li>
                 <a href="#">home</a>
             </li>
@@ -26,7 +29,15 @@
             </li>
         </ul>
     </nav>
+
     <div class="container">
+        <div class="typing-container">
+            <div class="line-one">Your website for</div>
+            <div class="line-two">
+                generating a <span id="typed-text"></span><span class="cursor">|</span>
+            </div>
+        </div>
+
 
         <!-- From Uiverse.io by vamsidevendrakumar -->
         <div class="card">
@@ -43,5 +54,36 @@
 
     </div>
 </body>
+<script>
+    const options = ["Story", "Map", "Character"];
+    const typedText = document.getElementById("typed-text");
+    let optionIndex = 0;
+    let charIndex = 0;
+    let deleting = false;
+
+    function typeLoop() {
+        const currentOption = options[optionIndex];
+        if (!deleting) {
+            typedText.textContent = currentOption.substring(0, charIndex + 1);
+            charIndex++;
+            if (charIndex === currentOption.length) {
+                deleting = true;
+                setTimeout(typeLoop, 2000); // Pause before deleting
+                return;
+            }
+        } else {
+            typedText.textContent = currentOption.substring(0, charIndex - 1);
+            charIndex--;
+            if (charIndex === 0) {
+                deleting = false;
+                optionIndex = (optionIndex + 1) % options.length;
+            }
+        }
+        setTimeout(typeLoop, deleting ? 80 : 150);
+    }
+
+    document.addEventListener("DOMContentLoaded", typeLoop);
+</script>
+
 
 </html>

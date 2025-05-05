@@ -5,28 +5,49 @@ html {
     background-color: #06043E;
 }
 
-
-
 nav {
     max-width: 1920px;
-    mask-image: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, #ffffff 25%, #ffffff 75%, rgba(255, 255, 255, 0) 100%);
     margin: 0 auto;
     padding: 10px 0;
+    position: relative; /* To position the pseudo-element correctly */
+    display: flex;
+    justify-content: center; /* Aligns items to the right */
+    align-items: center;
+}
+
+nav::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px; /* Adjust the height for the bottom border */
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, #05EEFF 25%, #05EEFF 75%, rgba(255, 255, 255, 0) 100%);
 }
 
 nav ul {
     text-align: center;
+    display: flex;
+    gap: 30px;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
 }
 
 nav ul li {
     display: inline-block;
 }
 
+nav ul li.logo img {
+    width: 50px; /* Adjust size of logo */
+    height: auto;
+}
+
 nav ul li a {
     padding: 18px;
     font-family: "Open Sans";
     color: rgba(252, 252, 252, 0.989);
-    font-size: 18px;
+    font-size: 16px;
     text-decoration: none;
     display: block;
 }
@@ -34,6 +55,8 @@ nav ul li a {
 nav ul li a:hover {
     color: #05EEFF;
 }
+
+
 
 
 table {
@@ -166,4 +189,29 @@ th {
     justify-content: center;
     font-size: 24px;
     transform: rotateY(180deg);
+}
+.typing-container {
+    text-align: center;
+    font-family: 'Open Sans', sans-serif;
+    color: #ffffff;
+    font-size: 70px; /* Increased size */
+    margin: 60px 0;
+}
+
+#typed-text {
+    color: #05EEFF; /* Typed word color */
+    font-weight: bold;
+}
+
+.cursor {
+    display: inline-block;
+    color: #05EEFF;
+    font-weight: bold;
+    font-size: 70px; /* Matches text size */
+    animation: blink 0.7s infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
 }
