@@ -22,7 +22,7 @@ class RegisterController extends Controller
 
     public function register(Request $request)
 {
-  
+
     $validator = Validator::make($request->all(), [
         'name' => 'required|string|max:255',
         'username' => 'required|string|max:255|unique:temporary_users',
@@ -57,11 +57,10 @@ class RegisterController extends Controller
         Log::info('Attempted to send email to ' . $temporaryUser->email);
     } catch (\Exception $e) {
         Log::error('Mail failed to send', ['error' => $e->getMessage()]);
-    
+
     }
 
-  
-    return redirect()->route('verify.code.form')->with('status', 'Please check your email for the verification code to complete your registration.');
+    return redirect()->route('verify.code.form');
 }
     public function verifyEmail(Request $request)
     {
@@ -89,6 +88,6 @@ class RegisterController extends Controller
 
         $temporaryUser->delete();
 
-        return redirect()->route('login')->with('status', 'Registration completed successfully.');
+        return redirect()->route('home');
     }
 }

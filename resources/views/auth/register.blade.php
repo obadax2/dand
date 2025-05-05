@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <title>Document</title>
     <link rel="stylesheet" href="style2.css">
 </head>
+
 <body>
     <section class="wrapper">
         <div class="form signup">
@@ -35,15 +37,16 @@
         </div>
 
         <div class="form login">
-    <header>Login</header>
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
-        <input type="text" name="username" placeholder="Username" required />
-        <input type="password" name="password" placeholder="Password" required />
-        <a href="#">Forgot password?</a>
-        <input type="submit" value="Login" />
-    </form>
-</div>
+            <header>Login</header>
+            <form method="POST" action="{{ route('login') }}">
+                @csrf
+                <input type="text" name="username" placeholder="Username" required />
+                <input type="password" name="password" placeholder="Password" required />
+                <a href="#">Forgot password?</a>
+                <input type="submit" value="Login" />
+            </form>
+        </div>
+
 
         <script>
             const wrapper = document.querySelector(".wrapper"),
@@ -59,4 +62,5 @@
     </section>
 
 </body>
+
 </html>

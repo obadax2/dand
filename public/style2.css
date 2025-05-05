@@ -173,3 +173,12 @@ form input[type="submit"] {
     padding: 8px;
     text-align: center;
 }
+
+.centered-text {
+    text-align: center;
+    /* Optional: Center the paragraph horizontally in the container */
+    margin: 0 auto;
+    /* Optional: Set a width or max-width if needed */
+    max-width: 600px;
+    color: white;
+}
