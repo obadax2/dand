@@ -9,9 +9,12 @@ nav {
     max-width: 1920px;
     margin: 0 auto;
     padding: 10px 0;
-    position: relative; /* To position the pseudo-element correctly */
+    max-width: 1000px;
+    position: relative;
+    /* To position the pseudo-element correctly */
     display: flex;
-    justify-content: center; /* Aligns items to the right */
+    justify-content: center;
+    /* Aligns items to the right */
     align-items: center;
 }
 
@@ -21,7 +24,8 @@ nav::after {
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 2px; /* Adjust the height for the bottom border */
+    height: 2px;
+    /* Adjust the height for the bottom border */
     background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, #05EEFF 25%, #05EEFF 75%, rgba(255, 255, 255, 0) 100%);
 }
 
@@ -39,7 +43,8 @@ nav ul li {
 }
 
 nav ul li.logo img {
-    width: 50px; /* Adjust size of logo */
+    width: 50px;
+    /* Adjust size of logo */
     height: auto;
 }
 
@@ -65,7 +70,7 @@ table {
     border-radius: 15px;
     overflow: hidden;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.1);
-    width: 100%;
+    width: 1100px !important;
     /* Ensure the table takes full width */
 }
 
@@ -89,18 +94,18 @@ th {
 
 #checklist {
     --text: #414856;
-    --check: #4f29f0;
+    --check: #6cb1b6;
     --disabled: #c3c8de;
     --border-radius: 10px;
+    justify-content: center;
 
     border-radius: var(--border-radius);
     box-shadow: 0 10px 30px rgba(65, 72, 86, 0.05);
     padding: 0px;
-    size: 400px;
     display: flex;
+    width: 120%;
     gap: 30px;
     align-items: center;
-    justify-content: center;
 }
 
 
@@ -190,16 +195,19 @@ th {
     font-size: 24px;
     transform: rotateY(180deg);
 }
+
 .typing-container {
     text-align: center;
     font-family: 'Open Sans', sans-serif;
     color: #ffffff;
-    font-size: 70px; /* Increased size */
+    font-size: 70px;
+    /* Increased size */
     margin: 60px 0;
 }
 
 #typed-text {
-    color: #05EEFF; /* Typed word color */
+    color: #05EEFF;
+    /* Typed word color */
     font-weight: bold;
 }
 
@@ -207,11 +215,196 @@ th {
     display: inline-block;
     color: #05EEFF;
     font-weight: bold;
-    font-size: 70px; /* Matches text size */
+    font-size: 70px;
+    /* Matches text size */
     animation: blink 0.7s infinite;
 }
 
 @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0; }
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+}
+
+.custom-alert {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    max-width: 90%;
+    padding: 15px;
+    font-size: 14px;
+    text-align: center;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    z-index: 1050;
+    /* Bootstrap uses 1050 for modals */
+    background-color: #d4edda;
+    /* Example: green background for success */
+    color: #155724;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        top: -100px;
+        opacity: 0;
+    }
+
+    to {
+        top: 20px;
+        opacity: 1;
+    }
+}
+
+#btnn {
+    width: 140px;
+    height: 50px;
+    background: black;
+    color: #fff;
+    border-radius: 50px;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    position: relative;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}
+
+#btnn span {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: top 0.5s;
+}
+
+.btn-text-one {
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+}
+
+.btn-text-two {
+    position: absolute;
+    width: 100%;
+    top: 150%;
+    left: 0;
+    transform: translateY(-50%);
+}
+
+.btn:hover .btn-text-one {
+    top: -100%;
+}
+
+.btn:hover .btn-text-two {
+    top: 50%;
+}
+
+input.form-control {
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    height: 49px;
+}
+
+input.form-control:focus {
+    box-shadow: 0 0 12px rgba(5, 238, 255, 0.6);
+    /* Stronger glow on focus */
+    border-color: #05EEFF;
+    outline: none;
+}
+
+/* From Uiverse.io by cssbuttons-io */
+button {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    outline: none;
+    border: 0;
+    vertical-align: middle;
+    text-decoration: none;
+    background: transparent;
+    padding: 0;
+    font-size: inherit;
+    font-family: inherit;
+}
+
+button.learn-more {
+    width: 12rem;
+    height: auto;
+}
+
+button.learn-more .circle {
+    transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+    position: relative;
+    display: block;
+    margin: 0;
+    width: 3rem;
+    height: 3rem;
+    background: #282936;
+    border-radius: 1.625rem;
+}
+
+button.learn-more .circle .icon {
+    transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    background: #fff;
+}
+
+button.learn-more .circle .icon.arrow {
+    transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+    left: 0.625rem;
+    width: 1.125rem;
+    height: 0.125rem;
+    background: none;
+}
+
+button.learn-more .circle .icon.arrow::before {
+    position: absolute;
+    content: "";
+    top: -0.29rem;
+    right: 0.0625rem;
+    width: 0.625rem;
+    height: 0.625rem;
+    border-top: 0.125rem solid #fff;
+    border-right: 0.125rem solid #fff;
+    transform: rotate(45deg);
+}
+
+button.learn-more .button-text {
+    transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 0.75rem 0;
+    margin: 0 0 0 1.85rem;
+    color: #282936;
+    font-weight: 700;
+    line-height: 1.6;
+    text-align: center;
+}
+
+button:hover .circle {
+    width: 100%;
+}
+
+button:hover .circle .icon.arrow {
+    background: #fff;
+    transform: translate(1rem, 0);
+}
+
+button:hover .button-text {
+    color: #fff;
 }

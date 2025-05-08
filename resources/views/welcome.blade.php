@@ -16,16 +16,16 @@
                 <img src="site-logo.png" alt="Logo"> <!-- Placeholder logo -->
             </li> --}}
             <li>
-                <a href="#">home</a>
+                <a href="#">Home</a>
             </li>
             <li>
-                <a href="#">about</a>
+                <a href="#">About</a>
             </li>
             <li>
-                <a href="#">services</a>
+                <a href="#">Services</a>
             </li>
             <li>
-                <a href="#">contact</a>
+                <a href="#">Contact</a>
             </li>
         </ul>
     </nav>
