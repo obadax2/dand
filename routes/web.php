@@ -8,7 +8,9 @@ use App\Http\Controllers\PollController;
 use App\Http\Controllers\AdminController;
 use App\Http\Middleware\CheckUserBanStatus;
 use App\Http\Controllers\StoryController;
-
+use App\Http\Controllers\FriendController;
+use App\Http\Controllers\FollowController;
+use App\Http\Controllers\UserProfileController;
 // Route for the welcome page
 Route::get('/', function () {
     return view('welcome'); // Adjust to render the Blade view
@@ -30,6 +32,23 @@ Route::middleware(['auth', CheckUserBanStatus::class])->group(function () {
         Route::get('/stories/{story}/edit', [StoryController::class, 'edit'])->name('stories.edit');
         Route::put('/stories/{story}', [StoryController::class, 'update'])->name('stories.update');
         Route::delete('/stories/{story}', [StoryController::class, 'destroy'])->name('stories.destroy'); 
+       // Route for AJAX search
+Route::get('/users/ajaxSearch', [UserController::class, 'ajaxSearch'])->name('users.ajaxSearch');
+
+// Follow / Unfollow
+Route::post('/follow/{user}', [FollowController::class, 'follow'])->name('followers.follow');
+Route::post('/unfollow/{user}', [FollowController::class, 'unfollow'])->name('followers.unfollow');
+
+// Friend Requests
+Route::post('/friends/request/{user}', [FriendController::class, 'sendRequest'])->name('friends.sendRequest');
+Route::post('/friends/accept/{user}', [FriendController::class, 'acceptRequest'])->name('friends.acceptRequest');
+Route::post('/friends/reject/{user}', [FriendController::class, 'rejectRequest'])->name('friends.rejectRequest');
+Route::delete('/friends/{user}', [FriendController::class, 'unfriend'])->name('friends.unfriend');
+   Route::get('/user/profile', [UserProfileController::class, 'show'])->name('user.profile');
+  
+    Route::post('/user/profile/update', [UserProfileController::class, 'updateProfile'])->name('user.updateProfile');
+    Route::post('/user/password/change', [UserProfileController::class, 'changePassword'])->name('user.changePassword');
+Route::post('/friends/accept/{user_id}', [FriendController::class, 'acceptFriendRequest'])->name('friend.accept');
 });
 
 // Admin routes

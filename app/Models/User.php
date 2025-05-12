@@ -83,4 +83,52 @@ class User extends Authenticatable
     {
         return $this->hasMany(Story::class);
     }
+ 
+public function friendsAsUser1()
+{
+    return $this->belongsToMany(User::class, 'friends', 'user1_id', 'user2_id')
+                ->withPivot('status')
+                ->wherePivot('status', 'accepted');
+}
+
+public function friendsAsUser2()
+{
+    return $this->belongsToMany(User::class, 'friends', 'user2_id', 'user1_id')
+                ->withPivot('status')
+                ->wherePivot('status', 'accepted');
+}
+
+    /**
+     * Get the list of friends with accepted status.
+     */
+    public function acceptedFriends()
+    {
+        return $this->friends()->wherePivot('status', 'accepted');
+    }
+
+    /**
+     * Get the list of friend requests received.
+     */
+    public function friendRequests()
+    {
+        return $this->belongsToMany(User::class, 'friends', 'user2_id', 'user1_id')
+                    ->withPivot('status')
+                    ->wherePivot('status', 'pending');
+    }
+
+    /**
+     * Get the followers of this user.
+     */
+    public function followers()
+    {
+        return $this->hasMany(Follower::class, 'user_id');
+    }
+
+    /**
+     * Get the users this user is following.
+     */
+    public function following()
+    {
+        return $this->belongsToMany(User::class, 'followers', 'follower_id', 'user_id');
+    }
 }

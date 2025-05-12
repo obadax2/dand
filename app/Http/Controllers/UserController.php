@@ -83,4 +83,12 @@ public function ban(User $user)
     return redirect()->route('users.index')->with('success', $user->banned ? 'User banned successfully!' : 'User unbanned successfully!');
 }
 
+public function ajaxSearch(Request $request) {
+    $query = $request->input('query');
+    $users = User::where('name', 'LIKE', "%$query%")
+        ->orWhere('username', 'LIKE', "%$query%")
+        ->limit(10)
+        ->get(['id', 'name', 'username']); // get only needed fields
+    return response()->json($users);
+}
 }
