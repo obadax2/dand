@@ -117,7 +117,7 @@
             <!-- Current User Profile Button -->
            <a href="{{ route('user.profile') }}">{{ Auth::user()->name }}</a>
             <!-- Blog Index Button -->
-            <a href="{{ url('blogindex.php') }}">Blog Index</a>
+            <a href="{{ route('dashboard') }}">Blog Index</a>
         </div>
     </div>
 

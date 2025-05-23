@@ -81,23 +81,23 @@ class User extends Authenticatable
      */
     public function stories(): HasMany
     {
-        return $this->hasMany(Story::class);
+        return $this->hasMany(Story::class);    
     }
- 
-public function friendsAsUser1()
+    public function friends()
 {
-    return $this->belongsToMany(User::class, 'friends', 'user1_id', 'user2_id')
-                ->withPivot('status')
-                ->wherePivot('status', 'accepted');
-}
+    // Friends where this user is user1
+    $friendsAsUser1 = $this->belongsToMany(User::class, 'friends', 'user1_id', 'user2_id')
+        ->withPivot('status')
+        ->wherePivot('status', 'accepted');
 
-public function friendsAsUser2()
-{
-    return $this->belongsToMany(User::class, 'friends', 'user2_id', 'user1_id')
-                ->withPivot('status')
-                ->wherePivot('status', 'accepted');
-}
+    // Friends where this user is user2
+    $friendsAsUser2 = $this->belongsToMany(User::class, 'friends', 'user2_id', 'user1_id')
+        ->withPivot('status')
+        ->wherePivot('status', 'accepted');
 
+    // Merge both collections
+    return $friendsAsUser1->union($friendsAsUser2);
+}
     /**
      * Get the list of friends with accepted status.
      */
@@ -119,16 +119,23 @@ public function friendsAsUser2()
     /**
      * Get the followers of this user.
      */
-    public function followers()
-    {
-        return $this->hasMany(Follower::class, 'user_id');
-    }
+ public function followers()
+{
+    return $this->hasMany(Follower::class, 'user_id');
+}
 
-    /**
-     * Get the users this user is following.
-     */
-    public function following()
-    {
-        return $this->belongsToMany(User::class, 'followers', 'follower_id', 'user_id');
-    }
+// Users this user is following
+public function following()
+{
+    return $this->belongsToMany(User::class, 'followers', 'follower_id', 'user_id');
+}
+public function allFriends()
+{
+    $friendIds = array_merge(
+        \DB::table('friends')->where('user1_id', $this->id)->where('status', 'accepted')->pluck('user2_id')->toArray(),
+        \DB::table('friends')->where('user2_id', $this->id)->where('status', 'accepted')->pluck('user1_id')->toArray()
+    );
+
+    return User::whereIn('id', $friendIds)->get();
+}
 }

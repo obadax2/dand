@@ -10,22 +10,22 @@ use App\Models\User;
 
 class UserProfileController extends Controller
 {
-  public function show()
+public function show()
 {
     $user = Auth::user();
 
     // Fetch friend requests with pivot status
     $friendRequests = $user->friendRequests()
-    ->withPivot('status')
-    ->wherePivot('status', 'pending')
-    ->get();
+        ->withPivot('status')
+        ->wherePivot('status', 'pending')
+        ->get();
 
     // Count followers
-    $followersCount = $user->followers()->count();
+   $followersCount = $user->followers()->count();
 
-    // Merge friends from both relations
-    $friends = $user->friendsAsUser1->merge($user->friendsAsUser2);
-    $friendsCount = $friends->count();
+    // Fetch friends from both relations and merge
+    $friends = $user->friends();
+$friendsCount = $user->allFriends()->count();
 
     // Define senderUser (assuming it's the current user or specify as needed)
     $senderUser = $user; // or fetch another user as per your logic

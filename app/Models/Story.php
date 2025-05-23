@@ -43,4 +43,8 @@ class Story extends Model
      {
          return $this->hasOne(Map::class); 
      }
+     public function blog()
+    {
+        return $this->hasOne(Blog::class);
+    }
 }

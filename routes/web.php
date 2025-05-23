@@ -11,6 +11,10 @@ use App\Http\Controllers\StoryController;
 use App\Http\Controllers\FriendController;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\UserProfileController;
+use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\PaymentController;
+use App\Models\Story;
+
 // Route for the welcome page
 Route::get('/', function () {
     return view('welcome'); // Adjust to render the Blade view
@@ -49,6 +53,17 @@ Route::delete('/friends/{user}', [FriendController::class, 'unfriend'])->name('f
     Route::post('/user/profile/update', [UserProfileController::class, 'updateProfile'])->name('user.updateProfile');
     Route::post('/user/password/change', [UserProfileController::class, 'changePassword'])->name('user.changePassword');
 Route::post('/friends/accept/{user_id}', [FriendController::class, 'acceptFriendRequest'])->name('friend.accept');
+Route::get('/dashboard', [App\Http\Controllers\BlogController::class, 'dashboard'])
+    ->middleware('auth')
+    ->name('dashboard');
+
+Route::post('/purchase', [PurchaseController::class, 'purchase'])->name('purchase');
+Route::get('/payment/cancel', [PaymentController::class, 'cancel'])->name('paypal.cancel');
+// In web.php
+Route::post('/pay', [PaymentController::class, 'createPayment'])->name('paypal.create');
+Route::get('/payment/callback', [PaymentController::class, 'execute'])->name('paypal.execute');
+// Handle blog creation
+Route::post('/blogs/create', [App\Http\Controllers\BlogController::class, 'create'])->name('blogs.create')->middleware('auth');
 });
 
 // Admin routes
