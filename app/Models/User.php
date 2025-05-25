@@ -138,4 +138,8 @@ public function allFriends()
 
     return User::whereIn('id', $friendIds)->get();
 }
+public function cartItems()
+{
+    return $this->hasMany(\App\Models\Cart::class);
+}
 }

@@ -10,57 +10,57 @@ use App\Models\User;
 
 class UserProfileController extends Controller
 {
-public function show()
-{
-    $user = Auth::user();
+    public function show()
+    {
+        $user = Auth::user();
 
-    // Fetch friend requests with pivot status
-    $friendRequests = $user->friendRequests()
-        ->withPivot('status')
-        ->wherePivot('status', 'pending')
-        ->get();
+        // Fetch friend requests with pivot status
+        $friendRequests = $user->friendRequests()
+            ->withPivot('status')
+            ->wherePivot('status', 'pending')
+            ->get();
 
-    // Count followers
-   $followersCount = $user->followers()->count();
+        // Count followers
+        $followersCount = $user->followers()->count();
 
-    // Fetch friends from both relations and merge
-    $friends = $user->friends();
-$friendsCount = $user->allFriends()->count();
+        // Fetch friends from both relations and merge
+        $friends = $user->friends();
+        $friendsCount = $user->allFriends()->count();
 
-    // Define senderUser (assuming it's the current user or specify as needed)
-    $senderUser = $user; // or fetch another user as per your logic
+        // Define senderUser (assuming it's the current user or specify as needed)
+        $senderUser = $user; // or fetch another user as per your logic
 
-    // Pass all variables to the view
-    return view('userprofile', compact('user', 'friendRequests', 'followersCount', 'friendsCount', 'senderUser'));
-}
+        // Pass all variables to the view
+        return view('userprofile', compact('user', 'friendRequests', 'followersCount', 'friendsCount', 'senderUser'));
+    }
     public function updateProfile(Request $request)
     {
-   
 
-    $request->validate([
-        'profile_picture' => 'required|image|max:2048',
-    ]);
 
-    $user = auth()->user();
+        $request->validate([
+            'profile_picture' => 'required|image|max:2048',
+        ]);
 
-    if ($request->hasFile('profile_picture')) {
-        // Delete old picture if exists
-        if ($user->profile_picture) {
-            Storage::delete('public/' . $user->profile_picture);
+        $user = auth()->user();
+
+        if ($request->hasFile('profile_picture')) {
+            // Delete old picture if exists
+            if ($user->profile_picture) {
+                Storage::delete('public/' . $user->profile_picture);
+            }
+
+            // Store new picture in 'public/pictures'
+            $path = $request->file('profile_picture')->store('pictures', 'public');
+
+
+            // Save path relative to 'public/'
+            $relativePath = str_replace('public/', '', $path);
+            $user->profile_picture = $relativePath;
+            $user->save();
         }
 
-        // Store new picture in 'public/pictures'
-       $path = $request->file('profile_picture')->store('pictures', 'public');
-
-    
-        // Save path relative to 'public/'
-        $relativePath = str_replace('public/', '', $path);
-        $user->profile_picture = $relativePath;
-        $user->save();
+        return redirect()->back()->with('success', 'Profile picture updated.');
     }
-
-    return redirect()->back()->with('success', 'Profile picture updated.');
-}
     public function changePassword(Request $request)
     {
         $request->validate([
@@ -90,7 +90,7 @@ $friendsCount = $user->allFriends()->count();
         $request->status = 'accepted';
         $request->save();
 
-       
+
         $user1 = User::find($request->from_user_id);
         $user2 = User::find($request->to_user_id);
         $user1->friends()->attach($user2->id, ['status' => 'accepted']);

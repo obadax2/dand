@@ -130,8 +130,7 @@ class StoryController extends Controller
         $user = Auth::user();
 
         // Fetch the user's stories with status 'draft'
-        $draftStories = $user->stories()->where('status', 'draft')->get();
-
+   $draftStories = $user->stories()->whereIn('status', ['purchased', 'draft'])->get();
         // Pass the draft stories to a view
         return view('stories.drafts', compact('draftStories'));
     }
@@ -180,17 +179,22 @@ class StoryController extends Controller
         // Redirect back to the drafts page or show a success message
         return redirect()->route('stories.drafts')->with('success', 'Story updated successfully!');
     }
-    public function destroy(Story $story)
-    {
-        // Ensure the authenticated user owns this story
-        if ($story->user_id !== Auth::id()) {
-            abort(403, 'Unauthorized action.'); // Or redirect with an error message
-        }
-
-        // Delete the story
-        $story->delete();
-
-        // Redirect back to the drafts page with a success message
-        return redirect()->route('stories.drafts')->with('success', 'Story deleted successfully!');
+   public function destroy(Story $story)
+{
+    // Ensure the authenticated user owns this story
+    if ($story->user_id !== Auth::id()) {
+        abort(403, 'Unauthorized action.');
     }
+
+    // Prevent deletion if the story is 'purchased'
+    if ($story->status === 'purchased') {
+        return redirect()->route('stories.drafts')->with('error', 'Purchased stories cannot be deleted.');
+    }
+
+    // Delete the story
+    $story->delete();
+
+    // Redirect back with success message
+    return redirect()->route('stories.drafts')->with('success', 'Story deleted successfully!');
+}
 }
