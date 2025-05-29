@@ -13,6 +13,8 @@ use App\Http\Controllers\FollowController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\CartController;
+use App\Models\Blog;
 use App\Models\Story;
 
 // Route for the welcome page
@@ -64,6 +66,13 @@ Route::post('/pay', [PaymentController::class, 'createPayment'])->name('paypal.c
 Route::get('/payment/callback', [PaymentController::class, 'execute'])->name('paypal.execute');
 // Handle blog creation
 Route::post('/blogs/create', [App\Http\Controllers\BlogController::class, 'create'])->name('blogs.create')->middleware('auth');
+Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+
+Route::get('/cart/checkout', [PaymentController::class, 'checkoutAndExecuteCart'])->name('paypal.cart.checkout');
+Route::get('/cart/execute', [PaymentController::class, 'checkoutAndExecuteCart'])->name('paypal.cart.execute');
+;
 });
 
 // Admin routes

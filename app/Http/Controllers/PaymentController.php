@@ -6,9 +6,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log; // Added for logging
+use Illuminate\Support\Facades\Log;
 use App\Models\Blog;
 use App\Models\PaymentLog;
+use App\Models\Story;
 
 class PaymentController extends Controller
 {
@@ -17,8 +18,8 @@ class PaymentController extends Controller
     private function getAccessToken()
     {
         try {
-           $clientId = 'AfckPd40pNpHd7GtPG9tTN_JsTSO_p4ufWbQI4MU3JvmbQRuRbFQsQl3dtZFW5dwmkgFGeV4RwUR80ez'; // Replace with your actual sandbox client id
-        $clientSecret = 'EJo7bV6t8IYyd7VkxBu9dqv2S9lE5GtjaUpDg5VrNCd4n6Tdj-6LJUD-VGDX9gTDtSQ5JaHt9CRvqOAx';
+            $clientId = 'AdOzBhc5t_QnWkTh1h9svI60vPAH_698nL6IBSWwWoKqdMsWYfTaOXeFdLxPCU3qArUNgJEUV3Yfiyed';
+            $clientSecret = 'EEFkktdIE2Uucdj7PtaG_uDdeNH5XH039DZSBENmzRBncCaDeEIAAEAg5Tsor9uHGW6UmVj0SYcj606C';
 
             Log::info('Requesting PayPal access token...');
             $response = Http::withBasicAuth($clientId, $clientSecret)
@@ -27,6 +28,7 @@ class PaymentController extends Controller
                 ->post($this->paypalBaseUrl . '/v1/oauth2/token', [
                     'grant_type' => 'client_credentials',
                 ]);
+
             Log::info('Access token response', ['status' => $response->status(), 'body' => $response->body()]);
 
             if ($response->successful()) {
@@ -51,6 +53,16 @@ class PaymentController extends Controller
 
             if ($blog->user_id == $user->id) {
                 return redirect()->back()->with('error', 'You cannot purchase your own blog.');
+            }
+
+            // ✅ Check for duplicate purchase
+            $alreadyPurchased = Story::where('user_id', $user->id)
+                ->where('status', 'purchased')
+                ->where('title', $blog->story->title)
+                ->exists();
+
+            if ($alreadyPurchased) {
+                return redirect()->route('dashboard')->withErrors('You have already purchased this story.');
             }
 
             $amount = $blog->price;
@@ -121,111 +133,276 @@ class PaymentController extends Controller
         }
     }
 
-   public function execute(Request $request)
-{
-    try {
-        $token = $request->get('token');
-        Log::info('Executing payment', ['token' => $token]);
+    public function execute(Request $request)
+    {
+        try {
+            $token = $request->get('token');
+            Log::info('Executing payment', ['token' => $token]);
 
-        if (!$token || !Session::has('blog_id')) {
-            Log::warning('Missing token or session data', ['token' => $token, 'session' => Session::all()]);
-            return redirect()->route('dashboard')->withErrors('Invalid session or token.');
-        }
+            if (!$token || !Session::has('blog_id')) {
+                Log::warning('Missing token or session data', ['token' => $token, 'session' => Session::all()]);
+                return redirect()->route('dashboard')->withErrors('Invalid session or token.');
+            }
 
-        $blogId = Session::get('blog_id');
-        $accessToken = $this->getAccessToken();
+            $blogId = Session::get('blog_id');
+            $accessToken = $this->getAccessToken();
 
-        Log::info('Fetching order details', ['order_id' => $token]);
+            $orderResponse = Http::withToken($accessToken)
+                ->withOptions(['verify' => false])
+                ->get($this->paypalBaseUrl . "/v2/checkout/orders/{$token}");
 
-        $orderResponse = Http::withToken($accessToken)
-            ->withOptions(['verify' => false])
-            ->get($this->paypalBaseUrl . "/v2/checkout/orders/{$token}");
+            if (!$orderResponse->successful()) {
+                Log::error('Failed to fetch order details', ['response' => $orderResponse->body()]);
+                return redirect()->route('dashboard')->withErrors('Failed to fetch order details.');
+            }
 
-        Log::info('Order fetch response', ['status' => $orderResponse->status(), 'body' => $orderResponse->body()]);
+            $orderDetails = $orderResponse->json();
+            if ($orderDetails['status'] !== 'APPROVED') {
+                Log::warning('Order not approved', ['status' => $orderDetails['status']]);
+                return redirect()->route('dashboard')->withErrors('Order not approved.');
+            }
 
-        if (!$orderResponse->successful()) {
-            Log::error('Failed to fetch order details', ['response' => $orderResponse->body()]);
-            return redirect()->route('dashboard')->withErrors('Failed to fetch order details.');
-        }
+            $captureUrl = $this->paypalBaseUrl . "/v2/checkout/orders/{$token}/capture";
 
-        $orderDetails = $orderResponse->json();
-        Log::info('Order details', ['details' => $orderDetails]);
+            $captureResponse = Http::withToken($accessToken)
+                ->withOptions(['verify' => false])
+                ->withHeaders([
+                    'Content-Type' => 'application/json',
+                    'Content-Length' => '0',
+                ])
+                ->post($captureUrl, null);
 
-        if ($orderDetails['status'] !== 'APPROVED') {
-            Log::warning('Order not approved', ['status' => $orderDetails['status']]);
-            return redirect()->route('dashboard')->withErrors('Order not approved.');
-        }
+            if (!$captureResponse->successful()) {
+                Log::error('Payment capture failed', ['response' => $captureResponse->body()]);
+                PaymentLog::create([
+                    'user_id' => Auth::id(),
+                    'amount' => $orderDetails['purchase_units'][0]['amount']['value'],
+                    'payment_method' => 'PayPal',
+                    'transaction_id' => null,
+                    'status' => 'failed',
+                ]);
+                return redirect()->route('dashboard')->withErrors('Payment capture failed.');
+            }
 
-        // Check if already captured
-        if ($orderDetails['status'] === 'COMPLETED') {
-            Log::info('Order already completed, skipping capture');
+            $captureResult = $captureResponse->json();
+            if (($captureResult['status'] ?? '') !== 'COMPLETED') {
+                Log::warning('Capture not completed', ['status' => $captureResult['status']]);
+                PaymentLog::create([
+                    'user_id' => Auth::id(),
+                    'amount' => $orderDetails['purchase_units'][0]['amount']['value'],
+                    'payment_method' => 'PayPal',
+                    'transaction_id' => null,
+                    'status' => 'failed',
+                ]);
+                return redirect()->route('dashboard')->withErrors('Payment was not completed.');
+            }
 
             $blog = Blog::with('story.user')->findOrFail($blogId);
             PaymentLog::create([
                 'user_id' => Auth::id(),
                 'amount' => $blog->price,
                 'payment_method' => 'PayPal',
-                'transaction_id' => $orderDetails['id'],
+                'transaction_id' => $captureResult['id'],
                 'status' => 'completed',
             ]);
-            return redirect()->route('dashboard')->with('success', 'Payment already processed.');
+
+            // ✅ Duplicate the story
+            $originalStory = $blog->story;
+
+            $copiedStory = $originalStory->replicate();
+            $copiedStory->user_id = Auth::id();
+            $copiedStory->status = 'purchased';
+            $copiedStory->save();
+
+            Log::info('Story copied for user', [
+                'original_story_id' => $originalStory->id,
+                'new_story_id' => $copiedStory->id,
+                'buyer_id' => Auth::id()
+            ]);
+
+            return redirect()->route('dashboard')->with('success', 'Payment successful! The story has been saved to your library.');
+        } catch (\Exception $e) {
+            Log::error('Exception in execute', ['message' => $e->getMessage()]);
+            return redirect()->route('dashboard')->withErrors('An error occurred during payment execution.');
+        }
+    }
+
+    public function cancel()
+    {
+        return redirect()->route('dashboard')->with('error', 'Payment canceled.');
+    }
+public function checkoutAndExecuteCart(Request $request)
+{
+    try {
+        $token = $request->get('token');
+
+        if (!$token) {
+            // Step 1: Create the PayPal order
+
+            $user = Auth::user();
+            $cartItems = $user->cartItems()->with('item.story')->get();
+
+            if ($cartItems->isEmpty()) {
+                dd('3: Cart is empty');
+            }
+
+            $items = [];
+            $total = 0;
+
+            foreach ($cartItems as $item) {
+                $blog = $item->item;
+
+                if (!$blog) {
+                    Log::warning("Cart item ID {$item->id} has no associated blog.");
+                    continue;
+                }
+
+                $alreadyPurchased = Story::where('user_id', $user->id)
+                    ->where('status', 'purchased')
+                    ->where('title', $blog->story->title)
+                    ->exists();
+
+                if ($alreadyPurchased) {
+                    dd("5: Already purchased - {$blog->story->title}");
+                }
+
+                $items[] = [
+                    'name' => $blog->story->title,
+                    'unit_amount' => [
+                        'currency_code' => 'USD',
+                        'value' => number_format($blog->price, 2, '.', ''),
+                    ],
+                    'quantity' => (string) $item->quantity,
+                ];
+
+                $total += $blog->price * $item->quantity;
+            }
+
+            if ($total <= 0) {
+                dd('6: Total amount is zero or invalid.');
+            }
+
+            $accessToken = $this->getAccessToken();
+
+            $orderId = uniqid();
+            $body = [
+                "intent" => "CAPTURE",
+                "application_context" => [
+                    "return_url" => route('paypal.cart.execute'),
+                    "cancel_url" => route('paypal.cancel'),
+                ],
+                "purchase_units" => [
+                    [
+                        "reference_id" => $orderId,
+                        "amount" => [
+                            "currency_code" => "USD",
+                            "value" => number_format($total, 2, '.', ''),
+                            "breakdown" => [
+                                "item_total" => [
+                                    "currency_code" => "USD",
+                                    "value" => number_format($total, 2, '.', ''),
+                                ],
+                            ],
+                        ],
+                        "items" => $items,
+                    ],
+                ],
+            ];
+
+            $response = Http::withToken($accessToken)
+                ->withOptions(['verify' => false])
+                ->post($this->paypalBaseUrl . '/v2/checkout/orders', $body);
+
+            if (!$response->successful()) {
+                dd('7: PayPal order failed', $response->body());
+            }
+
+            $order = $response->json();
+            $approveLink = collect($order['links'])->firstWhere('rel', 'approve')['href'] ?? null;
+
+            if (!$approveLink) {
+                dd('8: Approval link not found', $order);
+            }
+
+            Session::put('cart_checkout', true);
+            Session::put('order_id', $order['id']);
+
+            return redirect($approveLink);
         }
 
-        // Proceed to capture
-        $captureUrl = $this->paypalBaseUrl . "/v2/checkout/orders/{$token}/capture";
-        Log::info('Capturing payment', ['url' => $captureUrl]);
+        // Step 2: Execute the order after returning from PayPal
 
-       $captureResponse = Http::withToken($accessToken)
+        if (!Session::has('cart_checkout')) {
+            dd('10: Session lost');
+        }
+
+        $user = Auth::user();
+        $cartItems = $user->cartItems()->with('item.story')->get();
+
+        $accessToken = $this->getAccessToken();
+
+        $orderResponse = Http::withToken($accessToken)
+            ->withOptions(['verify' => false])
+            ->get($this->paypalBaseUrl . "/v2/checkout/orders/{$token}");
+
+        if (!$orderResponse->successful()) {
+            dd('12: Order fetch failed', $orderResponse->body());
+        }
+
+        $orderDetails = $orderResponse->json();
+        if ($orderDetails['status'] !== 'APPROVED') {
+            dd('13: Order not approved', $orderDetails);
+        }
+
+      $captureResponse = Http::withToken($accessToken)
     ->withOptions(['verify' => false])
-    ->withHeaders(['Content-Type' => 'application/json'])
-    ->post($captureUrl, json_encode([]));
-
-        Log::info('Capture response', ['status' => $captureResponse->status(), 'body' => $captureResponse->body()]);
-
+    ->withHeaders([
+        'Content-Type' => 'application/json',
+    ])
+    ->send('POST', $this->paypalBaseUrl . "/v2/checkout/orders/{$token}/capture", [
+        'body' => '{}',
+    ]);
         if (!$captureResponse->successful()) {
-            Log::error('Payment capture failed', ['response' => $captureResponse->body()]);
-            PaymentLog::create([
-                'user_id' => Auth::id(),
-                'amount' => $orderDetails['purchase_units'][0]['amount']['value'],
-                'payment_method' => 'PayPal',
-                'transaction_id' => null,
-                'status' => 'failed',
-            ]);
-            return redirect()->route('dashboard')->withErrors('Payment capture failed.');
+            dd('14: Capture failed', $captureResponse->body());
         }
 
         $captureResult = $captureResponse->json();
-        Log::info('Capture result', ['result' => $captureResult]);
-
         if (($captureResult['status'] ?? '') !== 'COMPLETED') {
-            Log::warning('Capture not completed', ['status' => $captureResult['status']]);
-            PaymentLog::create([
-                'user_id' => Auth::id(),
-                'amount' => $orderDetails['purchase_units'][0]['amount']['value'],
-                'payment_method' => 'PayPal',
-                'transaction_id' => null,
-                'status' => 'failed',
-            ]);
-            return redirect()->route('dashboard')->withErrors('Payment was not completed.');
+            dd('15: Capture not completed', $captureResult);
         }
 
-        // Save payment
-        $blog = Blog::with('story.user')->findOrFail($blogId);
+    foreach ($cartItems as $item) {
+    $blog = $item->item;
+    $originalStory = $blog->story;
+
+    // Copy the story for the user
+    $copiedStory = $originalStory->replicate();
+    $copiedStory->user_id = $user->id;
+    $copiedStory->status = 'purchased';
+    $copiedStory->save();
+
+    // Avoid duplicate logs
+    $existingPayment = PaymentLog::where('transaction_id', $captureResult['id'])->first();
+    if (!$existingPayment) {
         PaymentLog::create([
-            'user_id' => Auth::id(),
+            'user_id' => $user->id,
             'amount' => $blog->price,
             'payment_method' => 'PayPal',
             'transaction_id' => $captureResult['id'],
             'status' => 'completed',
         ]);
-        return redirect()->route('dashboard')->with('success', 'Payment successful!');
-    } catch (\Exception $e) {
-        Log::error('Exception in execute', ['message' => $e->getMessage()]);
-        return redirect()->route('dashboard')->withErrors('An error occurred during payment execution.');
     }
 }
-    public function cancel()
-    {
-        return redirect()->route('dashboard')->with('error', 'Payment canceled.');
+
+        $user->cartItems()->delete();
+        Session::forget(['cart_checkout', 'order_id']);
+
+        return redirect()->route('dashboard')->with('success', 'Cart purchase successful!');
+    } catch (\Exception $e) {
+        dd('17: Exception occurred', $e->getMessage());
     }
+}
+
+
+
 }
