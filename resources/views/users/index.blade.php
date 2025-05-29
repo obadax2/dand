@@ -76,14 +76,6 @@
 
         </div>
 
-
-
-        <!-- From Uiverse.io by cssbuttons-io -->
-
-
-
-
-
         <table class="table">
             <thead>
                 <tr>
@@ -134,6 +126,7 @@
         </table>
 
     </div>
+
     @if (session('success'))
         <div class="alert alert-success custom-alert" id="successAlert">
             {{ session('success') }}

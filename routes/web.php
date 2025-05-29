@@ -34,24 +34,24 @@ Route::middleware(['auth', CheckUserBanStatus::class])->group(function () {
     Route::get('/stories/create', [StoryController::class, 'create'])->name('stories.create');
     Route::post('/stories/generate', [StoryController::class, 'generate'])->name('stories.generate');
     Route::post('/stories', [StoryController::class, 'store'])->name('stories.store');
-        
-        Route::get('/stories/{story}/edit', [StoryController::class, 'edit'])->name('stories.edit');
-        Route::put('/stories/{story}', [StoryController::class, 'update'])->name('stories.update');
-        Route::delete('/stories/{story}', [StoryController::class, 'destroy'])->name('stories.destroy'); 
-       // Route for AJAX search
-Route::get('/users/ajaxSearch', [UserController::class, 'ajaxSearch'])->name('users.ajaxSearch');
 
-// Follow / Unfollow
+    Route::get('/stories/{story}/edit', [StoryController::class, 'edit'])->name('stories.edit');
+    Route::put('/stories/{story}', [StoryController::class, 'update'])->name('stories.update');
+    Route::delete('/stories/{story}', [StoryController::class, 'destroy'])->name('stories.destroy');
+    // Route for AJAX search
+    Route::get('/users/ajaxSearch', [UserController::class, 'ajaxSearch'])->name('users.ajaxSearch');
+
+  // Follow / Unfollow
 Route::post('/follow/{user}', [FollowController::class, 'follow'])->name('followers.follow');
-Route::post('/unfollow/{user}', [FollowController::class, 'unfollow'])->name('followers.unfollow');
+    Route::post('/unfollow/{user}', [FollowController::class, 'unfollow'])->name('followers.unfollow');
 
-// Friend Requests
-Route::post('/friends/request/{user}', [FriendController::class, 'sendRequest'])->name('friends.sendRequest');
-Route::post('/friends/accept/{user}', [FriendController::class, 'acceptRequest'])->name('friends.acceptRequest');
-Route::post('/friends/reject/{user}', [FriendController::class, 'rejectRequest'])->name('friends.rejectRequest');
-Route::delete('/friends/{user}', [FriendController::class, 'unfriend'])->name('friends.unfriend');
-   Route::get('/user/profile', [UserProfileController::class, 'show'])->name('user.profile');
-  
+    // Friend Requests
+    Route::post('/friends/request/{user}', [FriendController::class, 'sendRequest'])->name('friends.sendRequest');
+    Route::post('/friends/accept/{user}', [FriendController::class, 'acceptRequest'])->name('friends.acceptRequest');
+    Route::post('/friends/reject/{user}', [FriendController::class, 'rejectRequest'])->name('friends.rejectRequest');
+    Route::delete('/friends/{user}', [FriendController::class, 'unfriend'])->name('friends.unfriend');
+    Route::get('/user/profile', [UserProfileController::class, 'show'])->name('user.profile');
+
     Route::post('/user/profile/update', [UserProfileController::class, 'updateProfile'])->name('user.updateProfile');
     Route::post('/user/password/change', [UserProfileController::class, 'changePassword'])->name('user.changePassword');
 Route::post('/friends/accept/{user_id}', [FriendController::class, 'acceptFriendRequest'])->name('friend.accept');
@@ -73,6 +73,19 @@ Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('car
 Route::get('/cart/checkout', [PaymentController::class, 'checkoutAndExecuteCart'])->name('paypal.cart.checkout');
 Route::get('/cart/execute', [PaymentController::class, 'checkoutAndExecuteCart'])->name('paypal.cart.execute');
 ;
+    Route::post('/purchase', [PurchaseController::class, 'purchase'])->name('purchase');
+    Route::get('/payment/cancel', [PaymentController::class, 'cancel'])->name('paypal.cancel');
+    // In web.php
+    Route::post('/pay', [PaymentController::class, 'createPayment'])->name('paypal.create');
+    Route::get('/payment/callback', [PaymentController::class, 'execute'])->name('paypal.execute');
+    // Handle blog creation
+    Route::post('/blogs/create', [App\Http\Controllers\BlogController::class, 'create'])->name('blogs.create')->middleware('auth');
+    Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+
+    Route::get('/cart/checkout', [PaymentController::class, 'checkoutAndExecuteCart'])->name('paypal.cart.checkout');
+    Route::get('/cart/execute', [PaymentController::class, 'checkoutAndExecuteCart'])->name('paypal.cart.execute');;
 });
 
 // Admin routes

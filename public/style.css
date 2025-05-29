@@ -62,7 +62,9 @@ nav ul li a:hover {
 }
 
 
-
+.me{
+color: rgb(233, 0, 0);
+}
 
 table {
     border-collapse: separate;
@@ -71,7 +73,6 @@ table {
     overflow: hidden;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.1);
     width: 1100px !important;
-    /* Ensure the table takes full width */
 }
 
 th,
@@ -244,11 +245,9 @@ th {
     text-align: center;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    z-index: 1050;
+    z-index: 9999;
     /* Bootstrap uses 1050 for modals */
-    background-color: #d4edda;
     /* Example: green background for success */
-    color: #155724;
     animation: slideDown 0.3s ease-out;
 }
 
@@ -407,4 +406,20 @@ button:hover .circle .icon.arrow {
 
 button:hover .button-text {
     color: #fff;
+}
+
+.upload{
+    font-size: 13px;
+    border-radius: 50px;
+    width: 230px;
+    outline: none;
+}
+
+::-webkit-file-upload-button{
+    color:white;
+    background: #0e2238;
+    padding: 20px;
+    border: none;
+    border-radius: 50px;
+    outline: none;
 }

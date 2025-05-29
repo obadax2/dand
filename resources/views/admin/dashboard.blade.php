@@ -4,9 +4,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ asset('style.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
+
 </head>
+
+<style>
+    html {
+        background-color: #fff;
+    }
+</style>
+
 <body>
+
+    <nav>
+        <ul>
+            {{-- <li class="logo">
+                <img src="site-logo.png" alt="Logo"> <!-- Placeholder logo -->
+            </li> --}}
+            <li>
+                <a href="#" style="color: black;" onmouseover="this.style.color='#05EEFF'"
+                    onmouseout="this.style.color='black'">Home</a>
+            </li>
+            <li>
+                <a href="#" style="color: black;" onmouseover="this.style.color='#05EEFF'"
+                    onmouseout="this.style.color='black'">About</a>
+            </li>
+            <li>
+                <a href="#" style="color: black;" onmouseover="this.style.color='#05EEFF'"
+                    onmouseout="this.style.color='black'">Services</a>
+            </li>
+            <li>
+                <a href="#" style="color: black;" onmouseover="this.style.color='#05EEFF'"
+                    onmouseout="this.style.color='black'">Contact</a>
+            </li>
+        </ul>
+    </nav>
+    <br>
+
     <div class="container">
         <h1>Admin Dashboard</h1>
 
@@ -71,7 +108,6 @@
             </table>
         @endif
     </div>
-
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.4.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
