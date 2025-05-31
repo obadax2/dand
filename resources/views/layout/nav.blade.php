@@ -4,10 +4,10 @@
             <img src="site-logo.png" alt="Logo"> <!-- Placeholder logo -->
         </li> --}}
         <li>
-            <a href="#">Home</a>
+            <a href="{{route('home')}}">Home</a>
         </li>
         <li>
-            <a href="#">About</a>
+            <a href="{{route('user.profile')}}">Profile</a>
         </li>
         <li>
             <a href="#">Services</a>

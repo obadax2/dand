@@ -10,25 +10,7 @@
 </head>
 
 <body>
-    <nav>
-        <ul>
-            {{-- <li class="logo">
-                <img src="site-logo.png" alt="Logo"> <!-- Placeholder logo -->
-            </li> --}}
-            <li>
-                <a href="#">Home</a>
-            </li>
-            <li>
-                <a href="#">About</a>
-            </li>
-            <li>
-                <a href="#">Services</a>
-            </li>
-            <li>
-                <a href="#">Contact</a>
-            </li>
-        </ul>
-    </nav>
+    @include('layout.nav')
 
     <div class="container">
         <div class="typing-container">

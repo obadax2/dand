@@ -9,6 +9,7 @@ use App\Models\Map;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session; // Add this line
 use App\Models\User;
+
 class StoryController extends Controller
 {
     // Show the initial form
@@ -27,9 +28,9 @@ class StoryController extends Controller
 
         $prompt = $request->input('prompt');
 
-      
+
         $aiGeneratedContent = "Once upon a time, in a land far, far away...";
-   
+
         // Store the generated content in the session to carry it to the next step
         Session::put('generated_content', $aiGeneratedContent);
 
@@ -130,7 +131,7 @@ class StoryController extends Controller
         $user = Auth::user();
 
         // Fetch the user's stories with status 'draft'
-   $draftStories = $user->stories()->whereIn('status', ['purchased', 'draft'])->get();
+        $draftStories = $user->stories()->whereIn('status', ['purchased', 'draft'])->get();
         // Pass the draft stories to a view
         return view('stories.drafts', compact('draftStories'));
     }
@@ -179,22 +180,22 @@ class StoryController extends Controller
         // Redirect back to the drafts page or show a success message
         return redirect()->route('stories.drafts')->with('success', 'Story updated successfully!');
     }
-   public function destroy(Story $story)
-{
-    // Ensure the authenticated user owns this story
-    if ($story->user_id !== Auth::id()) {
-        abort(403, 'Unauthorized action.');
+    public function destroy(Story $story)
+    {
+        // Ensure the authenticated user owns this story
+        if ($story->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Prevent deletion if the story is 'purchased'
+        if ($story->status === 'purchased') {
+            return redirect()->route('stories.drafts')->with('error', 'Purchased stories cannot be deleted.');
+        }
+
+        // Delete the story
+        $story->delete();
+
+        // Redirect back with success message
+        return redirect()->route('stories.drafts')->with('success', 'Story deleted successfully!');
     }
-
-    // Prevent deletion if the story is 'purchased'
-    if ($story->status === 'purchased') {
-        return redirect()->route('stories.drafts')->with('error', 'Purchased stories cannot be deleted.');
-    }
-
-    // Delete the story
-    $story->delete();
-
-    // Redirect back with success message
-    return redirect()->route('stories.drafts')->with('success', 'Story deleted successfully!');
-}
 }

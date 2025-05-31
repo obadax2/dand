@@ -1,240 +1,161 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Create a New Story</title>
+    <link rel="stylesheet" href="{{ asset('style.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        /* Header styling */
-        .header {
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #06043E;
+            color: #ffffff;
+        }
+
+        .container {
+            background-color: #19174B;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 900px;
+            margin: 40px auto;
+        }
+
+        .nav-links {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            justify-content: flex-end;
+            gap: 20px;
             margin-bottom: 20px;
-            position: relative;
         }
-        /* Search bar styling */
-        .search-container {
-            flex: 1;
-            max-width: 300px;
-            position: relative;
+
+        .nav-links a {
+            color: #05EEFF;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 6px 12px;
+            background-color: #2a2860;
+            border-radius: 5px;
         }
-        .search-container input[type="text"] {
+
+        .nav-links a:hover {
+            background-color: #3b386c;
+        }
+
+        textarea,
+        input[type="text"] {
             width: 100%;
-            padding: 8px;
-            font-size: 16px;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            background-color: #2a2860;
+            color: #ffffff;
         }
-        /* Button styling for header buttons and links */
-        .header-buttons {
-            margin-left: 20px;
-        }
-        .header-buttons a {
+
+        button {
+            background-color: #05EEFF;
+            color: #000;
+            border: none;
             padding: 10px 20px;
-            background-color: #007BFF;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
+            border-radius: 5px;
             font-weight: bold;
         }
-        .header-buttons a:hover {
-            background-color: #0056b3;
+
+        button:hover {
+            background-color: #03bfd4;
         }
-        /* Style for header links container */
-        .header-links {
-            display: flex;
-            align-items: center;
-            gap: 10px; /* space between buttons */
-        }
-        /* Links styled as buttons for consistency */
-        .header-links a {
-            padding: 10px 20px;
-            background-color: #007BFF;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            font-weight: bold;
-        }
-        .header-links a:hover {
-            background-color: #0056b3;
-        }
-        /* Optional icon for links */
-        .header-links a::before {
-            content: '📄'; /* Unicode character for a document/page */
-            margin-right: 5px;
-        }
-        /* Styles for search results dropdown */
-        #search-results {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: #fff;
-            border: 1px solid #ccc;
-            max-height: 250px;
-            overflow-y: auto;
-            display: none;
-            z-index: 1000;
-        }
-        #search-results div {
-            padding: 8px;
-            cursor: pointer;
-        }
-        #search-results div:hover {
-            background-color: #f1f1f1;
-        }
-        /* Other styles remain unchanged */
-        form { max-width: 600px; margin: auto; }
-        textarea { width: 100%; height: 200px; }
-        input[type="text"] { width: 100%; padding: 8px; margin-bottom: 10px; }
-        button { padding: 10px 20px; margin-top: 10px; cursor: pointer; }
-        .success { color: green; }
-        .error { color: red; }
+
         .chat-box {
-            border: 1px solid #ccc;
+            background-color: #2a2860;
             padding: 15px;
+            border-radius: 6px;
             margin-bottom: 20px;
-            background-color: #f9f9f9;
             white-space: pre-wrap;
             word-wrap: break-word;
             max-height: 400px;
             overflow-y: auto;
         }
+
+        .alert {
+            margin-top: 15px;
+        }
+
+        h1, h2 {
+            color: #05EEFF;
+        }
     </style>
 </head>
-<body>
 
-    <!-- Header with search bar and links -->
-    <div class="header" style="position: relative;">
-        <!-- Search Bar -->
-        <div class="search-container" style="position: relative;">
-            <input type="text" id="user-search" placeholder="Search users..." autocomplete="off" />
-            <div id="search-results"></div>
-        </div>
-        <!-- Links including Drafts, User Profile, and Blog Index -->
-        <div class="header-links">
-            {{-- Link to the drafts page --}}
+<body>
+    @include('layout.nav')
+
+    <div class="container">
+
+        <!-- Navigation Links -->
+        <div class="nav-links">
             <a href="{{ route('stories.drafts') }}">Drafts</a>
-            <!-- Current User Profile Button -->
-           <a href="{{ route('user.profile') }}">{{ Auth::user()->name }}</a>
-            <!-- Blog Index Button -->
+            <a href="{{ route('user.profile') }}">{{ Auth::user()->name }}</a>
             <a href="{{ route('dashboard') }}">Blog Index</a>
         </div>
+
+        <h1>Create a New Story</h1>
+
+        @if(session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
+
+        @if(session('error'))
+            <div class="alert alert-danger">{{ session('error') }}</div>
+        @endif
+
+        @if($errors->any())
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        @if(isset($generatedContent))
+            <h2>Generated Story Content</h2>
+            <div class="chat-box">{{ $generatedContent }}</div>
+
+            <h2>Complete Your Story Details</h2>
+            <form method="POST" action="{{ route('stories.store') }}">
+                @csrf
+                <label for="title">Story Title:</label>
+                <input type="text" name="title" id="title" value="{{ old('title') }}" required>
+
+                <label for="genre">Genre:</label>
+                <input type="text" name="genre" id="genre" value="{{ old('genre') }}" required>
+
+                <button type="submit">Save Story</button>
+            </form>
+        @else
+            <form method="POST" action="{{ route('stories.generate') }}">
+                @csrf
+                <label for="prompt">Enter your prompt:</label>
+                <textarea name="prompt" id="prompt" required>{{ old('prompt') }}</textarea>
+                <button type="submit">Generate Story</button>
+            </form>
+        @endif
     </div>
 
-    <h1>Create a New Story</h1>
-
-    @if(session('success'))
-        <p class="success">{{ session('success') }}</p>
-    @endif
-
-    @if(session('error'))
-        <p class="error">{{ session('error') }}</p>
-    @endif
-
-    @if($errors->any())
-        <div class="error">
-            <ul>
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
-    {{-- Show generated content if exists --}}
-    @if(isset($generatedContent))
-        <h2>Generated Story Content:</h2>
-        <div class="chat-box">
-            {{ $generatedContent }}
-        </div>
-
-        <h2>Complete Your Story Details</h2>
-        <form method="POST" action="{{ route('stories.store') }}">
-            @csrf
-            <label for="title">Story Title:</label><br>
-            <input type="text" name="title" id="title" value="{{ old('title') }}" required><br><br>
-
-            <label for="genre">Genre:</label><br>
-            <input type="text" name="genre" id="genre" value="{{ old('genre') }}" required><br><br>
-
-            <button type="submit">Save Story</button>
-        </form>
-    @else
-        {{-- Show the initial prompt form --}}
-        <form method="POST" action="{{ route('stories.generate') }}">
-            @csrf
-            <label for="prompt">Enter your prompt:</label><br>
-            <textarea name="prompt" id="prompt" required>{{ old('prompt') }}</textarea><br>
-            <button type="submit">Generate Story</button>
-        </form>
-    @endif
-
-    <!-- Your other page content -->
-
-    <!-- Place the JavaScript just before closing </body> -->
     <script>
-  const routeFollow = "{{ url('/follow') }}/";
-  const routeUnfollow = "{{ url('/unfollow') }}/";
-  const routeSendRequest = "{{ url('/friends/request') }}/";
-
-  document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('user-search');
-    const resultsDiv = document.getElementById('search-results');
-
-    searchInput.addEventListener('keyup', function() {
-      const query = this.value.trim();
-
-      if (query.length === 0) {
-        resultsDiv.style.display = 'none';
-        resultsDiv.innerHTML = '';
-        return;
-      }
-
-      fetch(`{{ route('users.ajaxSearch') }}?query=` + encodeURIComponent(query))
-        .then(response => response.json())
-        .then(data => {
-          resultsDiv.innerHTML = '';
-
-          if (data.length === 0) {
-            resultsDiv.style.display = 'none';
-            return;
-          }
-
-          data.forEach(user => {
-            const div = document.createElement('div');
-            div.style.padding = '8px';
-            div.style.cursor = 'pointer';
-
-            div.innerHTML = `
-              <div>
-                <strong>${user.name}</strong> (${user.username})
-              </div>
-              <div style="margin-top: 5px;">
-                <!-- Follow Button -->
-                <form method="POST" action="${routeFollow}${user.id}" style="display:inline;">
-                  @csrf
-                  <button type="submit" style="padding:4px 8px; font-size:14px;">Follow</button>
-                </form>
-                <!-- Add Friend Button -->
-                <form method="POST" action="${routeSendRequest}${user.id}" style="display:inline;">
-                  @csrf
-                  <button type="submit" style="padding:4px 8px; font-size:14px;">Add Friend</button>
-                </form>
-              </div>
-            `;
-
-            // Optional: handle click to select user
-            div.onclick = () => {
-              searchInput.value = user.name;
-              resultsDiv.style.display = 'none';
-            };
-
-            resultsDiv.appendChild(div);
-          });
-          resultsDiv.style.display = 'block';
+        document.addEventListener('DOMContentLoaded', function () {
+            const alert = document.querySelector('.alert');
+            if (alert) {
+                setTimeout(() => {
+                    alert.style.transition = 'opacity 0.5s ease';
+                    alert.style.opacity = '0';
+                    setTimeout(() => alert.remove(), 500);
+                }, 3000);
+            }
         });
-    });
-  });
-</script>
+    </script>
 </body>
+
 </html>

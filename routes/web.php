@@ -14,13 +14,16 @@ use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\BlogController;
 use App\Models\Blog;
 use App\Models\Story;
 
 // Route for the welcome page
 Route::get('/', function () {
-    return view('welcome'); // Adjust to render the Blade view
-})->name('home');
+    // Your logic here, e.g. return a view
+    return view('welcome');
+})->middleware(['auth', CheckUserBanStatus::class])
+    ->name('home');
 
 // Use your middleware in route groups
 Route::middleware(['auth', CheckUserBanStatus::class])->group(function () {
@@ -55,9 +58,7 @@ Route::middleware(['auth', CheckUserBanStatus::class])->group(function () {
     Route::post('/user/profile/update', [UserProfileController::class, 'updateProfile'])->name('user.updateProfile');
     Route::post('/user/password/change', [UserProfileController::class, 'changePassword'])->name('user.changePassword');
     Route::post('/friends/accept/{user_id}', [FriendController::class, 'acceptFriendRequest'])->name('friend.accept');
-    Route::get('/dashboard', [App\Http\Controllers\BlogController::class, 'dashboard'])
-        ->middleware('auth')
-        ->name('dashboard');
+    Route::get('/dashboard', [BlogController::class, 'dashboard'])->name('dashboard');
 
     Route::post('/purchase', [PurchaseController::class, 'purchase'])->name('purchase');
     Route::get('/payment/cancel', [PaymentController::class, 'cancel'])->name('paypal.cancel');
@@ -65,7 +66,7 @@ Route::middleware(['auth', CheckUserBanStatus::class])->group(function () {
     Route::post('/pay', [PaymentController::class, 'createPayment'])->name('paypal.create');
     Route::get('/payment/callback', [PaymentController::class, 'execute'])->name('paypal.execute');
     // Handle blog creation
-    Route::post('/blogs/create', [App\Http\Controllers\BlogController::class, 'create'])->name('blogs.create')->middleware('auth');
+    Route::post('/blogs/create', [BlogController::class, 'create'])->name('blogs.create')->middleware('auth');
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
