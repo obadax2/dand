@@ -48,7 +48,6 @@
         button {
             background-color: #05EEFF;
             color: #000;
-            font-weight: bold;
             cursor: pointer;
         }
 
@@ -59,6 +58,9 @@
 
         .story-content p {
             margin: 10px 0;
+        }
+        p{
+            color: #ccc ;
         }
     </style>
 </head>

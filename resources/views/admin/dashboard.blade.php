@@ -15,33 +15,16 @@
     html {
         background-color: #fff;
     }
+    nav li a{
+        color: black !important;
+    }
+    nav ul li a:hover {
+    color: #05EEFF !important;
+}
 </style>
 
 <body>
-
-    <nav>
-        <ul>
-            {{-- <li class="logo">
-                <img src="site-logo.png" alt="Logo"> <!-- Placeholder logo -->
-            </li> --}}
-            <li>
-                <a href="#" style="color: black;" onmouseover="this.style.color='#05EEFF'"
-                    onmouseout="this.style.color='black'">Home</a>
-            </li>
-            <li>
-                <a href="#" style="color: black;" onmouseover="this.style.color='#05EEFF'"
-                    onmouseout="this.style.color='black'">About</a>
-            </li>
-            <li>
-                <a href="#" style="color: black;" onmouseover="this.style.color='#05EEFF'"
-                    onmouseout="this.style.color='black'">Services</a>
-            </li>
-            <li>
-                <a href="#" style="color: black;" onmouseover="this.style.color='#05EEFF'"
-                    onmouseout="this.style.color='black'">Contact</a>
-            </li>
-        </ul>
-    </nav>
+    @include('layout.nav')
     <br>
 
     <div class="container">

@@ -86,11 +86,71 @@
             margin-bottom: 12px;
             max-width: 300px;
         }
+
+        .profile-wrapper-with-name {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .profile-wrapper {
+            position: relative;
+            width: 120px;
+            height: 120px;
+        }
+
+        .profile-wrapper img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .edit-icon {
+            position: absolute;
+            bottom: 6px;
+            right: 6px;
+            background-color: #05EEFF;
+            border-radius: 50%;
+            height: 26px;
+            width: 26px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            color: #000;
+            font-size: 14px;
+        }
+
+        .edit-icon:hover {
+            background-color: #03bfd4;
+        }
+
+        .profile-info-text {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .profile-username {
+            margin: 0;
+            font-size: 22px;
+            user-select: none;
+        }
+
+        .profile-role {
+            margin: 4px 0 0 0;
+            font-size: 14px;
+            user-select: none;
+        }
+
+        .hidden-file-input {
+            display: none;
+        }
     </style>
 </head>
 
 <body>
-
     @include('layout.nav')
     @if (session('success'))
         <div class="alert alert-success custom-alert" id="successAlert">{{ session('success') }}</div>
@@ -105,44 +165,42 @@
             </ul>
         </div>
     @endif
+
+
     <div class="container">
-
-
         <!-- Column 1 -->
         <div class="column">
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <img src="{{ $user->profile_picture ? asset('storage/' . str_replace('public/', '', $user->profile_picture)) : 'https://via.placeholder.com/150' }}"
-                    alt="Profile Picture" width="150" height="150" />
-                <h3>{{ Auth::user()->name }}</h3>
+            <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 20px;">
+                <form action="{{ route('user.updateProfile') }}" method="POST" enctype="multipart/form-data"
+                    id="profileForm">
+                    @csrf
+                    <div class="profile-wrapper-with-name">
+                        <div class="profile-wrapper">
+                            <img id="profileImage"
+                                src="{{ $user->profile_picture ? asset('storage/' . str_replace('public/', '', $user->profile_picture)) : 'https://via.placeholder.com/150' }}"
+                                alt="Profile Picture" />
+                            <label for="profilePictureInput" class="edit-icon">
+                                <i class="lni lni-pencil"></i>
+                            </label>
+                            <input type="file" name="profile_picture" accept="image/*" id="profilePictureInput"
+                                class="hidden-file-input" onchange="document.getElementById('profileForm').submit();" />
+                        </div>
+                        <div class="profile-info-text">
+                            <h3 class="profile-username">Name: {{ Auth::user()->name }}</h3>
+                            <p class="profile-role">Role: {{ Auth::user()->role }}</p>
+                        </div>
+                    </div>
+
+                </form>
+
             </div>
 
-            <form action="{{ route('user.updateProfile') }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                <input type="file" name="profile_picture" accept="image/*" />
-                <br>
-                <button type="submit">Update Profile Picture</button>
-            </form>
 
             <h3>Statistics</h3>
             <div class="status-box">
                 <p>Followers: {{ $followersCount }}</p>
                 <p>Friends: {{ $friendsCount }}</p>
             </div>
-        </div>
-
-        <!-- Column 2 -->
-        <div class="column">
-            <h3>Change Password</h3>
-            <form method="POST" action="{{ route('user.changePassword') }}">
-                @csrf
-                <label>Current Password</label><br>
-                <input type="password" name="current_password" required /><br>
-                <label>New Password</label><br>
-                <input type="password" name="new_password" required /><br>
-                <label>Confirm New Password</label><br>
-                <input type="password" name="new_password_confirmation" required /><br>
-                <button type="submit">Change Password</button>
-            </form>
 
             <h3>Friend Requests</h3>
             @if ($friendRequests->isEmpty())
@@ -162,6 +220,23 @@
                     </div>
                 @endforeach
             @endif
+        </div>
+
+        <!-- Column 2 -->
+        <div class="column">
+            <h3>Change Password</h3>
+            <form method="POST" action="{{ route('user.changePassword') }}">
+                @csrf
+                <label>Current Password</label><br>
+                <input type="password" name="current_password" required /><br>
+                <label>New Password</label><br>
+                <input type="password" name="new_password" required /><br>
+                <label>Confirm New Password</label><br>
+                <input type="password" name="new_password_confirmation" required /><br>
+                <button type="submit">Change Password</button>
+            </form>
+
+
         </div>
     </div>
     <script>

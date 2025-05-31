@@ -22,12 +22,12 @@
 
 
         <!-- From Uiverse.io by vamsidevendrakumar -->
-        <div class="card">
-            <div class="card-inner">
-                <div class="card-front">
+        <div class="card1">
+            <div class="card-inner1">
+                <div class="card-front1">
                     <p>Front Side</p>
                 </div>
-                <div class="card-back">
+                <div class="card-back1">
                     <p>Back Side</p>
                 </div>
             </div>

@@ -62,8 +62,8 @@ nav ul li a:hover {
 }
 
 
-.me{
-color: rgb(233, 0, 0);
+.me {
+    color: rgb(233, 0, 0);
 }
 
 table {
@@ -148,12 +148,12 @@ th {
     text-decoration: none;
 }
 
-.card {
+.card1 {
     width: 300px;
     height: 200px;
 }
 
-.card-inner {
+.card-inner1 {
     width: 100%;
     height: 100%;
     position: relative;
@@ -161,19 +161,19 @@ th {
     transition: transform 0.999s;
 }
 
-.card:hover .card-inner {
+.card1:hover .card-inner1 {
     transform: rotateY(180deg);
 }
 
-.card-front,
-.card-back {
+.card-front1,
+.card-back1 {
     position: absolute;
     width: 100%;
     height: 100%;
     backface-visibility: hidden;
 }
 
-.card-front {
+.card-front1 {
     background-color: #6A2C70;
     color: #fff;
     display: flex;
@@ -185,7 +185,7 @@ th {
     transform: rotateY(0deg);
 }
 
-.card-back {
+.card-back1 {
     background-color: #F08A5D;
     color: #fff;
     display: flex;
@@ -408,18 +408,72 @@ button:hover .button-text {
     color: #fff;
 }
 
-.upload{
+.upload {
     font-size: 13px;
     border-radius: 50px;
     width: 230px;
     outline: none;
 }
 
-::-webkit-file-upload-button{
-    color:white;
+::-webkit-file-upload-button {
+    color: white;
     background: #0e2238;
     padding: 20px;
     border: none;
     border-radius: 50px;
     outline: none;
+}
+
+/* From Uiverse.io by eslam-hany */
+.card {
+    position: relative;
+    width: 220px;
+    height: 320px;
+    background: mediumturquoise;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 25px;
+    font-weight: bold;
+    border-radius: 15px;
+    cursor: pointer;
+}
+
+.card::before,
+.card::after {
+    position: absolute;
+    content: "";
+    width: 20%;
+    height: 20%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 25px;
+    font-weight: bold;
+    background-color: lightblue;
+    transition: all 0.5s;
+}
+
+.card::before {
+    top: 0;
+    right: 0;
+    border-radius: 0 15px 0 100%;
+}
+
+.card::after {
+    bottom: 0;
+    left: 0;
+    border-radius: 0 100% 0 15px;
+}
+
+.card:hover::before,
+.card:hover:after {
+    width: 100%;
+    height: 100%;
+    border-radius: 15px;
+    transition: all 0.5s;
+}
+
+.card:hover:after {
+    content: "HELLO";
 }
