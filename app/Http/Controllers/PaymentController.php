@@ -234,15 +234,13 @@ class PaymentController extends Controller
 public function checkoutAndExecuteCart(Request $request)
 {
     try {
-        // First checkpoint
-
         $token = $request->get('token');
 
         if (!$token) {
-           
+            // Step 1: Create the PayPal order
 
             $user = Auth::user();
-            $cartItems = $user->cartItems()->with('blog.story')->get();
+            $cartItems = $user->cartItems()->with('item.story')->get();
 
             if ($cartItems->isEmpty()) {
                 dd('3: Cart is empty');
@@ -252,13 +250,12 @@ public function checkoutAndExecuteCart(Request $request)
             $total = 0;
 
             foreach ($cartItems as $item) {
-              $blog = $item->blog;
+                $blog = $item->item;
 
-if (!$blog) {
-    Log::warning("Cart item ID {$item->id} has no associated blog.");
-    continue;
-}
-
+                if (!$blog) {
+                    Log::warning("Cart item ID {$item->id} has no associated blog.");
+                    continue;
+                }
 
                 $alreadyPurchased = Story::where('user_id', $user->id)
                     ->where('status', 'purchased')
@@ -275,14 +272,17 @@ if (!$blog) {
                         'currency_code' => 'USD',
                         'value' => number_format($blog->price, 2, '.', ''),
                     ],
-                    'quantity' => '1',
+                    'quantity' => (string) $item->quantity,
                 ];
 
-                $total += $blog->price;
+                $total += $blog->price * $item->quantity;
+            }
+
+            if ($total <= 0) {
+                dd('6: Total amount is zero or invalid.');
             }
 
             $accessToken = $this->getAccessToken();
-          
 
             $orderId = uniqid();
             $body = [
@@ -318,25 +318,26 @@ if (!$blog) {
             }
 
             $order = $response->json();
-            $approveLink = collect($order['links'])->firstWhere('rel', 'approve')['href'];
+            $approveLink = collect($order['links'])->firstWhere('rel', 'approve')['href'] ?? null;
+
+            if (!$approveLink) {
+                dd('8: Approval link not found', $order);
+            }
 
             Session::put('cart_checkout', true);
             Session::put('order_id', $order['id']);
 
-            dd('8: Redirecting to PayPal', $approveLink);
             return redirect($approveLink);
         }
 
-        // ELSE: we’re returning from PayPal with a token
-        dd('9: Returning from PayPal', $token);
+        // Step 2: Execute the order after returning from PayPal
 
         if (!Session::has('cart_checkout')) {
             dd('10: Session lost');
         }
 
         $user = Auth::user();
-        $cartItems = $user->cartItems()->with('blog.story')->get();
-        dd('11: Cart items after return', $cartItems);
+        $cartItems = $user->cartItems()->with('item.story')->get();
 
         $accessToken = $this->getAccessToken();
 
@@ -353,47 +354,55 @@ if (!$blog) {
             dd('13: Order not approved', $orderDetails);
         }
 
-        $captureResponse = Http::withToken($accessToken)
-            ->withOptions(['verify' => false])
-            ->withHeaders(['Content-Type' => 'application/json'])
-            ->post($this->paypalBaseUrl . "/v2/checkout/orders/{$token}/capture", null);
-
+      $captureResponse = Http::withToken($accessToken)
+    ->withOptions(['verify' => false])
+    ->withHeaders([
+        'Content-Type' => 'application/json',
+    ])
+    ->send('POST', $this->paypalBaseUrl . "/v2/checkout/orders/{$token}/capture", [
+        'body' => '{}',
+    ]);
         if (!$captureResponse->successful()) {
             dd('14: Capture failed', $captureResponse->body());
         }
 
         $captureResult = $captureResponse->json();
         if (($captureResult['status'] ?? '') !== 'COMPLETED') {
-            dd('15: Not completed', $captureResult);
+            dd('15: Capture not completed', $captureResult);
         }
 
-        foreach ($cartItems as $item) {
-            $blog = $item->blog;
-            $originalStory = $blog->story;
+    foreach ($cartItems as $item) {
+    $blog = $item->item;
+    $originalStory = $blog->story;
 
-            $copiedStory = $originalStory->replicate();
-            $copiedStory->user_id = $user->id;
-            $copiedStory->status = 'purchased';
-            $copiedStory->save();
+    // Copy the story for the user
+    $copiedStory = $originalStory->replicate();
+    $copiedStory->user_id = $user->id;
+    $copiedStory->status = 'purchased';
+    $copiedStory->save();
 
-            PaymentLog::create([
-                'user_id' => $user->id,
-                'amount' => $blog->price,
-                'payment_method' => 'PayPal',
-                'transaction_id' => $captureResult['id'],
-                'status' => 'completed',
-            ]);
-        }
+    // Avoid duplicate logs
+    $existingPayment = PaymentLog::where('transaction_id', $captureResult['id'])->first();
+    if (!$existingPayment) {
+        PaymentLog::create([
+            'user_id' => $user->id,
+            'amount' => $blog->price,
+            'payment_method' => 'PayPal',
+            'transaction_id' => $captureResult['id'],
+            'status' => 'completed',
+        ]);
+    }
+}
 
         $user->cartItems()->delete();
         Session::forget(['cart_checkout', 'order_id']);
 
-        dd('16: Purchase complete!');
         return redirect()->route('dashboard')->with('success', 'Cart purchase successful!');
     } catch (\Exception $e) {
         dd('17: Exception occurred', $e->getMessage());
     }
 }
+
 
 
 }
