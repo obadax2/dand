@@ -10,8 +10,27 @@
 </head>
 
 <body>
-    @include('layout.nav')
 
+    <div class="hero-section">
+    <div class="container">
+            @include('layout.nav')
+
+        <div class="typing-container">
+            <div class="line-one">Your website for</div>
+            <div class="line-two">
+                generating a <span id="typed-text"></span><span class="cursor">|</span>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+        <div class="typing-container">
+            <div class="line-one">Your website for</div>
+            <div class="line-two">
+                generating a <span id="typed-text"></span><span class="cursor">|</span>
+            </div>
+        </div>
+    </div>
     <div class="container">
         <div class="typing-container">
             <div class="line-one">Your website for</div>
@@ -19,10 +38,19 @@
                 generating a <span id="typed-text"></span><span class="cursor">|</span>
             </div>
         </div>
+    </div>
+    <div class="container">
+        <div class="typing-container">
+            <div class="line-one">Your website for</div>
+            <div class="line-two">
+                generating a <span id="typed-text"></span><span class="cursor">|</span>
+            </div>
+        </div>
+    </div>
 
 
-        <!-- From Uiverse.io by vamsidevendrakumar -->
-        <div class="card1">
+
+        {{-- <div class="card1">
             <div class="card-inner1">
                 <div class="card-front1">
                     <p>Front Side</p>
@@ -31,7 +59,7 @@
                     <p>Back Side</p>
                 </div>
             </div>
-        </div>
+        </div> --}}
 
 
     </div>

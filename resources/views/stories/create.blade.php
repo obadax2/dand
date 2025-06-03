@@ -109,33 +109,13 @@
             color: #ccc !important;
             /* or #05EEFF for highlight */
         }
-
-        .sidebar-column {
-            flex-shrink: 0;
-            background-color: #1e1b59;
-            padding: 15px;
-            border-radius: 10px;
-            width: 250px;
-            height: fit-content;
-        }
-
-        .sidebar-column .card {
-            margin-bottom: 15px;
-        }
     </style>
 </head>
 
 <body>
     @include('layout.nav')
     <div class="d-flex" style=" padding: 20px;">
-        <div class="sidebar-column">
-            <div class="card">STORY</div>
-            <div class="card">HOVER</div>
-            <div class="card">HOVER</div>
-            <div class="card">HOVER</div>
-            <div class="card">HOVER</div>
-            <div class="card">HOVER</div>
-        </div>
+        @include('layout.card')
         <div class="container flex-grow-1">
             <!-- Navigation Links -->
             <div class="page-header d-flex justify-content-between align-items-center mb-4">
