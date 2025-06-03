@@ -6,28 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css"> <!-- Optional: link to your CSS -->
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
     <div class="hero-section">
-    <div class="container">
+        <div class="container">
             @include('layout.nav')
-
-        <div class="typing-container">
-            <div class="line-one">Your website for</div>
-            <div class="line-two">
-                generating a <span id="typed-text"></span><span class="cursor">|</span>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="container">
-        <div class="typing-container">
-            <div class="line-one">Your website for</div>
-            <div class="line-two">
-                generating a <span id="typed-text"></span><span class="cursor">|</span>
+            <div class="typing-container">
+                <div class="line-one">Your website for</div>
+                <div class="line-two">
+                    generating a <span id="typed-text"></span><span class="cursor">|</span>
+                </div>
             </div>
         </div>
     </div>
@@ -47,10 +38,18 @@
             </div>
         </div>
     </div>
+    <div class="container">
+        <div class="typing-container">
+            <div class="line-one">Your website for</div>
+            <div class="line-two">
+                generating a <span id="typed-text"></span><span class="cursor">|</span>
+            </div>
+        </div>
+    </div>
 
 
 
-        {{-- <div class="card1">
+    {{-- <div class="card1">
             <div class="card-inner1">
                 <div class="card-front1">
                     <p>Front Side</p>

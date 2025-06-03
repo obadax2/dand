@@ -1,5 +1,5 @@
 <style>
-    button {
+    .navButton {
         background-color: #05EEFF;
         border: none;
         padding: 8px 14px;
@@ -10,13 +10,16 @@
     }
 </style>
 <nav>
+    <div class="logo">
+    <img src="your-logo.png" alt="Logo Here">
+</div>
     <ul>
         <li><a href="{{ route('home') }}">Home</a></li>
         <li><a href="{{ route('user.profile') }}">Profile</a></li>
         <li><a href="#">Services</a></li>
         <li><a href="#">Contact</a></li>
         <li>
-            <button>Try Now<i class="fas fa-rocket"></i></button>
+            <button>Try Now<i class="fas fa-rocket" class = "navButton"></i></button>
         </li>
 
 

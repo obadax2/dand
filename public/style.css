@@ -3,6 +3,8 @@
 html {
     height: 100%;
     background-color: #06043E;
+                font-family: Arial, sans-serif;
+
 }
 
 nav {
@@ -15,16 +17,6 @@ nav {
     align-items: center;
 }
 
-nav::after {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    /* Adjust the height for the bottom border */
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, #05EEFF 25%, #05EEFF 75%, rgba(255, 255, 255, 0) 100%);
-}
 
 nav ul {
     text-align: center;
@@ -520,3 +512,107 @@ button:hover .button-text {
             rgba(6, 4, 62, 1) 100%);
     z-index: -1;
 }
+
+/* FROM here the code is from the userprofile */
+
+.friend-request,
+        .status-box {
+            background-color: #2a2860;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            max-width: 300px;
+        }
+
+        .profile-wrapper-with-name {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .profile-wrapper {
+            position: relative;
+            width: 120px;
+            height: 120px;
+        }
+
+        .profile-wrapper img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .edit-icon {
+            position: absolute;
+            bottom: 6px;
+            right: 6px;
+            background-color: #05EEFF;
+            border-radius: 50%;
+            height: 26px;
+            width: 26px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            color: #000;
+            font-size: 14px;
+        }
+
+        .edit-icon:hover {
+            background-color: #03bfd4;
+        }
+
+        .profile-info-text {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .profile-username {
+            margin: 0;
+            font-size: 22px;
+            user-select: none;
+        }
+
+        .profile-role {
+            margin: 4px 0 0 0;
+            font-size: 14px;
+            user-select: none;
+        }
+
+        .hidden-file-input {
+            display: none;
+        }
+
+        .userButton {
+            background-color: #05EEFF;
+            border: none;
+            padding: 8px 14px;
+            color: #000;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 6px;
+        }
+
+        .usercontainer {
+    background-color: rgba(25, 23, 75, 0.5); /* semi-transparent */
+    backdrop-filter: blur(1px); /* blur effect */
+    padding: 30px;
+    color: #ffffff;
+    border-radius: 10px;
+    max-width: 900px;
+    margin: 40px auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.1); /* optional: light border for frosted glass feel */
+}
+
+        .column {
+            flex: 1;
+            min-width: 300px;
+        }
+
+
+/*to here*/
