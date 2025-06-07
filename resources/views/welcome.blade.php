@@ -95,6 +95,54 @@
             </div>
         </div>
     </div>
+        <div class="container">
+        <div class="typing-container">
+            <div class="line-one">Your website for</div>
+            <div class="line-two">
+                generating a <span id="typed-text"></span><span class="cursor">|</span>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="typing-container">
+            <div class="line-one">Your website for</div>
+            <div class="line-two">
+                generating a <span id="typed-text"></span><span class="cursor">|</span>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="typing-container">
+            <div class="line-one">Your website for</div>
+            <div class="line-two">
+                generating a <span id="typed-text"></span><span class="cursor">|</span>
+            </div>
+        </div>
+    </div>
+        <div class="container">
+        <div class="typing-container">
+            <div class="line-one">Your website for</div>
+            <div class="line-two">
+                generating a <span id="typed-text"></span><span class="cursor">|</span>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="typing-container">
+            <div class="line-one">Your website for</div>
+            <div class="line-two">
+                generating a <span id="typed-text"></span><span class="cursor">|</span>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="typing-container">
+            <div class="line-one">Your website for</div>
+            <div class="line-two">
+                generating a <span id="typed-text"></span><span class="cursor">|</span>
+            </div>
+        </div>
+    </div>
 
     {{-- Optional commented out card section
     <div class="card1">

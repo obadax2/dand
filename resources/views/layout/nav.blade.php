@@ -11,25 +11,24 @@
 </style>
 <nav>
     <div class="logo">
-    <img src="your-logo.png" alt="Logo Here">
-</div>
+        <img src="your-logo.png" alt="Logo Here">
+    </div>
     <ul>
+        @if (Auth::user()->role === 'admin')
+            <li><a href="{{ route('admin.dashboard') }}">Admin</a></li>
+        @endif
         <li><a href="{{ route('home') }}">Home</a></li>
         <li><a href="{{ route('user.profile') }}">Profile</a></li>
-        <li><a href="#">Services</a></li>
-        <li><a href="#">Contact</a></li>
-        <li>
-            <button>Try Now<i class="fas fa-rocket" class = "navButton"></i></button>
-        </li>
-
-
         <li>
             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                 @csrf
             </form>
-            {{-- <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+            <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                 Logout
-            </a> --}}
+            </a>
+        </li>
+        <li>
+            <button>Try Now<i class="fas fa-rocket" class = "navButton"></i></button>
         </li>
     </ul>
 </nav>
