@@ -24,19 +24,19 @@ use App\Models\Poll;
 // Route for the welcome page
 Route::get('/', function () {
     $polls = Poll::orderBy('created_at', 'desc')->get();
-    return view('welcome',compact('polls'));
+    return view('welcome', compact('polls'));
 })->middleware(['auth', CheckUserBanStatus::class])
     ->name('home');
 
 // Use your middleware in route groups
 Route::middleware(['auth', CheckUserBanStatus::class])->group(function () {
-   Route::middleware(['auth', 'role:hr'])->group(function () {
-    Route::get('/users', [UserController::class, 'index'])->name('users.index');
-    Route::post('/users/{user}/role', [UserController::class, 'updateRole'])->name('users.role.update');
-    Route::post('/polls', [PollController::class, 'store'])->name('polls.store');
-});
+    Route::middleware(['auth', 'role:hr'])->group(function () {
+        Route::get('/users', [UserController::class, 'index'])->name('users.index');
+        Route::post('/users/{user}/role', [UserController::class, 'updateRole'])->name('users.role.update');
+        Route::post('/polls', [PollController::class, 'store'])->name('polls.store');
+    });
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
-   
+
     Route::post('/users/{user}/ban', [UserController::class, 'ban'])->name('users.ban');
     Route::get('/stories/drafts', [StoryController::class, 'drafts'])->name('stories.drafts');
 
@@ -78,28 +78,32 @@ Route::middleware(['auth', CheckUserBanStatus::class])->group(function () {
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
-   Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
     Route::post('/chat/start', [ChatController::class, 'startConversation'])->name('chat.start');
     Route::get('/chat/{conversation}', [ChatController::class, 'show'])->name('chat.show');
     Route::post('/chat/{conversation}/send', [ChatController::class, 'sendMessage'])->name('chat.send');
     Route::get('/cart/checkout', [PaymentController::class, 'checkoutAndExecuteCart'])->name('paypal.cart.checkout');
     Route::get('/cart/execute', [PaymentController::class, 'checkoutAndExecuteCart'])->name('paypal.cart.execute');
-   Route::post('/polls/{poll}/vote/{vote}', [PollController::class, 'vote'])->name('polls.vote')->middleware('auth');
+    Route::post('/polls/{poll}/vote/{vote}', [PollController::class, 'vote'])->name('polls.vote')->middleware('auth');
 });
 
 // Admin routes
-Route::middleware(['auth','role:admin'])->group(function () {
+Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
     Route::post('/admin/users/{id}/ban', [AdminController::class, 'banUser'])->name('admin.users.ban');
     Route::post('/admin/users/{id}/unban', [AdminController::class, 'unbanUser'])->name('admin.users.unban');
 });
 
 // Authentication routes
+// LOGIN
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-Route::get('/login', [RegisterController::class, 'showRegistrationForm'])->name('register.form');
-Route::post('/login', [RegisterController::class, 'register'])->name('register');
+
+// REGISTER
+Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register.form');
+Route::post('/register', [RegisterController::class, 'register'])->name('register');
+
 Route::get('/verify-code', function () {
     return view('auth.verify_code');
 })->name('verify.code.form');

@@ -12,6 +12,5 @@
 @endforeach
 
 <form method="GET" action="{{ route('paypal.cart.checkout') }}">
-   
     <button type="submit">Checkout with PayPal</button>
 </form>

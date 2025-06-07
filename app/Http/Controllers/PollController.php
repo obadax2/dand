@@ -6,6 +6,7 @@ use App\Models\Poll;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\PollVote;
+
 class PollController extends Controller
 {
     public function store(Request $request)
@@ -24,7 +25,7 @@ class PollController extends Controller
 
         return redirect()->back()->with('success', 'Poll created successfully!');
     }
-  public function vote(Request $request, Poll $poll, $vote)
+    public function vote(Request $request, Poll $poll, $vote)
     {
         $user = Auth::user();
 
@@ -35,8 +36,8 @@ class PollController extends Controller
 
         // Check if user already voted on this poll
         $existingVote = PollVote::where('poll_id', $poll->id)
-                                ->where('user_id', $user->id)
-                                ->first();
+            ->where('user_id', $user->id)
+            ->first();
 
         if ($existingVote) {
             return redirect()->back()->with('error', 'You have already voted on this poll.');
