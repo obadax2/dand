@@ -12,8 +12,20 @@
     <link rel="stylesheet" href="{{ asset('style.css') }}">
 </head>
 
-
 <body>
+     @if (session('success'))
+        <div class="alert alert-success custom-alert" id="successAlert">{{ session('success') }}</div>
+    @endif
+
+    @if ($errors->any())
+        <div class="alert alert-danger custom-alert" id="successAlert">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
     <div class="hero-section">
         <div>
             <br>
@@ -30,23 +42,7 @@
                     </div>
 
 
-                    @if (session('success'))
-                        <div class="alert alert-success">{{ session('success') }}</div>
-                    @endif
 
-                    @if (session('error'))
-                        <div class="alert alert-danger">{{ session('error') }}</div>
-                    @endif
-
-                    @if ($errors->any())
-                        <div class="alert alert-danger">
-                            <ul class="mb-0">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
 
                     @if (isset($generatedContent))
                         <h2>Generated Story Content</h2>
@@ -55,13 +51,14 @@
                         <h2>Complete Your Story Details</h2>
                         <form method="POST" action="{{ route('stories.store') }}">
                             @csrf
-                            <label for="title">Story Title:</label>
-                            <input type="text" name="title" id="title" value="{{ old('title') }}" required>
+                            <p for="title">Story Title:</p>
 
-                            <label for="genre">Genre:</label>
-                            <input type="text" name="genre" id="genre" value="{{ old('genre') }}" required>
+                            <input type="text" name="title" id="title" value="{{ old('title') }}" required autocomplete="off">
 
-                            <button type="submit">Save Story</button>
+                            <p for="genre">Genre:</p>
+                            <input type="text" name="genre" id="genre" value="{{ old('genre') }}" required autocomplete="off">
+
+                            <button class="userButton" type="submit">Save Story</button>
                         </form>
                     @else
                         <form method="POST" action="{{ route('stories.generate') }}">

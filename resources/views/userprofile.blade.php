@@ -139,8 +139,6 @@
                             <input type="password" name="new_password_confirmation" required /><br>
                             <button type="submit" class="userButton">Change Password</button>
                         </form>
-
-
                     </div>
                 </div>
             </div>

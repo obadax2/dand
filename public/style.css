@@ -41,6 +41,7 @@ nav ul li a {
 
 nav ul li a:hover {
     color: #05EEFF;
+
 }
 
 nav ul li button {
@@ -65,6 +66,8 @@ nav ul li button {
 
 nav ul li button:hover {
     background-color: #04c1e8;
+    box-shadow: 0 0 30px rgba(5, 238, 255, 0.6);
+
 }
 
 
@@ -353,13 +356,31 @@ th {
 
 input.form-control {
     transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    background-color: #2A2860;
+    color: #fff;
 }
 
 input.form-control:focus {
     box-shadow: 0 0 12px rgba(5, 238, 255, 0.6);
     /* Stronger glow on focus */
     border-color: #05EEFF;
+    background-color: #2A2860;
+    color: #fff;
     outline: none;
+}
+
+select.form-control {
+    background-color: #2A2860;
+    color: #fff;
+}
+
+select.form-control:focus {
+    outline: none;
+    color: #fff;
+    border: 1px solid #05EEFF;
+    background-color: #2A2860;
+    /* Optional: custom focus */
+    box-shadow: none;
 }
 
 /* From Uiverse.io by cssbuttons-io */
@@ -532,6 +553,7 @@ button:hover .button-text {
     display: flex;
     justify-content: center;
     z-index: 1;
+
 }
 
 .hero-section::before {
@@ -923,6 +945,7 @@ input[type="text"] {
 
 .chat-box {
     background-color: #2a2860;
+    color: #fff;
     padding: 15px;
     border-radius: 6px;
     margin-bottom: 20px;
@@ -930,6 +953,19 @@ input[type="text"] {
     word-wrap: break-word;
     max-height: 400px;
     overflow-y: auto;
+}
+
+#genre:focus {
+    outline: none;
+    box-shadow: 0 0 12px rgba(5, 238, 255, 0.6);
+    /* Stronger glow on focus */
+
+}
+
+#title:focus {
+    outline: none;
+    box-shadow: 0 0 12px rgba(5, 238, 255, 0.6);
+    /* Stronger glow on focus */
 }
 
 .alert {
@@ -1009,3 +1045,30 @@ input[type="number"],
 }
 
 /*to here*/
+
+/* From Uiverse.io by vinodjangid07 */
+.Btn4 {
+    width: 130px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color:#2A2860;
+    border: none;
+    color: white;
+    font-weight: 600;
+    gap: 8px;
+    cursor: pointer;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.103);
+    position: relative;
+    overflow: hidden;
+    transition-duration: .3s;
+}
+
+.svgIcon {
+    width: 16px;
+}
+
+.svgIcon path {
+    fill: white;
+}
