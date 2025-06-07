@@ -47,4 +47,10 @@ class Story extends Model
     {
         return $this->hasOne(Blog::class);
     }
+    public function conversations()
+{
+    return $this->hasMany(Conversation::class);
+}
+
+
 }

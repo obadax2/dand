@@ -15,22 +15,28 @@ use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\BlogController;
+
+use App\Http\Controllers\ChatController;
 use App\Models\Blog;
 use App\Models\Story;
+use App\Models\Poll;
 
 // Route for the welcome page
 Route::get('/', function () {
-    // Your logic here, e.g. return a view
-    return view('welcome');
+    $polls = Poll::orderBy('created_at', 'desc')->get();
+    return view('welcome',compact('polls'));
 })->middleware(['auth', CheckUserBanStatus::class])
     ->name('home');
 
 // Use your middleware in route groups
 Route::middleware(['auth', CheckUserBanStatus::class])->group(function () {
+   Route::middleware(['auth', 'role:hr'])->group(function () {
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::post('/users/{user}/role', [UserController::class, 'updateRole'])->name('users.role.update');
-    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
     Route::post('/polls', [PollController::class, 'store'])->name('polls.store');
+});
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+   
     Route::post('/users/{user}/ban', [UserController::class, 'ban'])->name('users.ban');
     Route::get('/stories/drafts', [StoryController::class, 'drafts'])->name('stories.drafts');
 
@@ -72,13 +78,17 @@ Route::middleware(['auth', CheckUserBanStatus::class])->group(function () {
     Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
     Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
-
+   Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+    Route::post('/chat/start', [ChatController::class, 'startConversation'])->name('chat.start');
+    Route::get('/chat/{conversation}', [ChatController::class, 'show'])->name('chat.show');
+    Route::post('/chat/{conversation}/send', [ChatController::class, 'sendMessage'])->name('chat.send');
     Route::get('/cart/checkout', [PaymentController::class, 'checkoutAndExecuteCart'])->name('paypal.cart.checkout');
     Route::get('/cart/execute', [PaymentController::class, 'checkoutAndExecuteCart'])->name('paypal.cart.execute');
+   Route::post('/polls/{poll}/vote/{vote}', [PollController::class, 'vote'])->name('polls.vote')->middleware('auth');
 });
 
 // Admin routes
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth','role:admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
     Route::post('/admin/users/{id}/ban', [AdminController::class, 'banUser'])->name('admin.users.ban');
     Route::post('/admin/users/{id}/unban', [AdminController::class, 'unbanUser'])->name('admin.users.unban');

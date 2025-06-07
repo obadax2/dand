@@ -12,7 +12,7 @@ class AdminController extends Controller
     {
         Log::info('AdminController@index reached successfully.');
 
-        $users = User::where('role', 'user')->where('banned', 0)->get();
+      $users = User::where('role', 'user')->get();
         $tickets = Ticket::with('user')->orderBy('created_at', 'desc')->get();
         if ($users->isEmpty()) {
             Log::info('No users found for the dashboard.');

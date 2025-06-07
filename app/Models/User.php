@@ -142,4 +142,8 @@ public function cartItems()
 {
     return $this->hasMany(\App\Models\Cart::class);
 }
+public function conversations()
+{
+    return $this->hasMany(Conversation::class);
+}
 }

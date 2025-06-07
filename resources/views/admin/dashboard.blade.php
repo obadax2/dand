@@ -50,14 +50,12 @@
                             <td>{{ $user->username }}</td>
                             <td>{{ $user->email }}</td>
                             <td>
-                                <form action="{{ route('admin.users.ban', $user->id) }}" method="POST" style="display:inline;">
-                                    @csrf
-                                    <button type="submit" class="btn btn-danger">Ban</button>
-                                </form>
-                                <form action="{{ route('admin.users.unban', $user->id) }}" method="POST" style="display:inline;">
-                                    @csrf
-                                    <button type="submit" class="btn btn-success">Unban</button>
-                                </form>
+        <form action="{{ $user->banned ? route('admin.users.unban', $user->id) : route('admin.users.ban', $user->id) }}" method="POST" style="display:inline;">
+    @csrf
+    <button type="submit" class="btn {{ $user->banned ? 'btn-success' : 'btn-danger' }}">
+        {{ $user->banned ? 'Unban' : 'Ban' }}
+    </button>
+</form>
                             </td>
                         </tr>
                     @endforeach
