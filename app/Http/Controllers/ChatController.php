@@ -10,46 +10,46 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class ChatController extends Controller
 {
-   public function index()
-   {
-       $stories = auth()->user()->stories; // or all if admin
-       return view('chat.select_story', compact('stories'));
-   }
+    public function index()
+    {
+        $stories = auth()->user()->stories; // or all if admin
+        return view('chat.select_story', compact('stories'));
+    }
 
-   public function startConversation(Request $request)
-   {
-       $conversation = Conversation::firstOrCreate([
-           'user_id' => auth()->id(),
-           'story_id' => $request->story_id,
-       ]);
+    public function startConversation(Request $request)
+    {
+        $conversation = Conversation::firstOrCreate([
+            'user_id' => auth()->id(),
+            'story_id' => $request->story_id,
+        ]);
 
-       return redirect()->route('chat.show', $conversation);
-   }
+        return redirect()->route('chat.show', $conversation);
+    }
 
-   public function show(Conversation $conversation)
-   {
-       $messages = $conversation->messages()->latest()->paginate(10);
+    public function show(Conversation $conversation)
+    {
+        $messages = $conversation->messages()->latest()->paginate(10);
 
-       if (request()->ajax()) {
-           return view('chat.partials.messages', compact('messages'));
-       }
+        if (request()->ajax()) {
+            return view('chat.partials.messages', compact('messages'));
+        }
 
-       $story = $conversation->story; // your story data to pass
-       return view('chat.show', compact('conversation', 'story', 'messages'));
-   }
+        $story = $conversation->story; // your story data to pass
+        return view('chat.show', compact('conversation', 'story', 'messages'));
+    }
 
-   public function sendMessage(Request $request, Conversation $conversation)
-   {
-       $request->validate(['message' => 'required|string']);
+    public function sendMessage(Request $request, Conversation $conversation)
+    {
+        $request->validate(['message' => 'required|string']);
 
-       // Save user message
-       $conversation->messages()->create([
-           'sender' => 'user',
-           'message' => $request->message
-       ]);
+        // Save user message
+        $conversation->messages()->create([
+            'sender' => 'user',
+            'message' => $request->message
+        ]);
 
-       // --- AI INTEGRATION PLACEHOLDER ---
-       /*
+        // --- AI INTEGRATION PLACEHOLDER ---
+        /*
        // Prepare data for AI core
        $story = $conversation->story;
        $characters = $story->characters; // Collection of characters
@@ -71,21 +71,21 @@ class ChatController extends Controller
        ]);
        */
 
-       // Placeholder bot reply (temporary until AI core is ready)
-       $conversation->messages()->create([
-           'sender' => 'bot',
-           'message' => 'This is a placeholder reply.'
-       ]);
+        // Placeholder bot reply (temporary until AI core is ready)
+        $conversation->messages()->create([
+            'sender' => 'bot',
+            'message' => 'This is a placeholder reply.'
+        ]);
 
-       if ($request->ajax()) {
-           $messages = $conversation->messages()->latest()->paginate(10);
-           $view = view('chat.partials.messages', compact('messages'))->render();
+        if ($request->ajax()) {
+            $messages = $conversation->messages()->latest()->paginate(10);
+            $view = view('chat.partials.messages', compact('messages'))->render();
 
-           return response()->json([
-               'messages_html' => $view,
-           ]);
-       }
+            return response()->json([
+                'messages_html' => $view,
+            ]);
+        }
 
-       return redirect()->route('chat.show', $conversation);
-   }
+        return redirect()->route('chat.show', $conversation);
+    }
 }
