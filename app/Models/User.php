@@ -146,4 +146,8 @@ public function conversations()
 {
     return $this->hasMany(Conversation::class);
 }
+public function reviews()
+{
+    return $this->hasMany(Review::class);
+}
 }

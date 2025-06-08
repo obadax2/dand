@@ -1,9 +1,10 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Illuminate\Http\Request;
 use App\Models\Ticket;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class AdminController extends Controller
@@ -12,13 +13,18 @@ class AdminController extends Controller
     {
         Log::info('AdminController@index reached successfully.');
 
-      $users = User::where('role', 'user')->get();
-        $tickets = Ticket::with('user')->orderBy('created_at', 'desc')->get();
+        $users = User::where('role', 'user')->get();
+
+        // Eager load user and messages (latest first)
+        $tickets = Ticket::with(['user', 'messages' => function ($query) {
+            $query->orderBy('created_at', 'desc');
+        }])->orderBy('created_at', 'desc')->get();
+
         if ($users->isEmpty()) {
             Log::info('No users found for the dashboard.');
         }
 
-        return view('admin.dashboard', compact('users', 'tickets')); ;
+        return view('admin.dashboard', compact('users', 'tickets'));
     }
 
     public function banUser($id)

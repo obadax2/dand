@@ -1,57 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="{{ asset('style.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://cdn.lineicons.com/3.0/lineicons.css" rel="stylesheet">
-
-</head>
-<style>
-    table{
-        color: #BDAEC6;
+    <link rel="stylesheet" href="{{ asset('style.css') }}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link href="https://cdn.lineicons.com/3.0/lineicons.css" rel="stylesheet" />
+    <style>
+        table {
+            color: #bdaec6;
             background-color: rgba(25, 23, 75, 0.5);
-    /* semi-transparent */
-    backdrop-filter: blur(1px);
-    }
-    /* From Uiverse.io by adamgiebl */
-    .ban ,.unban {
-        position: relative;
-        display: inline-block;
-        margin: 15px;
-        padding: 15px 15px;
-        text-align: center;
-        font-size: 12px;
-        letter-spacing: 1px;
-        text-decoration: none;
-        color: #BDAEC6;
-        background: transparent;
-        cursor: pointer;
-        transition: ease-out 0.5s;
-        border: 2px solid #725AC1;
-        border-radius: 10px;
-        box-shadow: inset 0 0 0 0 #725AC1;
-    }
+            backdrop-filter: blur(1px);
+        }
 
-    .ban:hover ,.unban:hover {
-        color: white;
-        box-shadow: inset 0 -100px 0 0 #725AC1;
-    }
+        .ban, .unban {
+            position: relative;
+            display: inline-block;
+            margin: 15px;
+            padding: 15px 15px;
+            text-align: center;
+            font-size: 12px;
+            letter-spacing: 1px;
+            text-decoration: none;
+            color: #bdaec6;
+            background: transparent;
+            cursor: pointer;
+            transition: ease-out 0.5s;
+            border: 2px solid #725ac1;
+            border-radius: 10px;
+            box-shadow: inset 0 0 0 0 #725ac1;
+        }
 
-    .ban:active ,.unban:active {
-        transform: scale(0.9);
-    }
-</style>
+        .ban:hover, .unban:hover {
+            color: white;
+            box-shadow: inset 0 -100px 0 0 #725ac1;
+        }
 
+        .ban:active, .unban:active {
+            transform: scale(0.9);
+        }
+
+        textarea {
+            width: 100%;
+            margin-top: 0.5rem;
+            resize: vertical;
+        }
+    </style>
+</head>
 <body>
     <div class="hero-section">
         <div>
             @include('layout.nav')
             <div class="container">
                 <h1>Admin Dashboard</h1>
+
                 <h2>Users</h2>
                 @if ($users->isEmpty())
                     <p>No users found.</p>
@@ -72,13 +75,11 @@
                                     <td>{{ $user->username }}</td>
                                     <td>{{ $user->email }}</td>
                                     <td>
-                                        <form action="{{ route('admin.users.ban', $user->id) }}" method="POST"
-                                            style="display:inline;">
+                                        <form action="{{ route('admin.users.ban', $user->id) }}" method="POST" style="display:inline;">
                                             @csrf
                                             <button type="submit" class="ban">Ban</button>
                                         </form>
-                                        <form action="{{ route('admin.users.unban', $user->id) }}" method="POST"
-                                            style="display:inline;">
+                                        <form action="{{ route('admin.users.unban', $user->id) }}" method="POST" style="display:inline;">
                                             @csrf
                                             <button type="submit" class="unban">Unban</button>
                                         </form>
@@ -89,69 +90,6 @@
                     </table>
                 @endif
 
-<<<<<<< HEAD
-    <div class="container">
-        <h1>Admin Dashboard</h1>
-
-        <h2>Users</h2>
-        @if($users->isEmpty())
-            <p>No users found.</p>
-        @else
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Username</th>
-                        <th>Email</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($users as $user)
-                        <tr>
-                            <td>{{ $user->name }}</td>
-                            <td>{{ $user->username }}</td>
-                            <td>{{ $user->email }}</td>
-                            <td>
-        <form action="{{ $user->banned ? route('admin.users.unban', $user->id) : route('admin.users.ban', $user->id) }}" method="POST" style="display:inline;">
-    @csrf
-    <button type="submit" class="btn {{ $user->banned ? 'btn-success' : 'btn-danger' }}">
-        {{ $user->banned ? 'Unban' : 'Ban' }}
-    </button>
-</form>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        @endif
-
-        <h2>Tickets</h2>
-        @if($tickets->isEmpty())
-            <p>No tickets found.</p>
-        @else
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Ticket ID</th>
-                        <th>Username</th>
-                        <th>Content</th>
-                        <th>Date Submitted</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($tickets as $ticket)
-                        <tr>
-                            <td>{{ $ticket->id }}</td>
-                            <td>{{ $ticket->user->username ?? 'N/A' }}</td>
-                            <td>{{ $ticket->content }}</td>
-                            <td>{{ $ticket->created_at->format('Y-m-d H:i') }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        @endif
-=======
                 <h2>Tickets</h2>
                 @if ($tickets->isEmpty())
                     <p>No tickets found.</p>
@@ -161,8 +99,9 @@
                             <tr>
                                 <th>Ticket ID</th>
                                 <th>Username</th>
-                                <th>Content</th>
-                                <th>Date Submitted</th>
+                                <th>Conversation</th>
+                                <th>Last Updated</th>
+                                <th>Reply</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -170,8 +109,34 @@
                                 <tr>
                                     <td>{{ $ticket->id }}</td>
                                     <td>{{ $ticket->user->username ?? 'N/A' }}</td>
-                                    <td>{{ $ticket->content }}</td>
-                                    <td>{{ $ticket->created_at->format('Y-m-d H:i') }}</td>
+                                    <td>
+                                        @foreach ($ticket->messages as $message)
+                                            <div style="margin-bottom: 1rem; padding: 0.5rem; border-radius: 5px; background-color: {{ $message->sender === 'admin' ? '#e0f7fa' : '#f1f8e9' }}">
+                                                <strong>{{ ucfirst($message->sender) }}:</strong>
+                                                <p>{{ $message->message }}</p>
+                                                <small>{{ $message->created_at->format('d M Y, H:i') }}</small>
+                                            </div>
+                                        @endforeach
+                                    </td>
+                                    <td>{{ $ticket->updated_at->format('Y-m-d H:i') }}</td>
+                                    <td>
+                                        @php
+                                            $lastMessage = $ticket->messages->first();
+                                        @endphp
+
+                                        @if (!$lastMessage || $lastMessage->sender === 'user')
+                                            <div id="reply-container-{{ $ticket->id }}">
+                                                <form action="{{ route('tickets.reply', $ticket->id) }}" method="POST" class="reply-form" data-ticket-id="{{ $ticket->id }}">
+                                                    @csrf
+                                                    <textarea name="reply" rows="2" required></textarea>
+                                                    <button type="submit" class="ban">Send Reply</button>
+                                                </form>
+                                            </div>
+                                        @else
+                                            <p style="color: lightgreen;"><strong>Last reply sent.</strong></p>
+                                            <p>Waiting for user response.</p>
+                                        @endif
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -179,11 +144,33 @@
                 @endif
             </div>
         </div>
->>>>>>> e958d5a141ec923566d1e449390aceeb9b2c1a45
     </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.4.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
 
+    <script>
+        document.querySelectorAll('.reply-form').forEach(form => {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const ticketId = form.dataset.ticketId;
+                const formData = new FormData(form);
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': form.querySelector('input[name="_token"]').value
+                    },
+                    body: formData
+                });
+
+                if (response.ok) {
+                    document.getElementById(`reply-container-${ticketId}`).innerHTML = `
+                        <p style="color: lightgreen;"><strong>Reply sent.</strong></p>
+                        <p>Waiting for user response.</p>
+                    `;
+                } else {
+                    alert('Failed to send reply.');
+                }
+            });
+        });
+    </script>
+</body>
 </html>
