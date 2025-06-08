@@ -27,9 +27,10 @@
             color: #fff;
         }
 
-        h4{
+        h4 {
             color: #03bfd4;
         }
+
         input[type=number]::-webkit-inner-spin-button,
         input[type=number]::-webkit-outer-spin-button {
             -webkit-appearance: none;
@@ -38,6 +39,20 @@
 
         input[type=number] {
             -moz-appearance: textfield;
+        }
+
+        textarea::placeholder {
+            color: #6f7777 !important;
+            /* Replace with your desired color */
+        }
+        strong{
+            color: #03bfd4;
+        }
+
+        .review {
+            width: 300px;
+            background-color: rgba(25, 23, 75, 0.5);
+            backdrop-filter: blur(1px);
         }
     </style>
 </head>
@@ -64,7 +79,7 @@
             <div class="container4">
 
                 <div class="form-section">
-                    <h3>Create a New Blog</h3>
+                    <h3>Sell your story</h3>
                     <form method="POST" action="{{ route('blogs.create') }}">
                         @csrf
                         <input type="hidden" name="story_id" id="story_id_input" />
@@ -88,11 +103,11 @@
                             <option value="partial">First 50 Lines</option>
                         </select>
 
-                        <button type="submit" class="Blog">Create Blog</button>
+                        <button type="submit" class="Blog">Save</button>
                     </form>
                 </div>
 
-                <h2>Blogs</h2>
+                <h2>Stories</h2>
                 <br>
                 @forelse($blogs as $blog)
                     @php
@@ -134,41 +149,45 @@
                                 </button>
                             </form>
 
-        
-                    {{-- Review Form --}}
-                    @if (auth()->check())
-                        <form action="{{ route('reviews.store', $blog->id) }}" method="POST" style="margin-top: 20px;">
-                            @csrf
-                            <label for="rating">Rate this blog:</label>
-                            <select name="rating" required class="form-control w-25">
-                                <option value="">--Select--</option>
-                                @for ($i = 1; $i <= 5; $i++)
-                                    <option value="{{ $i }}">{{ $i }} Star{{ $i > 1 ? 's' : '' }}</option>
-                                @endfor
-                            </select>
 
-                            <label for="comment">Review:</label>
-                            <textarea name="comment" rows="3" class="form-control" placeholder="Write your thoughts..."></textarea>
+                            {{-- Review Form --}}
+                            @if (auth()->check())
+                                <form action="{{ route('reviews.store', $blog->id) }}" method="POST"
+                                    style="margin-top: 20px;">
+                                    @csrf
+                                    <label for="rating">Rate this blog:</label>
+                                    <select name="rating" required class="form-control w-25">
+                                        <option value="">--Select--</option>
+                                        @for ($i = 1; $i <= 5; $i++)
+                                            <option value="{{ $i }}">{{ $i }}
+                                                Star{{ $i > 1 ? 's' : '' }}</option>
+                                        @endfor
+                                    </select>
 
-                            <button type="submit" class="btn mt-2">Submit Review</button>
-                        </form>
-                    @endif
+                                    <label for="comment">Review:</label>
+                                    <textarea name="comment" rows="3" class="form-control" placeholder="Write your thoughts..."></textarea>
 
-                    {{-- Display Reviews --}}
-                    @if ($blog->reviews->count())
-                        <div style="margin-top: 20px;">
-                            <h5 style="color: #05EEFF;">Reviews:</h5>
-                            @foreach ($blog->reviews as $review)
-                                <div style="background: #1b1b3a; padding: 10px; margin-bottom: 10px; border-radius: 6px;">
-                                    <strong>{{ $review->user->name }}</strong> —
-                                    <span style="color: gold;">{{ str_repeat('★', $review->rating) }}{{ str_repeat('☆', 5 - $review->rating) }}</span>
-                                    <p>{{ $review->comment }}</p>
-                                    <small style="color: #888;">{{ $review->created_at->diffForHumans() }}</small>
+                                    <button type="submit" class="Blog">Submit Review</button>
+                                </form>
+                            @endif
+
+                            {{-- Display Reviews --}}
+                            @if ($blog->reviews->count())
+                                <div style="margin-top: 20px;">
+                                    <h5 style="color: #fff;">Reviews:</h5>
+                                    @foreach ($blog->reviews as $review)
+                                        <div style="padding: 10px; margin-bottom: 10px; border-radius: 6px;" class="review">
+                                            <strong>{{ $review->user->name }}</strong> —
+                                            <span
+                                                style="color: gold;">{{ str_repeat('★', $review->rating) }}{{ str_repeat('☆', 5 - $review->rating) }}</span>
+                                            <p>{{ $review->comment }}</p>
+                                            <small
+                                                style="color: #888;">{{ $review->created_at->diffForHumans() }}</small>
+                                        </div>
+                                    @endforeach
                                 </div>
-                            @endforeach
+                            @endif
                         </div>
-                    @endif
-                </div>
                     </div>
                 @empty
                     <p>No blogs available.</p>

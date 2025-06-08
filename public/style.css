@@ -904,8 +904,8 @@ textarea {
     border: none;
     border-radius: 5px;
     margin-bottom: 15px;
-    background-color: #2a2860;
-    color: #ffffff;
+    background-color: #2a2860 !important;
+    color: #ffffff !important;
     overflow: hidden;
     resize: none;
     /* Prevent manual resizing since it's auto-resized */
@@ -1006,8 +1006,8 @@ input[type="text"] {
 /*from here for dashboard*/
 
 .container4 {
+    box-shadow: 0 0 15px rgba(0, 183, 255, 0.3);
     background-color: rgba(25, 23, 75, 0.5);
-    /* semi-transparent */
     backdrop-filter: blur(1px);
     padding: 30px;
     border-radius: 10px;
@@ -1053,7 +1053,7 @@ input[type="number"],
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color:#2A2860;
+    background-color: #2A2860;
     border: none;
     color: white;
     font-weight: 600;
@@ -1071,4 +1071,19 @@ input[type="number"],
 
 .svgIcon path {
     fill: white;
+}
+
+.com {
+    background: rgba(25, 23, 75, 1);
+    backdrop-filter: blur(12px);
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.com:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 12px rgba(5, 238, 255, 0.3);
 }

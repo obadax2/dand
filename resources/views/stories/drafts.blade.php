@@ -9,6 +9,12 @@
     <link href="https://cdn.lineicons.com/3.0/lineicons.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('style.css') }}">
     <style>
+        .modal-content {
+
+            border: 1px solid rgba(129, 125, 125, 0.7) !important;
+            /* your red border */
+        }
+
         h1 {
             color: #05EEFF;
             text-align: center;
@@ -41,7 +47,6 @@
 
         .story-content {
             margin-top: 15px;
-            border-top: 1px dashed #05EEFF;
             padding-top: 10px;
             white-space: pre-wrap;
             color: #ccc;
@@ -120,13 +125,17 @@
                                         Edit
                                     </a>
 
-                                    <form action="{{ route('stories.destroy', $story->id) }}" method="POST"
-                                        onsubmit="return confirm('Are you sure you want to delete this story?');"
+                                    <form id="delete-form-{{ $story->id }}"
+                                        action="{{ route('stories.destroy', $story->id) }}" method="POST"
                                         class="d-inline">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger fw-semibold">Delete</button>
+                                        <button type="button" class="btn btn-danger fw-semibold" data-bs-toggle="modal"
+                                            data-bs-target="#confirmDeleteModal" data-story-id="{{ $story->id }}">
+                                            Delete
+                                        </button>
                                     </form>
+
                                 </div>
                                 <br>
                                 <small>Genre: {{ $story->genre ?: 'N/A' }} | Status: {{ $story->status }}</small>
@@ -139,8 +148,50 @@
                     </ul>
                 @endif
             </div>
+
+
         </div>
     </div>
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-light border border-2 border-danger">
+                <div class="modal-header">
+                    <h5 class="modal-title text-danger" id="confirmDeleteModalLabel">Confirm Deletion</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this story? This action cannot be undone.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Yes, Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        let currentStoryId = null;
+
+        const confirmModal = document.getElementById('confirmDeleteModal');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+
+        confirmModal.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            currentStoryId = button.getAttribute('data-story-id');
+        });
+
+        confirmDeleteBtn.addEventListener('click', function() {
+            if (currentStoryId) {
+                const form = document.getElementById(`delete-form-${currentStoryId}`);
+                if (form) form.submit();
+            }
+        });
+    </script>
 
 </body>
 

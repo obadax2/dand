@@ -45,6 +45,17 @@
             margin: 6px 0 12px;
             border: none;
             border-radius: 4px;
+            background-color: #2a2860;
+            outline: 1px solid transparent;
+            /* initially hidden */
+            color: #fff;
+        }
+
+        input[type="password"]:focus,
+        input[type="file"] :focus {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(5, 238, 255, 0.3);
+            outline: 1px solid #05EEFF;
         }
     </style>
 </head>
