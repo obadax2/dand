@@ -13,7 +13,7 @@
 </head>
 
 <body>
-     @if (session('success'))
+    @if (session('success'))
         <div class="alert alert-success custom-alert" id="successAlert">{{ session('success') }}</div>
     @endif
 
@@ -26,11 +26,12 @@
             </ul>
         </div>
     @endif
+
     <div class="hero-section">
         <div>
             <br>
             @include('layout.nav')
-            <div class="d-flex" style=" padding: 20px;">
+            <div class="d-flex" style="padding: 20px;">
                 <div class="container3 flex-grow-1">
                     <!-- Navigation Links -->
                     <div class="page-header d-flex justify-content-between align-items-center mb-4">
@@ -41,18 +42,26 @@
                         </div>
                     </div>
 
-
-
-
                     @if (isset($generatedContent))
                         <h2>Generated Story Content</h2>
                         <div class="chat-box">{{ $generatedContent }}</div>
+
+                        {{-- 🎭 Show Generated Characters --}}
+                        @if (isset($characters) && count($characters))
+                            <h3 class="mt-4">Generated Characters</h3>
+                            <ul class="list-group mb-4">
+                                @foreach ($characters as $char)
+                                    <li class="list-group-item">
+                                        <strong>{{ $char['name'] }}</strong>: {{ $char['description'] }}
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @endif
 
                         <h2>Complete Your Story Details</h2>
                         <form method="POST" action="{{ route('stories.store') }}">
                             @csrf
                             <p for="title">Story Title:</p>
-
                             <input type="text" name="title" id="title" value="{{ old('title') }}" required autocomplete="off">
 
                             <p for="genre">Genre:</p>
@@ -73,43 +82,42 @@
                 </div>
             </div>
         </div>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const textarea = document.getElementById('prompt');
-                const charCount = document.getElementById('charCount');
+    </div>
 
-                const autoResize = (el) => {
-                    el.style.height = 'auto';
-                    el.style.height = el.scrollHeight + 'px';
-                };
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const textarea = document.getElementById('prompt');
+            const charCount = document.getElementById('charCount');
 
-                if (textarea) {
+            const autoResize = (el) => {
+                el.style.height = 'auto';
+                el.style.height = el.scrollHeight + 'px';
+            };
+
+            if (textarea) {
+                autoResize(textarea);
+                textarea.addEventListener('input', () => {
                     autoResize(textarea);
-                    textarea.addEventListener('input', () => {
-                        autoResize(textarea);
-                        if (charCount) {
-                            charCount.textContent = `${textarea.value.length} / 2000 characters`;
-                        }
-                    });
-
-                    // Initial count
                     if (charCount) {
                         charCount.textContent = `${textarea.value.length} / 2000 characters`;
                     }
+                });
+
+                if (charCount) {
+                    charCount.textContent = `${textarea.value.length} / 2000 characters`;
                 }
+            }
 
-                const alert = document.querySelector('.alert');
-                if (alert) {
-                    setTimeout(() => {
-                        alert.style.transition = 'opacity 0.5s ease';
-                        alert.style.opacity = '0';
-                        setTimeout(() => alert.remove(), 500);
-                    }, 3000);
-                }
-            });
-        </script>
-
-
+            const alert = document.querySelector('.alert');
+            if (alert) {
+                setTimeout(() => {
+                    alert.style.transition = 'opacity 0.5s ease';
+                    alert.style.opacity = '0';
+                    setTimeout(() => alert.remove(), 500);
+                }, 3000);
+            }
+        });
+    </script>
 </body>
 
 </html>
