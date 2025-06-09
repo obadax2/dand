@@ -33,32 +33,57 @@
             @include('layout.nav')
             <div class="d-flex" style="padding: 20px;">
                 <div class="container3 flex-grow-1">
-                    <!-- Navigation Links -->
-                    <div class="page-header d-flex justify-content-between align-items-center mb-4">
-                        <h1 class="m-0">Create a New Story</h1>
-                        <div class="nav-links d-flex gap-2">
-                            <a href="{{ route('stories.drafts') }}">Drafts</a>
-                            <a href="{{ route('dashboard') }}">Blog Index</a>
+                    <!-- Header + Nav + Character Image Form -->
+                    <div class="page-header mb-4">
+                        <div class="d-flex justify-content-between align-items-start flex-wrap">
+                            <h1 class="m-0">Create a New Story</h1>
+
+                            <div class="d-flex flex-column align-items-end" style="min-width: 300px;">
+                                <!-- Navigation Links -->
+                                <div class="nav-links d-flex gap-3 mb-2">
+                                    <a href="{{ route('stories.drafts') }}">Drafts</a>
+                                    <a href="{{ route('dashboard') }}">Blog Index</a>
+                                </div>
+
+                                <!-- Character Image Generator Dropdown -->
+                                @if (isset($stories) && count($stories))
+                                    <form method="POST" action="{{ route('characters.generate.images') }}" class="d-flex align-items-center">
+                                        @csrf
+                                        <select name="story_id" class="form-select me-2" required>
+                                            <option value="" disabled selected>Select a Story</option>
+                                            @foreach ($stories as $story)
+                                                <option value="{{ $story->id }}">{{ $story->title }}</option>
+                                            @endforeach
+                                        </select>
+                                        <button type="submit" class="btn btn-primary">Character Images</button>
+                                    </form>
+                                @endif
+                            </div>
                         </div>
                     </div>
 
+                    <!-- Show Generated Characters -->
+                    @if (isset($characters) && count($characters))
+                        <h3 class="mt-3">Generated Characters</h3>
+                        <ul class="list-group mb-4">
+                            @foreach ($characters as $char)
+                                <li class="list-group-item">
+                                    <strong>{{ $char['name'] }}</strong>: {{ $char['description'] }}
+                                    @if (!empty($char['image_url']))
+                                        <br>
+                                        <img src="{{ asset($char['image_url']) }}" alt="Character Image" width="150" class="mt-2">
+                                    @endif
+                                </li>
+                            @endforeach
+                        </ul>
+                    @endif
+
+                    <!-- Generated Story Content -->
                     @if (isset($generatedContent))
                         <h2>Generated Story Content</h2>
                         <div class="chat-box">{{ $generatedContent }}</div>
 
-                        {{-- 🎭 Show Generated Characters --}}
-                        @if (isset($characters) && count($characters))
-                            <h3 class="mt-4">Generated Characters</h3>
-                            <ul class="list-group mb-4">
-                                @foreach ($characters as $char)
-                                    <li class="list-group-item">
-                                        <strong>{{ $char['name'] }}</strong>: {{ $char['description'] }}
-                                    </li>
-                                @endforeach
-                            </ul>
-                        @endif
-
-                        <h2>Complete Your Story Details</h2>
+                        <h2 class="mt-4">Complete Your Story Details</h2>
                         <form method="POST" action="{{ route('stories.store') }}">
                             @csrf
                             <p for="title">Story Title:</p>

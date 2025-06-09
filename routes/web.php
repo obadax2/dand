@@ -16,8 +16,10 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\TicketController;
-
+use App\Http\Controllers\CharacterImageController;
+use App\Http\Controllers\CharacterController;
 use App\Http\Controllers\ChatController;
+
 use App\Models\Blog;
 use App\Models\Story;
 use App\Models\Poll;
@@ -93,6 +95,10 @@ Route::post('/blogs/{blog}/reviews', [ReviewController::class, 'store'])->name('
     Route::get('/tickets/{ticket}', [TicketController::class, 'show'])->name('tickets.show');
     Route::post('/tickets/{ticket}/reply', [TicketController::class, 'userReply'])->name('tickets.userReply');
 });
+Route::post('/characters/generate-images', [CharacterImageController::class, 'generateImages'])->name('characters.generate.images');
+Route::get('my-stories', [StoryController::class, 'showMyStory'])->name('stories.my');
+    Route::get('/my-characters', [CharacterController::class, 'myCharacters'])->name('characters.my');
+    Route::get('/stories/{id}', [StoryController::class, 'show'])->name('stories.show');
 });
 
 // Admin routes

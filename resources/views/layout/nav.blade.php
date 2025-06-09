@@ -136,6 +136,8 @@
         @endif
 
         <li><a href="{{ route('home') }}">Home</a></li>
+        <li><a href="{{ route('stories.my') }}" class="btn btn-primary">View My Stories</a></li>
+<li><a href="{{ route('characters.my') }}">My Characters</a></li>
 
 
         <li class="nav-item story-dropdown">
