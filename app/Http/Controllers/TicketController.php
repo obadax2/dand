@@ -46,11 +46,11 @@ class TicketController extends Controller
         'reply' => 'required|string|max:1000',
     ]);
 
-    $ticket->messages()->create([
-        'user_id' => null, // or the admin's ID if needed
-        'message' => $request->input('reply'),
-        'sender' => 'admin',
-    ]);
+   $ticket->messages()->create([
+    'user_id' => $ticket->user_id, // ✅ associate with the ticket owner
+    'message' => $request->input('reply'),
+    'sender' => 'admin',
+]);
 
     // Return JSON if it's an AJAX request
     if ($request->ajax()) {
@@ -94,4 +94,19 @@ class TicketController extends Controller
 
         return back()->with('success', 'Your reply was sent.');
     }
+    public function notifications()
+{
+    $userId = auth()->id();
+
+    // Get latest admin replies to user's tickets
+    $messages = \App\Models\Message::whereHas('ticket', function ($query) use ($userId) {
+        $query->where('user_id', $userId);
+    })
+    ->where('sender', 'admin')
+    ->latest()
+    ->take(5)
+    ->get();
+
+    return response()->json($messages);
+}
 }

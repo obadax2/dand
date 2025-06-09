@@ -99,6 +99,7 @@ Route::post('/characters/generate-images', [CharacterImageController::class, 'ge
 Route::get('my-stories', [StoryController::class, 'showMyStory'])->name('stories.my');
     Route::get('/my-characters', [CharacterController::class, 'myCharacters'])->name('characters.my');
     Route::get('/stories/{id}', [StoryController::class, 'show'])->name('stories.show');
+    Route::get('/notifications', [TicketController::class, 'notifications'])->name('notifications');
 });
 
 // Admin routes
