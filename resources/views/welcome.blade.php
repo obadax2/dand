@@ -14,7 +14,19 @@
 <body>
 
 
+    @if (session('success'))
+        <div class="alert alert-success custom-alert" id="successAlert">{{ session('success') }}</div>
+    @endif
 
+    @if ($errors->any())
+        <div class="alert alert-danger custom-alert" id="successAlert">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
     <div class="hero-section">
         <div>
@@ -30,20 +42,13 @@
             </div>
 
 
-    {{-- Submit Complaint Button --}}
-    @if(auth()->check())
-        <div style="text-align: center; margin: 2rem auto;">
-    <a href="{{ route('tickets.form') }}" class="com">
-        Submit a Complaint
-    </a>
-</div>
+            {{-- Submit Complaint Button --}}
+            @if (auth()->check())
+                <div style="text-align: center; margin: 2rem auto;">
+                    <button class="com" data-bs-toggle="modal" data-bs-target="#complaintModal">
+                        Submit a Complaint
+                    </button>
 
-    @endif
-
-            {{-- Poll success message --}}
-            @if (session('success'))
-                <div style="color: green; text-align: center; margin-top: 1rem;">
-                    {{ session('success') }}
                 </div>
             @endif
 
@@ -99,47 +104,46 @@
                 @endforelse
             </div>
 
-            {{-- The repeated typing-container blocks below (keep as is if you want) --}}
-            <div class="container">
-                <div class="typing-container">
-                    <div class="line-one">Your website for</div>
-                    <div class="line-two">
-                        generating a <span id="typed-text"></span><span class="cursor">|</span>
-                    </div>
+        </div>
+    </div>
+    <div class="modal fade" id="complaintModal" tabindex="-1" aria-labelledby="complaintModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content  text-light "
+                style="    background-color: rgba(25, 23, 75, 0.5);backdrop-filter: blur(12px);">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="complaintModalLabel">Submit a Complaint</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
-            </div>
-            <div class="container">
-                <div class="typing-container">
-                    <div class="line-one">Your website for</div>
-                    <div class="line-two">
-                        generating a <span id="typed-text"></span><span class="cursor">|</span>
-                    </div>
-                </div>
-            </div>
-            <div class="container">
-                <div class="typing-container">
-                    <div class="line-one">Your website for</div>
-                    <div class="line-two">
-                        generating a <span id="typed-text"></span><span class="cursor">|</span>
-                    </div>
-                </div>
-            </div>
-            <div class="container">
-                <div class="typing-container">
-                    <div class="line-one">Your website for</div>
-                    <div class="line-two">
-                        generating a <span id="typed-text"></span><span class="cursor">|</span>
-                    </div>
+                <div class="modal-body">
+                    <form action="{{ route('tickets.store') }}" method="POST">
+                        @csrf
+                        <div class="mb-3">
+                            <label for="content" class="form-label">Your Complaint:</label>
+                            <textarea name="content" id="content" rows="4" class="form-control" required></textarea>
+                        </div>
+
+                        <button type="submit" class="genButton">Submit</button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
+
 </body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
+    const alert = document.querySelector('.alert');
+            if (alert) {
+                setTimeout(() => {
+                    alert.style.transition = 'opacity 0.5s ease';
+                    alert.style.opacity = '0';
+                    setTimeout(() => alert.remove(), 500);
+                }, 3000);
+            }
 
-
-    // Typing effect script as you had it
-    const options = ["Story", "Map", "Character"];
+            const options = ["Story", "Map", "Character"];
     const typedText = document.getElementById("typed-text");
 
     let optionIndex = 0;

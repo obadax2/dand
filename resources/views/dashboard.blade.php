@@ -155,7 +155,7 @@
                                 <form action="{{ route('reviews.store', $blog->id) }}" method="POST"
                                     style="margin-top: 20px;">
                                     @csrf
-                                    <label for="rating">Rate this blog:</label>
+                                    <label for="rating">Rate this story:</label>
                                     <select name="rating" required class="form-control w-25">
                                         <option value="">--Select--</option>
                                         @for ($i = 1; $i <= 5; $i++)
@@ -190,7 +190,7 @@
                         </div>
                     </div>
                 @empty
-                    <p>No blogs available.</p>
+                    <p>No stories available.</p>
                 @endforelse
             </div>
             <br>

@@ -662,9 +662,7 @@ p {
 
 .usercontainer {
     background-color: rgba(25, 23, 75, 0.5);
-    /* semi-transparent */
     backdrop-filter: blur(1px);
-    /* blur effect */
     padding: 30px;
     color: #ffffff;
     border-radius: 10px;
@@ -913,8 +911,7 @@ textarea {
 }
 
 .container3 {
-    background-color: #19174B;
-    padding: 30px;
+
     border-radius: 10px;
     max-width: 900px;
     margin: 40px auto;

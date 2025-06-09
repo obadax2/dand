@@ -142,7 +142,7 @@
             <a href="#" class="nav-link">Story ▾</a>
             <ul class="story-submenu">
                 <li><a href="{{ route('stories.create') }}">Create</a></li>
-                <li><a href="{{ route('dashboard') }}">Edit</a></li>
+                <li><a href="{{ route('dashboard') }}">Store</a></li>
                 <li><a href="{{ route('stories.drafts') }}">Drafts</a></li>
             </ul>
         </li>
