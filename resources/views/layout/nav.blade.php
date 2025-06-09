@@ -165,10 +165,10 @@
             $repliedTickets = auth()->check()
                 ? Ticket::where('user_id', auth()->id())
                     ->whereHas('messages', function ($query) {
-                        $query->where('sender', 'admin');
+                        $query->where('sender', 'admin')->where('is_read', false);
                     })
                     ->with(['messages' => function ($query) {
-                        $query->where('sender', 'admin')->latest();
+                        $query->where('sender', 'admin')->where('is_read', false)->latest();
                     }])
                     ->orderBy('updated_at', 'desc')
                     ->get()
@@ -217,9 +217,27 @@
     document.addEventListener('DOMContentLoaded', () => {
         const bell = document.getElementById('notificationIcon');
         const dropdown = document.getElementById('notificationDropdown');
+        const badge = document.querySelector('.notification-badge');
 
-        bell.addEventListener('click', () => {
+        bell.addEventListener('click', async () => {
             dropdown.classList.toggle('active');
+
+            if (badge) {
+                try {
+                    await fetch('{{ route('notifications.markRead') }}', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({})
+                    });
+
+                    badge.remove(); // remove the red badge visually
+                } catch (err) {
+                    console.error('Failed to mark notifications as read.', err);
+                }
+            }
         });
 
         document.addEventListener('click', (e) => {

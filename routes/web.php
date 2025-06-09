@@ -100,6 +100,7 @@ Route::get('my-stories', [StoryController::class, 'showMyStory'])->name('stories
     Route::get('/my-characters', [CharacterController::class, 'myCharacters'])->name('characters.my');
     Route::get('/stories/{id}', [StoryController::class, 'show'])->name('stories.show');
     Route::get('/notifications', [TicketController::class, 'notifications'])->name('notifications');
+    Route::post('/notifications/mark-read', [App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.markRead');
 });
 
 // Admin routes
