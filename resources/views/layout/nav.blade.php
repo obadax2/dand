@@ -47,7 +47,6 @@
         color: #B6A7C0;
     }
 
-    /* Notification section */
     .notification-wrapper {
         position: relative;
         display: inline-block;
@@ -125,9 +124,6 @@
         <img src="your-logo.png" alt="Logo Here">
     </div>
     <ul>
-
-
-
         @if (Auth::user()->role === 'admin')
             <li><a href="{{ route('admin.dashboard') }}">Admin</a></li>
         @endif
@@ -136,7 +132,8 @@
         @endif
 
         <li><a href="{{ route('home') }}">Home</a></li>
-
+        <li><a href="{{ route('stories.my') }}" class="btn btn-primary">View My Stories</a></li>
+        <li><a href="{{ route('characters.my') }}">My Characters</a></li>
 
         <li class="nav-item story-dropdown">
             <a href="#" class="nav-link">Story ▾</a>
@@ -147,14 +144,13 @@
             </ul>
         </li>
 
-
         <li class="nav-item story-dropdown">
             <a href="#" class="nav-link">Account ▾</a>
             <ul class="story-submenu">
                 <li><a href="{{ route('user.profile') }}">Profile</a></li>
                 <li>
                     <a href="#"
-                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
+                       onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
                     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                         @csrf
                     </form>
@@ -164,11 +160,17 @@
 
         {{-- Notification Icon --}}
         @php
-            // Get logged-in user's tickets with replies
-$repliedTickets = auth()->check()
-    ? \App\Models\Ticket::where('user_id', auth()->id())
-        ->whereNotNull('reply')
-        ->orderBy('updated_at', 'desc')
+            use App\Models\Ticket;
+
+            $repliedTickets = auth()->check()
+                ? Ticket::where('user_id', auth()->id())
+                    ->whereHas('messages', function ($query) {
+                        $query->where('sender', 'admin')->where('is_read', false);
+                    })
+                    ->with(['messages' => function ($query) {
+                        $query->where('sender', 'admin')->where('is_read', false)->latest();
+                    }])
+                    ->orderBy('updated_at', 'desc')
                     ->get()
                 : collect();
         @endphp
@@ -188,32 +190,54 @@ $repliedTickets = auth()->check()
                             <p style="padding: 10px;">No new replies.</p>
                         @else
                             @foreach ($repliedTickets as $ticket)
-                                <div class="notification-item">
-                                    <p><strong>Reply to:</strong> {{ Str::limit($ticket->content, 40) }}</p>
-                                    <a href="{{ route('tickets.show', $ticket->id) }}">View Full Reply</a>
-                                </div>
+                                @php
+                                    $latestAdminMessage = $ticket->messages->first();
+                                @endphp
+                                @if ($latestAdminMessage)
+                                    <div class="notification-item">
+                                        <p><strong>Admin:</strong> {{ Str::limit($latestAdminMessage->message, 60) }}</p>
+                                        <a href="{{ route('tickets.show', $ticket->id) }}">View Conversation</a>
+                                    </div>
+                                @endif
                             @endforeach
                         @endif
                     </div>
                 </div>
             </li>
-
         @endif
 
         <li>
-            <button>Try Now<i class="fas fa-rocket"></i></button>
+            <button>Try Now <i class="fas fa-rocket"></i></button>
         </li>
-
     </ul>
 </nav>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const bell = document.getElementById('notificationIcon');
         const dropdown = document.getElementById('notificationDropdown');
+        const badge = document.querySelector('.notification-badge');
 
-        bell.addEventListener('click', () => {
+        bell.addEventListener('click', async () => {
             dropdown.classList.toggle('active');
+
+            if (badge) {
+                try {
+                    await fetch('{{ route('notifications.markRead') }}', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({})
+                    });
+
+                    badge.remove(); // remove the red badge visually
+                } catch (err) {
+                    console.error('Failed to mark notifications as read.', err);
+                }
+            }
         });
 
         document.addEventListener('click', (e) => {

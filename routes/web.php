@@ -16,8 +16,10 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\TicketController;
-
+use App\Http\Controllers\CharacterImageController;
+use App\Http\Controllers\CharacterController;
 use App\Http\Controllers\ChatController;
+
 use App\Models\Blog;
 use App\Models\Story;
 use App\Models\Poll;

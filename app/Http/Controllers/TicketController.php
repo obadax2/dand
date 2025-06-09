@@ -94,4 +94,19 @@ class TicketController extends Controller
 
         return back()->with('success', 'Your reply was sent.');
     }
+    public function notifications()
+{
+    $userId = auth()->id();
+
+    // Get latest admin replies to user's tickets
+    $messages = \App\Models\Message::whereHas('ticket', function ($query) use ($userId) {
+        $query->where('user_id', $userId);
+    })
+    ->where('sender', 'admin')
+    ->latest()
+    ->take(5)
+    ->get();
+
+    return response()->json($messages);
+}
 }

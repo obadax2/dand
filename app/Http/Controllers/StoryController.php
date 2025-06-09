@@ -14,10 +14,11 @@ class StoryController extends Controller
 {
     // Remove HuggingFaceService injection since we call Python API now
 
-     public function create()
-    {
-        return view('stories.create');
-    }
+public function create()
+{
+    $stories = Story::where('user_id', Auth::id())->get(); // ✅ Filter by current user
+    return view('stories.create', compact('stories'));
+}
 
    public function generate(Request $request)
 {
@@ -70,7 +71,7 @@ class StoryController extends Controller
 
     private function callPythonAIService(string $prompt): ?array
     {
-        $url = env('PYTHON_AI_URL', 'http://localhost:8000/generate');
+        $url = env('PYTHON_AI_URL', 'http://localhost:8002/generate');
 
         try {
            $response = Http::timeout(120)->post($url, ['prompt' => $prompt]);
@@ -207,4 +208,16 @@ class StoryController extends Controller
 
         return redirect()->route('stories.drafts')->with('success', 'Story deleted successfully!');
     }
+public function showMyStory()
+{
+     $userId = auth()->id();
+    $stories = Story::where('user_id', $userId)->get();
+
+    return view('stories.my', compact('stories'));
+}
+public function show($id)
+{
+    $story = Story::findOrFail($id);
+    return view('stories.show', compact('story'));
+}
 }
