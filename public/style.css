@@ -703,6 +703,11 @@ p {
 }
 
 .usercontainer {
+<<<<<<< HEAD
+=======
+    background-color: rgba(25, 23, 75, 0.5);
+    backdrop-filter: blur(1px);
+>>>>>>> 29c5223eef861cdd8275f6a34812cd1da512d169
     padding: 30px;
     color: #000000;
     border-radius: 10px;
@@ -951,8 +956,12 @@ textarea {
 }
 
 .container3 {
+<<<<<<< HEAD
     background-color: #B68D40;
     padding: 30px;
+=======
+
+>>>>>>> 29c5223eef861cdd8275f6a34812cd1da512d169
     border-radius: 10px;
     max-width: 900px;
     margin: 40px auto;

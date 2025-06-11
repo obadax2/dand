@@ -110,6 +110,7 @@
                             @endforeach
                         </tbody>
                     </table>
+<<<<<<< HEAD
                 </div>
 
             @endif
@@ -117,10 +118,19 @@
             <br>
             <h2>Tickets</h2>
             <div class="table-wrapper">
+=======
+                @endif
+                <br>
+                <h2>Tickets</h2>
+>>>>>>> 29c5223eef861cdd8275f6a34812cd1da512d169
                 @if ($tickets->isEmpty())
                     <p style="color: #000000">No tickets found.</p>
                 @else
+<<<<<<< HEAD
                     <table class="ntable">
+=======
+                    <table class="custom-table">
+>>>>>>> 29c5223eef861cdd8275f6a34812cd1da512d169
                         <thead>
                             <tr>
                                 <th>Ticket ID</th>
@@ -136,24 +146,41 @@
                                     <td>{{ $ticket->id }}</td>
                                     <td>{{ $ticket->user->username ?? 'N/A' }}</td>
                                     <td>
+<<<<<<< HEAD
                                         <button type="button" class="btn btn-dark" data-bs-toggle="modal"
                                             data-bs-target="#conversationModal-{{ $ticket->id }}">
                                             View Conversation
                                         </button>
+=======
+                                        @foreach ($ticket->messages as $message)
+                                            <div style="margin-bottom: 1rem; padding: 0.5rem; border-radius: 5px; ">
+                                                <strong>{{ ucfirst($message->sender) }}:</strong>
+                                                <p>{{ $message->message }}</p>
+                                                <small>{{ $message->created_at->format('d M Y, H:i') }}</small>
+                                            </div>
+                                        @endforeach
+>>>>>>> 29c5223eef861cdd8275f6a34812cd1da512d169
                                     </td>
                                     <td>{{ $ticket->updated_at->format('Y-m-d H:i') }}</td>
                                     <td>
                                         @php $lastMessage = $ticket->messages->first(); @endphp
 
                                         @if (!$lastMessage || $lastMessage->sender === 'user')
+<<<<<<< HEAD
                                             <button type="button" class="ban" data-bs-toggle="modal"
                                                 data-bs-target="#replyModal-{{ $ticket->id }}">
                                                 Reply
                                             </button>
+=======
+                                            <button class="ban" onclick="openReplyModal({{ $ticket->id }})">Send
+                                                Reply</button>
+>>>>>>> 29c5223eef861cdd8275f6a34812cd1da512d169
                                         @else
                                             Last reply sent.
                                         @endif
+
                                     </td>
+
                                 </tr>
                             @endforeach
                         </tbody>
@@ -188,6 +215,7 @@
                 </div>
             </div>
         </div>
+<<<<<<< HEAD
     @endforeach
 
     {{-- Conversation Modals --}}
@@ -261,9 +289,70 @@
                 } catch (error) {
                     console.error(error);
                 }
+=======
+    </div>
+    <div class="modal fade" id="replyModal" tabindex="-1" aria-labelledby="replyModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-light"
+                style="background-color: rgba(25, 23, 75, 0.5); backdrop-filter: blur(12px);">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="replyModalLabel">Send Reply</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="replyForm" method="POST">
+                        @csrf
+                        <div class="mb-3">
+                            <label for="replyText" class="form-label">Reply Message:</label>
+                            <textarea name="reply" id="replyText" rows="4" class="form-control" required></textarea>
+                        </div>
+                        <button type="submit" class="genButton">Send</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentTicketId = null;
+        const replyModal = new bootstrap.Modal(document.getElementById('replyModal'));
+
+        function openReplyModal(ticketId) {
+            currentTicketId = ticketId;
+            const form = document.getElementById('replyForm');
+            form.action = `/admin/tickets/${ticketId}/reply`; // Adjust if using named routes
+            document.getElementById('replyText').value = '';
+            replyModal.show();
+        }
+
+        document.getElementById('replyForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const form = e.target;
+            const formData = new FormData(form);
+
+            const response = await fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': form.querySelector('input[name="_token"]').value
+                },
+                body: formData
+>>>>>>> 29c5223eef861cdd8275f6a34812cd1da512d169
             });
+
+            if (response.ok) {
+                replyModal.hide();
+                // Optional: update UI or refresh page
+                alert('Reply sent successfully!');
+            } else {
+                alert('Failed to send reply.');
+            }
         });
     </script>
+
 </body>
 
 </html>
