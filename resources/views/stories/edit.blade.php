@@ -9,23 +9,16 @@
     <link href="https://cdn.lineicons.com/3.0/lineicons.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('style.css') }}">
     <style>
-        h1 {
-            color: #05EEFF;
-            margin-bottom: 30px;
-        }
-
         .form-container {
-            background-color: rgba(25, 23, 75, 0.5);
-            backdrop-filter: blur(2px);
+            background-color: #122620;
             padding: 30px;
             border-radius: 12px;
-            box-shadow: 0 0 15px rgba(0, 183, 255, 0.3);
             max-width: 700px;
             margin: auto;
         }
 
         label {
-            color: #05EEFF;
+            color: #ffffff;
             margin-bottom: 6px;
             font-weight: 500;
         }
@@ -35,20 +28,17 @@
         select {
             width: 100%;
             padding: 10px;
-            background-color: #2a2860;
-            color: #fff;
+            background-color: #ffffff;
+            color: #000;
             border-radius: 8px;
             resize: vertical;
         }
 
-        textarea {
-            min-height: 200px;
-        }
 
         .btn-primary {
-            background-color: #05EEFF;
+            background-color: #122620;
             border: none;
-            color: #06043E;
+            color: #fff;
             font-weight: bold;
             padding: 10px 20px;
             border-radius: 8px;
@@ -56,18 +46,21 @@
         }
 
         .btn-primary:hover {
-            background-color: #03bfd4;
+            background-color: #fff;
+            color: #000;
         }
 
         .back-link {
             display: inline-block;
             margin-top: 20px;
-            color: #05EEFF;
+            color: #ffffff;
             text-decoration: none;
         }
 
-        .back-link:hover {
-            text-decoration: underline;
+        textarea {
+            min-height: 200px;
+            resize: none;
+            overflow-y: auto;
         }
 
         .error {
@@ -78,10 +71,10 @@
 </head>
 
 <body>
-    <div class="hero-section">
         <div>
             <br>
             @include('layout.nav')
+            <br>
             <div class="form-container">
                 <h1>Edit Story: "{{ $story->title ?: 'Untitled Draft' }}"</h1>
 
@@ -126,13 +119,12 @@
                         @enderror
                     </div>
 
-                    <button type="submit" class="btn btn-primary">Update Story</button>
+                    <button type="submit" class="btn btn-light">Update Story</button>
                 </form>
 
                 <a href="{{ route('stories.drafts') }}" class="back-link">← Back to Drafts</a>
             </div>
         </div>
-    </div>
 </body>
 
 </html>

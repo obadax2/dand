@@ -52,6 +52,30 @@
 </head>
 
 <body>
+    <div class="container">
+        <br>
+        @include('layout.nav')
+
+        <!-- Typing Effect Section -->
+        <div class="typing-container">
+            <div class="line-one">Your website for</div>
+            <div class="line-two">
+                generating a <span class="typed-text"></span><span class="cursor">|</span>
+
+    @if (session('success'))
+        <div class="alert alert-success custom-alert" id="successAlert">{{ session('success') }}</div>
+    @endif
+
+    @if ($errors->any())
+        <div class="alert alert-danger custom-alert" id="successAlert">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <div class="hero-section">
         <div>
             <br>
@@ -69,21 +93,28 @@
                     </div>
                 </div>
             </div>
+        </div>
 
+        <!-- Polls Section -->
+        <div class="polls-container row">
+            @forelse ($polls as $poll)
+                @php
+                    $userVote = auth()->check()
+                        ? \App\Models\PollVote::where('poll_id', $poll->id)
+                            ->where('user_id', auth()->id())
+                            ->first()
+                        : null;
+                @endphp
+
+                <div class="col-md-4 col-sm-6 mb-4 d-flex justify-content-center">
             {{-- Submit Complaint Button --}}
-            @if(auth()->check())
-            <div style="text-align: center; margin: 2rem auto;">
-                <a href="{{ route('tickets.form') }}" class="com">
-                    Submit a Complaint
-                </a>
-            </div>
-            @endif
+            @if (auth()->check())
+                <div style="text-align: center; margin: 2rem auto;">
+                    <button class="com" data-bs-toggle="modal" data-bs-target="#complaintModal">
+                        Submit a Complaint
+                    </button>
 
-            {{-- Poll success message --}}
-            @if (session('success'))
-            <div style="color: green; text-align: center; margin-top: 1rem;">
-                {{ session('success') }}
-            </div>
+                </div>
             @endif
 
             {{-- Polls container --}}
@@ -99,83 +130,120 @@
 
                 <div class="card1">
                     <div class="card-inner1">
-                        {{-- FRONT SIDE: Show the poll question --}}
-                        <div class="card-front1">
+                        <!-- Front -->
+                        <div class="card-front1 ">
                             <h3 class="poll-title">{{ $poll->title }}</h3>
                         </div>
-
-                        {{-- BACK SIDE: Show vote buttons or the user's vote --}}
+                        <!-- Back -->
                         <div class="card-back1">
+                                @if (Auth::user() && (Auth::user()->role === 'hr' || Auth::user()->role === 'admin'))
+                                    <!-- Delete Button -->
+                                    <form action="{{ route('polls.destroy', $poll->id) }}" method="POST"
+                                        class="position-absolute top-0 end-0 mt-2 me-2">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-danger"
+                                            onclick="return confirm('Are you sure you want to delete this poll?')">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                @endif
                             @if (!$userVote)
                             <div class="vote-buttons">
                                 <form action="{{ route('polls.vote', ['poll' => $poll->id, 'vote' => 'yes']) }}" method="POST">
                                     @csrf
-                                    <button type="submit" class="btn-yes">
+                                    <button style="color: white" type="submit" class="btn btn-dark">
                                         Yes ({{ $poll->yes_count }})
                                     </button>
                                 </form>
 
-                                <form action="{{ route('polls.vote', ['poll' => $poll->id, 'vote' => 'no']) }}" method="POST">
-                                    @csrf
-                                    <button type="submit" class="btn-no">
-                                        No ({{ $poll->no_count }})
-                                    </button>
-                                </form>
+                                        <form action="{{ route('polls.vote', ['poll' => $poll->id, 'vote' => 'no']) }}"
+                                            method="POST">
+                                            @csrf
+                                            <button type="submit" class="btn btn-light">
+                                                No ({{ $poll->no_count }})
+                                            </button>
+                                        </form>
+                                    </div>
+                                @else
+                                    <p class="voted-text">
+                                        You voted: <strong>{{ ucfirst($userVote->vote) }}</strong>
+                                    </p>
+                                @endif
                             </div>
-                            @else
-                            <p class="voted-text">
-                                You voted: <strong>{{ ucfirst($userVote->vote) }}</strong>
-                            </p>
-                            @endif
                         </div>
                     </div>
                 </div>
+            @empty
+                <p class="text-center text-white">No polls available right now.</p>
+            @endforelse
+        </div>
 
-                @empty
-                <p style="text-align:center;">No polls available right now.</p>
-                @endforelse
-            </div>
-
-            {{-- The repeated typing-container blocks below (keep as is if you want) --}}
-            <div class="container">
-                <div class="typing-container">
-                    <div class="line-one">Your website for</div>
-                    <div class="line-two">
-                        generating a <span id="typed-text"></span><span class="cursor">|</span>
-                    </div>
-                </div>
-            </div>
-            <div class="container">
-                <div class="typing-container">
-                    <div class="line-one">Your website for</div>
-                    <div class="line-two">
-                        generating a <span id="typed-text"></span><span class="cursor">|</span>
-                    </div>
-                </div>
-            </div>
-            <div class="container">
-                <div class="typing-container">
-                    <div class="line-one">Your website for</div>
-                    <div class="line-two">
-                        generating a <span id="typed-text"></span><span class="cursor">|</span>
-                    </div>
-                </div>
-            </div>
-            <div class="container">
-                <div class="typing-container">
-                    <div class="line-one">Your website for</div>
-                    <div class="line-two">
-                        generating a <span id="typed-text"></span><span class="cursor">|</span>
-                    </div>
-                </div>
+<<<<<<< HEAD
+        <!-- Reuse Typing Container at the Bottom -->
+        <div class="typing-container">
+            <div class="line-one">Your website for</div>
+            <div class="line-two">
+                generating a <span class="typed-text"></span><span class="cursor">|</span>
             </div>
         </div>
     </div>
 
     <script>
-        // Typing effect script as you had it
-        const options = ["Story", "Map", "Character"];
-        const typedText = document.getElementById("typed-text");
+        const alert = document.querySelector('.alert');
+        if (alert) {
+            setTimeout(() => {
+                alert.style.transition = 'opacity 0.5s ease';
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 500);
+            }, 3000);
+=======
+                @empty
+                <p style="text-align:center;">No polls available right now.</p>
+                @endforelse
+            </div>
+
+        </div>
+    </div>
+    <div class="modal fade" id="complaintModal" tabindex="-1" aria-labelledby="complaintModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content  text-light "
+                style="    background-color: rgba(25, 23, 75, 0.5);backdrop-filter: blur(12px);">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="complaintModalLabel">Submit a Complaint</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('tickets.store') }}" method="POST">
+                        @csrf
+                        <div class="mb-3">
+                            <label for="content" class="form-label">Your Complaint:</label>
+                            <textarea name="content" id="content" rows="4" class="form-control" required></textarea>
+                        </div>
+
+                        <button type="submit" class="genButton">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    const alert = document.querySelector('.alert');
+            if (alert) {
+                setTimeout(() => {
+                    alert.style.transition = 'opacity 0.5s ease';
+                    alert.style.opacity = '0';
+                    setTimeout(() => alert.remove(), 500);
+                }, 3000);
+            }
+
+            const options = ["Story", "Map", "Character"];
+    const typedText = document.getElementById("typed-text");
 
         let optionIndex = 0;
         let charIndex = 0;
@@ -198,14 +266,52 @@
                     deleting = false;
                     optionIndex = (optionIndex + 1) % options.length;
                 }
-            }
-            setTimeout(typeLoop, deleting ? 80 : 150);
+    >>>>>>> 29c5223eef861cdd8275f6a34812cd1da512d169
         }
+        const options = ["Story", "Map", "Character"];
+        const typedTextElements = document.querySelectorAll(".typed-text");
 
-        document.addEventListener("DOMContentLoaded", typeLoop);
-    </script>
+        let optionIndex = 0;
+        let charIndex = 0;
+        let deleting = false;
 
-    <script>
+        function typeLoop() {
+            const currentOption = options[optionIndex];
+
+            typedTextElements.forEach(el => {
+                el.textContent = deleting ?
+                    currentOption.substring(0, charIndex - 1) :
+                    currentOption.substring(0, charIndex + 1);
+            });
+
+            if (!deleting) {
+                charIndex++;
+                if (charIndex === currentOption.length) {
+                    deleting = true;
+                    setTimeout(typeLoop, 2000);
+                    return;
+                }
+            } else {
+                charIndex--;
+                if (charIndex === 0) {
+                    deleting = false;
+                    optionIndex = (optionIndex + 1) % options.length;
+                }
+            }
+
+                setTimeout(typeLoop, deleting ? 80 : 150);
+            }
+
+            document.addEventListener("DOMContentLoaded", typeLoop);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.forEach(function(tooltipTriggerEl) {
+                new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+        </script>
+</body>    <script>
         // AJAX User Search
         const searchInput = document.getElementById('ajaxSearchInput');
         const resultsBox = document.getElementById('searchResults');

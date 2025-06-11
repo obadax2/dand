@@ -35,19 +35,15 @@
                 <div class="container3 flex-grow-1">
                     <!-- Header + Nav + Character Image Form -->
                     <div class="page-header mb-4">
-                        <div class="d-flex justify-content-between align-items-start flex-wrap">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap w-100">
                             <h1 class="m-0">Create a New Story</h1>
 
-                            <div class="d-flex flex-column align-items-end" style="min-width: 300px;">
-                                <!-- Navigation Links -->
-                                <div class="nav-links d-flex gap-3 mb-2">
-                                    <a href="{{ route('stories.drafts') }}">Drafts</a>
-                                    <a href="{{ route('dashboard') }}">Blog Index</a>
-                                </div>
+                            <div class="d-flex align-items-center gap-4 ms-auto mt-4" style="min-width: 350px;">
 
                                 <!-- Character Image Generator Dropdown -->
                                 @if (isset($stories) && count($stories))
-                                    <form method="POST" action="{{ route('characters.generate.images') }}" class="d-flex align-items-center">
+                                    <form method="POST" action="{{ route('characters.generate.images') }}"
+                                        class="d-flex align-items-center mb-0">
                                         @csrf
                                         <select name="story_id" class="form-select me-2" required>
                                             <option value="" disabled selected>Select a Story</option>
@@ -55,7 +51,7 @@
                                                 <option value="{{ $story->id }}">{{ $story->title }}</option>
                                             @endforeach
                                         </select>
-                                        <button type="submit" class="btn btn-primary">Character Images</button>
+                                        <button type="submit" class="ch">Character Images</button>
                                     </form>
                                 @endif
                             </div>
@@ -71,7 +67,8 @@
                                     <strong>{{ $char['name'] }}</strong>: {{ $char['description'] }}
                                     @if (!empty($char['image_url']))
                                         <br>
-                                        <img src="{{ asset($char['image_url']) }}" alt="Character Image" width="150" class="mt-2">
+                                        <img src="{{ asset($char['image_url']) }}" alt="Character Image" width="150"
+                                            class="mt-2">
                                     @endif
                                 </li>
                             @endforeach
@@ -87,10 +84,12 @@
                         <form method="POST" action="{{ route('stories.store') }}">
                             @csrf
                             <p for="title">Story Title:</p>
-                            <input type="text" name="title" id="title" value="{{ old('title') }}" required autocomplete="off">
+                            <input type="text" name="title" id="title" value="{{ old('title') }}" required
+                                autocomplete="off">
 
                             <p for="genre">Genre:</p>
-                            <input type="text" name="genre" id="genre" value="{{ old('genre') }}" required autocomplete="off">
+                            <input type="text" name="genre" id="genre" value="{{ old('genre') }}" required
+                                autocomplete="off">
 
                             <button class="userButton" type="submit">Save Story</button>
                         </form>
@@ -110,7 +109,7 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const textarea = document.getElementById('prompt');
             const charCount = document.getElementById('charCount');
 
