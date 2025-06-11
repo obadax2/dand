@@ -7,20 +7,38 @@ use App\Models\User;
 
 class FriendController extends Controller
 {
-   public function sendRequest(Request $request, User $user)
+ public function sendRequest(Request $request, User $user)
 {
     $currentUser = auth()->user();
 
-    // Check if request already exists or they are already friends
-    if ($currentUser->friends()->where('user2_id', $user->id)->exists()) {
-        return back()->with('error', 'Friend request already sent or you are already friends.');
+    // Check if a friend request or friendship already exists (pending or accepted)
+    $exists = \DB::table('friends')
+        ->where(function ($query) use ($currentUser, $user) {
+            $query->where('user1_id', $currentUser->id)
+                  ->where('user2_id', $user->id);
+        })
+        ->orWhere(function ($query) use ($currentUser, $user) {
+            $query->where('user2_id', $currentUser->id)
+                  ->where('user1_id', $user->id);
+        })
+        ->exists();
+
+    if ($exists) {
+        return response()->json(['error' => 'Friend request already sent or you are already friends.'], 400);
     }
 
-    // Send request with 'pending' status
-    $currentUser->friends()->attach($user->id, ['status' => 'pending']);
+    // Insert a pending friend request
+    \DB::table('friends')->insert([
+        'user1_id' => $currentUser->id,
+        'user2_id' => $user->id,
+        'status' => 'pending',
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
 
-    return back()->with('success', 'Friend request sent.');
+    return response()->json(['success' => 'Friend request sent.']);
 }
+
 public function acceptRequest($senderUserId)
 {
     $currentUser = auth()->user();

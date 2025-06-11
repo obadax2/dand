@@ -28,4 +28,8 @@ class Character extends Model
     {
         return $this->belongsTo(Story::class);
     }
+    public function getImageId()
+{
+    return $this->original_character_id ?? $this->id;
+}
 }

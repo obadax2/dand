@@ -42,10 +42,10 @@ class TicketController extends Controller
 
     // Admin replies to ticket
     public function reply(Request $request, Ticket $ticket)
-    {
-        $request->validate([
-            'reply' => 'required|string|max:1000',
-        ]);
+{
+    $request->validate([
+        'reply' => 'required|string|max:1000',
+    ]);
 
         $ticket->messages()->create([
             'user_id' => $ticket->user_id, // associate with ticket owner or admin user ID if available
@@ -58,8 +58,18 @@ class TicketController extends Controller
         }
 
         return redirect()->route('tickets.index')->with('success', 'Reply sent successfully.');
+    $ticket->messages()->create([
+        'user_id' => null, // or use auth()->id() if you want to store admin ID
+        'message' => $request->input('reply'),
+        'sender' => 'admin',
+    ]);
+
+    if ($request->ajax()) {
+        return response()->json(['success' => true, 'message' => 'Reply sent successfully.']);
     }
 
+    return redirect()->route('tickets.index')->with('success', 'Reply sent successfully.');
+}
 
     // Show ticket with conversation for user
     public function show(Ticket $ticket)
@@ -135,4 +145,5 @@ class TicketController extends Controller
 
         return response()->json(['success' => true]);
     }
+
 }

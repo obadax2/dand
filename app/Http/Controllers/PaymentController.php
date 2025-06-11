@@ -210,9 +210,44 @@ class PaymentController extends Controller
             $originalStory = $blog->story;
 
             $copiedStory = $originalStory->replicate();
-            $copiedStory->user_id = Auth::id();
-            $copiedStory->status = 'purchased';
-            $copiedStory->save();
+$copiedStory->user_id = Auth::id();
+$copiedStory->status = 'purchased';
+$copiedStory->save();
+
+// ✅ Copy characters
+foreach ($originalStory->characters as $character) {
+  $copiedCharacter = $character->replicate();
+$copiedCharacter->story_id = $copiedStory->id;
+
+// Set the original_character_id to the ID of the original character
+$copiedCharacter->original_character_id = $character->id;
+
+if ($character->image && \Storage::disk('public')->exists($character->image)) {
+    $extension = pathinfo($character->image, PATHINFO_EXTENSION);
+    $newImageName = 'character_images/' . uniqid() . '.' . $extension;
+    \Storage::disk('public')->copy($character->image, $newImageName);
+    $copiedCharacter->image = $newImageName;
+}
+
+$copiedCharacter->save();
+
+}
+
+$originalMap = $originalStory->map;
+if ($originalMap) {
+    $copiedMap = $originalMap->replicate();
+    $copiedMap->user_id = $user->id;
+    $copiedMap->story_id = $copiedStory->id;
+
+    // ✅ Copy the map image if it exists
+    if ($originalMap->image && \Storage::disk('public')->exists($originalMap->image)) {
+        $extension = pathinfo($originalMap->image, PATHINFO_EXTENSION);
+        $newImageName = 'map_images/' . uniqid() . '.' . $extension;
+        \Storage::disk('public')->copy($originalMap->image, $newImageName);
+        $copiedMap->image = $newImageName;  // no leading slash
+    }
+    $copiedMap->save();
+}
 
             Log::info('Story copied for user', [
                 'original_story_id' => $originalStory->id,
@@ -377,9 +412,46 @@ public function checkoutAndExecuteCart(Request $request)
 
     // Copy the story for the user
     $copiedStory = $originalStory->replicate();
-    $copiedStory->user_id = $user->id;
-    $copiedStory->status = 'purchased';
-    $copiedStory->save();
+$copiedStory->user_id = $user->id;
+$copiedStory->status = 'purchased';
+$copiedStory->save();
+
+// ✅ Copy characters
+foreach ($originalStory->characters as $character) {
+  $copiedCharacter = $character->replicate();
+$copiedCharacter->story_id = $copiedStory->id;
+
+// Set the original_character_id to the ID of the original character
+$copiedCharacter->original_character_id = $character->id;
+
+if ($character->image && \Storage::disk('public')->exists($character->image)) {
+    $extension = pathinfo($character->image, PATHINFO_EXTENSION);
+    $newImageName = 'character_images/' . uniqid() . '.' . $extension;
+    \Storage::disk('public')->copy($character->image, $newImageName);
+    $copiedCharacter->image = $newImageName;
+}
+
+$copiedCharacter->save();
+
+}
+
+$originalMap = $originalStory->map;
+if ($originalMap) {
+    $copiedMap = $originalMap->replicate();
+    $copiedMap->user_id = $user->id;
+    $copiedMap->story_id = $copiedStory->id;
+
+    // ✅ Copy the map image if it exists
+    if ($originalMap->image && \Storage::disk('public')->exists($originalMap->image)) {
+        $extension = pathinfo($originalMap->image, PATHINFO_EXTENSION);
+        $newImageName = 'map_images/' . uniqid() . '.' . $extension;
+        \Storage::disk('public')->copy($originalMap->image, $newImageName);
+        $copiedMap->image = $newImageName;  // no leading slash
+    }
+    $copiedMap->save();
+
+
+}
 
     // Avoid duplicate logs
     $existingPayment = PaymentLog::where('transaction_id', $captureResult['id'])->first();

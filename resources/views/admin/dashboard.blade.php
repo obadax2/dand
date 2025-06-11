@@ -163,6 +163,52 @@
             </div>
             @endif
         </div>
+            <<h2>Tickets</h2>
+<div class="table-wrapper">
+    @if ($tickets->isEmpty())
+        <p style="color: #000000">No tickets found.</p>
+    @else
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>Ticket ID</th>
+                    <th>Username</th>
+                    <th>Conversation</th>
+                    <th>Last Updated</th>
+                    <th>Reply</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($tickets as $ticket)
+                    <tr>
+                        <td>{{ $ticket->id }}</td>
+                        <td>{{ $ticket->user->username ?? 'N/A' }}</td>
+                        <td>
+                            <button type="button" class="btn btn-dark" data-bs-toggle="modal"
+                                data-bs-target="#conversationModal-{{ $ticket->id }}">
+                                View Conversation
+                            </button>
+                        </td>
+                        <td>{{ $ticket->updated_at->format('Y-m-d H:i') }}</td>
+                        <td>
+                            @php $lastMessage = $ticket->messages->first(); @endphp
+                            @if (!$lastMessage || $lastMessage->sender === 'user')
+                                <button type="button" class="ban" data-bs-toggle="modal"
+                                    data-bs-target="#replyModal-{{ $ticket->id }}">
+                                    Reply
+                                </button>
+                                <button class="ban" onclick="openReplyModal({{ $ticket->id }})">Send
+                                    Reply</button>
+                            @else
+                                Last reply sent.
+                            @endif
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    @endif
+</div>
     </div> <br>
 
     {{-- Reply Modals --}}
@@ -263,6 +309,56 @@
                 } catch (error) {
                     console.error(error);
                 }
+    </div>
+    <div class="modal fade" id="replyModal" tabindex="-1" aria-labelledby="replyModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-light"
+                style="background-color: rgba(25, 23, 75, 0.5); backdrop-filter: blur(12px);">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="replyModalLabel">Send Reply</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="replyForm" method="POST">
+                        @csrf
+                        <div class="mb-3">
+                            <label for="replyText" class="form-label">Reply Message:</label>
+                            <textarea name="reply" id="replyText" rows="4" class="form-control" required></textarea>
+                        </div>
+                        <button type="submit" class="genButton">Send</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentTicketId = null;
+        const replyModal = new bootstrap.Modal(document.getElementById('replyModal'));
+
+        function openReplyModal(ticketId) {
+            currentTicketId = ticketId;
+            const form = document.getElementById('replyForm');
+            form.action = `/admin/tickets/${ticketId}/reply`; // Adjust if using named routes
+            document.getElementById('replyText').value = '';
+            replyModal.show();
+        }
+
+        document.getElementById('replyForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const form = e.target;
+            const formData = new FormData(form);
+
+            const response = await fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': form.querySelector('input[name="_token"]').value
+                },
+                body: formData
             });
 
             if (response.ok) {

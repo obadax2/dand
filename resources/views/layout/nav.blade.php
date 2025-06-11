@@ -446,6 +446,12 @@
             </li>
         @endif
     </ul>
+    <li class="nav-item story-dropdown">
+    <a href="#" class="nav-link">Generate Map ▾</a>
+    <ul class="story-submenu">
+        <li><a href="{{ route('maps.generate') }}">Select Story</a></li>
+    </ul>
+</li>
 </nav>
 @if (Auth::user()->role === 'user')
     <div class="floating-buttons">
