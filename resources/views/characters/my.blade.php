@@ -36,11 +36,15 @@
                     @foreach($story->characters as $character)
                         <div class="col-md-4">
                             <div class="card mb-4 shadow-sm">
-                                @if(Storage::disk('public')->exists("character_images/{$character->id}.png"))
-                                    <img src="{{ asset("storage/character_images/{$character->id}.png") }}" class="card-img-top" alt="{{ $character->name }}">
-                                @else
-                                    <img src="{{ asset('images/default-character.png') }}" class="card-img-top" alt="No Image">
-                                @endif
+                               @php
+    $imageId = $character->original_character_id ?? $character->id;
+@endphp
+
+@if(Storage::disk('public')->exists("character_images/{$imageId}.png"))
+    <img src="{{ asset("storage/character_images/{$imageId}.png") }}" class="card-img-top" alt="{{ $character->name }}">
+@else
+    <img src="{{ asset('images/default-character.png') }}" class="card-img-top" alt="No Image">
+@endif
                                 <div class="card-body">
                                     <h5 class="card-title">{{ $character->name }}</h5>
                                     <p class="card-text">{{ $character->description }}</p>

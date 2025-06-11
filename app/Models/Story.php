@@ -51,6 +51,12 @@ class Story extends Model
 {
     return $this->hasMany(Conversation::class);
 }
-
+public function originalCharacters()
+{
+    if ($this->parent_story_id) {
+        return $this->belongsTo(Story::class, 'parent_story_id')->first()->characters;
+    }
+    return $this->characters;
+}
 
 }

@@ -19,7 +19,7 @@ use App\Http\Controllers\TicketController;
 use App\Http\Controllers\CharacterImageController;
 use App\Http\Controllers\CharacterController;
 use App\Http\Controllers\ChatController;
-
+use App\Http\Controllers\MapGenerationController;
 use App\Models\Blog;
 use App\Models\Story;
 use App\Models\Poll;
@@ -70,7 +70,7 @@ Route::middleware(['auth', CheckUserBanStatus::class])->group(function () {
     Route::post('/friends/accept/{user_id}', [FriendController::class, 'acceptFriendRequest'])->name('friend.accept');
     Route::get('/dashboard', [BlogController::class, 'dashboard'])->name('dashboard');
 Route::post('/blogs/{blog}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
-    Route::post('/friends/accept/{user_id}', [FriendController::class, 'acceptFriendRequest'])->name('friend.accept');
+    
 
     Route::post('/purchase', [PurchaseController::class, 'purchase'])->name('purchase');
     Route::get('/payment/cancel', [PaymentController::class, 'cancel'])->name('paypal.cancel');
@@ -101,6 +101,11 @@ Route::get('my-stories', [StoryController::class, 'showMyStory'])->name('stories
     Route::get('/stories/{id}', [StoryController::class, 'show'])->name('stories.show');
     Route::get('/notifications', [TicketController::class, 'notifications'])->name('notifications');
     Route::post('/notifications/mark-read', [App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.markRead');
+        Route::get('/maps/generate', [MapGenerationController::class, 'selectStory'])->name('maps.generate');
+    Route::post('/maps/generate', [MapGenerationController::class, 'generateMap'])->name('maps.generate.post');
+    Route::get('/maps/upload', [MapGenerationController::class, 'uploadForm'])->name('maps.upload.form');
+Route::post('/maps/upload', [MapGenerationController::class, 'uploadImage'])->name('maps.upload.image');
+Route::post('/upload-map-image', [MapGenerationController::class, 'apiUploadImage']);
 });
 
 // Admin routes

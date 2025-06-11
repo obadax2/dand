@@ -150,4 +150,25 @@ public function reviews()
 {
     return $this->hasMany(Review::class);
 }
+public function allFriendsAsUser1()
+{
+    return $this->belongsToMany(User::class, 'friends', 'user1_id', 'user2_id')
+        ->withPivot('status');
+}
+
+// All friendships where this user is user2 (any status)
+public function allFriendsAsUser2()
+{
+    return $this->belongsToMany(User::class, 'friends', 'user2_id', 'user1_id')
+        ->withPivot('status');
+}
+
+// Get all friendships regardless of status
+
+// Friend requests sent by this user (status pending)
+public function sentFriendRequests()
+{
+    return $this->allFriendsAsUser1()->wherePivot('status', 'pending');
+}
+
 }

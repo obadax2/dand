@@ -210,6 +210,12 @@
             <button>Try Now <i class="fas fa-rocket"></i></button>
         </li>
     </ul>
+    <li class="nav-item story-dropdown">
+    <a href="#" class="nav-link">Generate Map ▾</a>
+    <ul class="story-submenu">
+        <li><a href="{{ route('maps.generate') }}">Select Story</a></li>
+    </ul>
+</li>
 </nav>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
