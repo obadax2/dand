@@ -48,16 +48,11 @@ class TicketController extends Controller
         ]);
 
         $ticket->messages()->create([
-<<<<<<< HEAD
             'user_id' => $ticket->user_id, // associate with ticket owner or admin user ID if available
-=======
-            'user_id' => null, // or the admin's ID if needed
->>>>>>> 29c5223eef861cdd8275f6a34812cd1da512d169
             'message' => $request->input('reply'),
             'sender' => 'admin',
         ]);
 
-<<<<<<< HEAD
         if ($request->ajax()) {
             return response()->json(['success' => true, 'message' => 'Reply sent successfully.']);
         }
@@ -66,17 +61,6 @@ class TicketController extends Controller
     }
 
 
-=======
-        // Return JSON if it's an AJAX request
-        if ($request->ajax()) {
-            return response()->json(['message' => 'Reply sent successfully.']);
-        }
-
-        // Fallback for normal requests
-        return redirect()->route('tickets.index')->with('success', 'Reply sent successfully.');
-    }
-
->>>>>>> 29c5223eef861cdd8275f6a34812cd1da512d169
     // Show ticket with conversation for user
     public function show(Ticket $ticket)
     {

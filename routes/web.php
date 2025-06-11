@@ -104,6 +104,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/admin/users/{id}/unban', [AdminController::class, 'unbanUser'])->name('admin.users.unban');
     Route::get('/admin/tickets', [TicketController::class, 'index'])->name('tickets.index');
     Route::post('/admin/tickets/{ticket}/reply', [TicketController::class, 'reply'])->name('tickets.reply');
+    Route::delete('/polls/{poll}', [PollController::class, 'destroy'])->name('polls.destroy');
+    Route::get('my-stories', [StoryController::class, 'showMyStory'])->name('stories.my');
+    Route::get('/my-characters', [CharacterController::class, 'myCharacters'])->name('characters.my');
 });
 
 // Authentication routes

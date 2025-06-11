@@ -16,40 +16,11 @@
         <br>
         @include('layout.nav')
 
-<<<<<<< HEAD
         <!-- Typing Effect Section -->
         <div class="typing-container">
             <div class="line-one">Your website for</div>
             <div class="line-two">
                 generating a <span class="typed-text"></span><span class="cursor">|</span>
-=======
-
-    @if (session('success'))
-        <div class="alert alert-success custom-alert" id="successAlert">{{ session('success') }}</div>
-    @endif
-
-    @if ($errors->any())
-        <div class="alert alert-danger custom-alert" id="successAlert">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
-    <div class="hero-section">
-        <div>
-            <br>
-            @include('layout.nav')
-            <div class="container">
-                <div class="typing-container">
-                    <div class="line-one">Your website for</div>
-                    <div class="line-two">
-                        generating a <span id="typed-text"></span><span class="cursor">|</span>
-                    </div>
-                </div>
->>>>>>> 29c5223eef861cdd8275f6a34812cd1da512d169
             </div>
         </div>
 
@@ -64,31 +35,7 @@
                         : null;
                 @endphp
 
-<<<<<<< HEAD
                 <div class="col-md-4 col-sm-6 mb-4 d-flex justify-content-center">
-=======
-            {{-- Submit Complaint Button --}}
-            @if (auth()->check())
-                <div style="text-align: center; margin: 2rem auto;">
-                    <button class="com" data-bs-toggle="modal" data-bs-target="#complaintModal">
-                        Submit a Complaint
-                    </button>
-
-                </div>
-            @endif
-
-            {{-- Polls container --}}
-            <div class="polls-container">
-                @forelse ($polls as $poll)
-                    @php
-                        $userVote = auth()->check()
-                            ? \App\Models\PollVote::where('poll_id', $poll->id)
-                                ->where('user_id', auth()->id())
-                                ->first()
-                            : null;
-                    @endphp
-
->>>>>>> 29c5223eef861cdd8275f6a34812cd1da512d169
                     <div class="card1">
                         <div class="card-inner1">
                             <!-- Front -->
@@ -141,7 +88,6 @@
             @endforelse
         </div>
 
-<<<<<<< HEAD
         <!-- Reuse Typing Container at the Bottom -->
         <div class="typing-container">
             <div class="line-one">Your website for</div>
@@ -159,76 +105,6 @@
                 alert.style.opacity = '0';
                 setTimeout(() => alert.remove(), 500);
             }, 3000);
-=======
-                @empty
-                    <p style="text-align:center;">No polls available right now.</p>
-                @endforelse
-            </div>
-
-        </div>
-    </div>
-    <div class="modal fade" id="complaintModal" tabindex="-1" aria-labelledby="complaintModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content  text-light "
-                style="    background-color: rgba(25, 23, 75, 0.5);backdrop-filter: blur(12px);">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="complaintModalLabel">Submit a Complaint</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form action="{{ route('tickets.store') }}" method="POST">
-                        @csrf
-                        <div class="mb-3">
-                            <label for="content" class="form-label">Your Complaint:</label>
-                            <textarea name="content" id="content" rows="4" class="form-control" required></textarea>
-                        </div>
-
-                        <button type="submit" class="genButton">Submit</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-</body>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-<script>
-    const alert = document.querySelector('.alert');
-            if (alert) {
-                setTimeout(() => {
-                    alert.style.transition = 'opacity 0.5s ease';
-                    alert.style.opacity = '0';
-                    setTimeout(() => alert.remove(), 500);
-                }, 3000);
-            }
-
-            const options = ["Story", "Map", "Character"];
-    const typedText = document.getElementById("typed-text");
-
-    let optionIndex = 0;
-    let charIndex = 0;
-    let deleting = false;
-
-    function typeLoop() {
-        const currentOption = options[optionIndex];
-        if (!deleting) {
-            typedText.textContent = currentOption.substring(0, charIndex + 1);
-            charIndex++;
-            if (charIndex === currentOption.length) {
-                deleting = true;
-                setTimeout(typeLoop, 2000); // Pause before deleting
-                return;
-            }
-        } else {
-            typedText.textContent = currentOption.substring(0, charIndex - 1);
-            charIndex--;
-            if (charIndex === 0) {
-                deleting = false;
-                optionIndex = (optionIndex + 1) % options.length;
-            }
->>>>>>> 29c5223eef861cdd8275f6a34812cd1da512d169
         }
         const options = ["Story", "Map", "Character"];
         const typedTextElements = document.querySelectorAll(".typed-text");
