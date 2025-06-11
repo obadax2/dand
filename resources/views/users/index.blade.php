@@ -13,119 +13,134 @@
 
 <style>
     label {
-        color: #fff;
+        color: #000000;
     }
 
-    .custom-table {
-        color: #BDAEC6;
-        background-color: rgba(25, 23, 75, 0.5);
-        /* semi-transparent */
-        backdrop-filter: blur(1px);
+    .table-wrapper {
+        display: flex;
+        margin-bottom: 40px;
+        /* optional spacing between sections */
     }
 
+    h1 {
+        color: #000000;
+    }
+
+    .bb {
+        margin-top: 10px !important;
+        /* or adjust the value as needed */
+    }
+
+    input[type="text"] {
+        width: 250px;
+        padding: 6px 8px;
+        margin: 6px 0 12px;
+        border: 1px solid black;
+        border-radius: 4px;
+        background-color: #ffffff;
+        color: #000000;
+        outline: 1px solid transparent;
+        transition: all 0.3s ease;
+    }
 </style>
 
 <body>
-    <div class="hero-section">
-        <div>
-            <br>
-            @include('layout.nav')
+    <br>
+    @include('layout.nav')
 
-            <div class="container">
-                <h1>User Management</h1>
-
-                <h2>Create a Poll</h2>
-                <div class="d-flex justify-content-between align-items-start gap-4 mb-4 flex-wrap">
-                    <form action="{{ route('polls.store') }}" method="POST" class="flex-grow-1">
-                        @csrf
-                        <div class="mb-3">
-                            <label for="pollTitle" class="form-label">Poll Title</label>
-                            <input type="text" name="title" id="pollTitle" class="form-control" required>
-                        </div>
-                        <button class="btn" id="btnn">
-                            <span class="btn-text-one">Create poll</span>
-                            <span class="btn-text-two">Click</span>
-                        </button>
-                    </form>
-
-                    <!-- Search Form -->
-                    <form action="{{ route('users.index') }}" method="GET" class="flex-grow-1">
-                        <label for="search" class="form-label">Search Users</label>
-                        <div class="input-group">
-                            <input type="text" name="search" class="form-control"
-                                value="{{ request()->query('search') }}">
-                            <button class="learn-more ms-2">
-                                <span class="circle" aria-hidden="true">
-                                    <span class="icon arrow"></span>
-                                </span>
-                                <span class="button-text">Search here</span>
-                            </button>
-                        </div>
-                    </form>
-
+    <div class="container">
+        <br>
+        <h1>User Management</h1>
+        <div class="d-flex justify-content-start align-items-end mb-4 flex-wrap">
+            <form action="{{ route('polls.store') }}" method="POST" class="me-3">
+                @csrf
+                <p style="color: #000000">Create a poll</p>
+                <div class="input-group">
+                    <input type="text" class="bb" name="title" id="pollTitle" required placeholder="Enter poll content">
+                    <button class="learn-more ms-2">
+                        <span class="circle" aria-hidden="true">
+                            <span class="icon arrow"></span>
+                        </span>
+                        <span class="button-text">Create</span>
+                    </button>
                 </div>
+            </form>
+                        <!-- Search Form -->
 
-                <table class="custom-table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Username</th>
-                            <th>Email</th>
-                            <th>Role</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($users as $user)
-                            <tr>
-                                <td>{{ $user->name }}</td>
-                                <td>{{ $user->username }}</td>
-                                <td>{{ $user->email }}</td>
-                                <td>{{ $user->role }}</td>
-                                <td>
-                                    <form action="{{ route('users.role.update', $user) }}" method="POST"
-                                        class="d-inline">
-                                        @csrf
-                                        <div id="checklist">
-                                            <input value="user" name="role" type="radio"
-                                                id="role-user-{{ $user->id }}"
-                                                {{ $user->role === 'user' ? 'checked' : '' }}>
-                                            <label for="role-user-{{ $user->id }}">User</label>
-
-                                            <input value="hr" name="role" type="radio"
-                                                id="role-hr-{{ $user->id }}"
-                                                {{ $user->role === 'hr' ? 'checked' : '' }}>
-                                            <label for="role-hr-{{ $user->id }}">HR</label>
-
-                                            <input value="admin" name="role" type="radio"
-                                                id="role-admin-{{ $user->id }}"
-                                                {{ $user->role === 'admin' ? 'checked' : '' }}>
-                                            <label for="role-admin-{{ $user->id }}">Admin</label>
-                                            <button type="submit" class="btn btn-primary btn-sm">Update Role</button>
-                                        </div>
-                                    </form>
-
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" class="text-center">No users found.</td>
-                            </tr>
-                        @endforelse
-
-                    </tbody>
-                </table>
-
-            </div>
-
-            @if (session('success'))
-                <div class="alert alert-success custom-alert" id="successAlert">
-                    {{ session('success') }}
+            <form action="{{ route('users.index') }}" method="GET">
+                <p style="color: #000000">Search Users</p>
+                <div class="input-group">
+                    <input type="text" class="bb" name="search" value="{{ request()->query('search') }}" placeholder="Enter user name">
+                    <button class="learn-more ms-2">
+                        <span class="circle" aria-hidden="true">
+                            <span class="icon arrow"></span>
+                        </span>
+                        <span class="button-text">Search</span>
+                    </button>
                 </div>
-            @endif
+            </form>
+
         </div>
+        <div class="table-wrapper">
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($users as $user)
+                        <tr>
+                            <td>{{ $user->name }}</td>
+                            <td>{{ $user->username }}</td>
+                            <td>{{ $user->email }}</td>
+                            <td>{{ $user->role }}</td>
+                            <td>
+                                <form action="{{ route('users.role.update', $user) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    <div id="checklist">
+                                        <input value="user" name="role" type="radio"
+                                            id="role-user-{{ $user->id }}"
+                                            {{ $user->role === 'user' ? 'checked' : '' }}>
+                                        <label for="role-user-{{ $user->id }}">User</label>
 
+                                        <input value="hr" name="role" type="radio"
+                                            id="role-hr-{{ $user->id }}"
+                                            {{ $user->role === 'hr' ? 'checked' : '' }}>
+                                        <label for="role-hr-{{ $user->id }}">HR</label>
+
+                                        <input value="admin" name="role" type="radio"
+                                            id="role-admin-{{ $user->id }}"
+                                            {{ $user->role === 'admin' ? 'checked' : '' }}>
+                                        <label for="role-admin-{{ $user->id }}">Admin</label>
+                                        <button type="submit" class="btn btn-dark btn-sm">Update
+                                            Role</button>
+                                    </div>
+                                </form>
+
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="text-center">No users found.</td>
+                        </tr>
+                    @endforelse
+
+                </tbody>
+            </table>
+        </div>
+        @if (session('success'))
+            <div class="alert alert-success custom-alert" id="successAlert">
+                {{ session('success') }}
+            </div>
+        @endif
     </div>
+
+
 </body>
 <script>
     document.addEventListener('DOMContentLoaded', function() {

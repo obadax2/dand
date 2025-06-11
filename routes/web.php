@@ -69,7 +69,7 @@ Route::middleware(['auth', CheckUserBanStatus::class])->group(function () {
     Route::post('/user/password/change', [UserProfileController::class, 'changePassword'])->name('user.changePassword');
     Route::post('/friends/accept/{user_id}', [FriendController::class, 'acceptFriendRequest'])->name('friend.accept');
     Route::get('/dashboard', [BlogController::class, 'dashboard'])->name('dashboard');
-Route::post('/blogs/{blog}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+    Route::post('/blogs/{blog}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
     Route::post('/friends/accept/{user_id}', [FriendController::class, 'acceptFriendRequest'])->name('friend.accept');
 
     Route::post('/purchase', [PurchaseController::class, 'purchase'])->name('purchase');
@@ -89,18 +89,20 @@ Route::post('/blogs/{blog}/reviews', [ReviewController::class, 'store'])->name('
     Route::get('/cart/checkout', [PaymentController::class, 'checkoutAndExecuteCart'])->name('paypal.cart.checkout');
     Route::get('/cart/execute', [PaymentController::class, 'checkoutAndExecuteCart'])->name('paypal.cart.execute');
     Route::post('/polls/{poll}/vote/{vote}', [PollController::class, 'vote'])->name('polls.vote')->middleware('auth');
-   Route::middleware(['auth', 'role:user', CheckUserBanStatus::class])->group(function () {
-    Route::get('/tickets/form', fn() => view('tickets.form'))->name('tickets.form');
-    Route::post('/tickets/store', [TicketController::class, 'store'])->name('tickets.store');
-    Route::get('/tickets/{ticket}', [TicketController::class, 'show'])->name('tickets.show');
-    Route::post('/tickets/{ticket}/reply', [TicketController::class, 'userReply'])->name('tickets.userReply');
-});
-Route::post('/characters/generate-images', [CharacterImageController::class, 'generateImages'])->name('characters.generate.images');
-Route::get('my-stories', [StoryController::class, 'showMyStory'])->name('stories.my');
+    Route::middleware(['auth', 'role:user', CheckUserBanStatus::class])->group(function () {
+        Route::get('/tickets/form', fn() => view('tickets.form'))->name('tickets.form');
+        Route::post('/tickets/store', [TicketController::class, 'store'])->name('tickets.store');
+        Route::get('/tickets/{ticket}', [TicketController::class, 'show'])->name('tickets.show');
+        Route::post('/tickets/{ticket}/reply', [TicketController::class, 'userReply'])->name('tickets.userReply');
+    });
+    Route::post('/characters/generate-images', [CharacterImageController::class, 'generateImages'])->name('characters.generate.images');
+    Route::get('my-stories', [StoryController::class, 'showMyStory'])->name('stories.my');
     Route::get('/my-characters', [CharacterController::class, 'myCharacters'])->name('characters.my');
     Route::get('/stories/{id}', [StoryController::class, 'show'])->name('stories.show');
     Route::get('/notifications', [TicketController::class, 'notifications'])->name('notifications');
     Route::post('/notifications/mark-read', [App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.markRead');
+    Route::delete('/polls/{poll}', [PollController::class, 'destroy'])->name('polls.destroy');
+
 });
 
 // Admin routes
@@ -108,7 +110,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
     Route::post('/admin/users/{id}/ban', [AdminController::class, 'banUser'])->name('admin.users.ban');
     Route::post('/admin/users/{id}/unban', [AdminController::class, 'unbanUser'])->name('admin.users.unban');
-     Route::get('/admin/tickets', [TicketController::class, 'index'])->name('tickets.index');
+    Route::get('/admin/tickets', [TicketController::class, 'index'])->name('tickets.index');
     Route::post('/admin/tickets/{ticket}/reply', [TicketController::class, 'reply'])->name('tickets.reply');
 });
 

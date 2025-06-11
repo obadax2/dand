@@ -16,8 +16,10 @@
         }
 
         h1 {
-            color: #05EEFF;
+            color: #000 !important;
             text-align: center;
+                font-style: italic;
+
             margin-bottom: 30px;
         }
 
@@ -29,9 +31,8 @@
         }
 
         .drafts li {
-            background-color: rgba(25, 23, 75, 0.5);
+            background-color: #16383b;
             backdrop-filter: blur(1px);
-            box-shadow: 0 0 15px rgba(0, 183, 255, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 20px;
             margin-bottom: 20px;
@@ -42,7 +43,7 @@
         .drafts li a {
             text-decoration: none;
             font-size: 1.1rem;
-            color: #05EEFF;
+            color: #ffffff;
         }
 
         .story-content {
@@ -60,11 +61,9 @@
             gap: 8px;
         }
 
-
-
         .edit-button {
             background-color: #05EEFF;
-            color: #06043E;
+            color: #000 !important;
         }
 
         .edit-button:hover {
@@ -72,8 +71,8 @@
         }
 
         .create {
-            background-color: #05EEFF;
-            color: #06043E !important;
+            background-color: #B68D40;
+            color: #ffffff !important;
             font-weight: bold;
             border: none;
             padding: 10px 20px;
@@ -86,16 +85,16 @@
         }
 
         small {
-            color: #aaa;
+            color: #c3b2b2;
         }
     </style>
 </head>
 
 <body>
-    <div class="hero-section">
         <div>
             <br>
             @include('layout.nav')
+            <br>
             <div>
                 <div class="d-flex align-items-center justify-content-center gap-3 mb-4">
                     <h1 class="m-0">Your Draft Stories</h1>
@@ -151,7 +150,6 @@
 
 
         </div>
-    </div>
     <!-- Delete Confirmation Modal -->
     <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel"
         aria-hidden="true">
@@ -172,6 +170,7 @@
             </div>
         </div>
     </div>
+    <br>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>

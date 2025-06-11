@@ -2,7 +2,6 @@
 
 html {
     height: 100%;
-    background-color: #06043E;
     font-family: Arial, sans-serif;
 }
 
@@ -20,9 +19,6 @@ nav {
 nav ul {
     text-align: center;
     display: flex;
-    margin-left: 500px;
-    /* push nav items 100px to the right */
-    gap: 70px;
     list-style-type: none;
 }
 
@@ -40,7 +36,7 @@ nav ul li a {
 }
 
 nav ul li a:hover {
-    color: #05EEFF;
+    color: #D6AD60;
 
 }
 
@@ -63,25 +59,35 @@ nav ul li button {
     line-height: normal;
 }
 
-
-nav ul li button:hover {
-    background-color: #04c1e8;
-    box-shadow: 0 0 30px rgba(5, 238, 255, 0.6);
-
-}
-
-
 .me {
     color: rgb(233, 0, 0);
 }
+
+.custom-table {
+    display: inline-table;
+    color: #000000;
+    width: 70%;
+    backdrop-filter: blur(1px);
+    table-layout: auto;
+}
+
+
+
 
 table {
     border-collapse: separate;
     border-spacing: 0;
     border-radius: 15px;
-    overflow: hidden;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.1);
-    width: 1100px !important;
+    overflow-x: auto;
+}
+
+.ntable{
+    width: 75%;
+    display: inline-table;
+    color: #000000;
+    backdrop-filter: blur(1px);
+    table-layout: auto;
 }
 
 th,
@@ -104,8 +110,8 @@ th {
 
 #checklist {
     --text: #414856;
-    --check: #B6A8C1;
-    --disabled: #c3c8de;
+    --check: #000000;
+    --disabled: #ffffff;
     --border-radius: 10px;
     justify-content: center;
 
@@ -113,7 +119,8 @@ th {
     box-shadow: 0 10px 30px rgba(65, 72, 86, 0.05);
     padding: 0px;
     display: flex;
-    width: 120%;
+    width: 100%;
+    flex-wrap: wrap;
     gap: 30px;
     align-items: center;
 }
@@ -166,7 +173,8 @@ th {
 }
 
 .card1 {
-    width: 300px;
+    width: 100%;
+    max-width: 300px;
     height: 200px;
     perspective: 1000px;
     border-radius: 10px;
@@ -193,24 +201,85 @@ th {
     /* existing styles */
     position: absolute;
     width: 100%;
+    font-style: italic;
+
     height: 100%;
     backface-visibility: hidden;
-    border: 1px solid #19174B;
     border-radius: 10px;
     padding: 1.5rem;
-    background-color: rgba(25, 23, 75, 0.5);
+    background-color: #F4EBD0;
     backdrop-filter: blur(1px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+    100% { transform: translateY(0px); }
+}
+
+.submit-complaint-btn {
+    background-color: #000;
+    color: #fff;
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    width: 55px;
+    height: 55px;
+    font-size: 22px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1050;
+    animation: float 3s ease-in-out infinite;
+}
+
+
+.submit-complaint-btn:hover {
+    background-color: #fff;
+    border: 1px solid black;
+    color: #000;
+    transform: scale(1.1);
+    text-decoration: none;
+}
+
+.floating-buttons {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    z-index: 1050;
+}
+
+.submit-complaint-btn,
+.chatbot-btn {
+    width: 55px;
+    height: 55px;
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: floatEffect 3s ease-in-out infinite;
+}
+
+@keyframes floatEffect {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+    100% { transform: translateY(0); }
+}
+
 
 .card-back1 {
     transform: rotateY(180deg);
 }
 
 .poll-title {
+    color: #000 !important;
     margin-bottom: 1rem;
     font-size: 1.2rem;
-    font-weight: bold;
 }
 
 .vote-buttons {
@@ -225,7 +294,7 @@ th {
     padding: 0.5rem 1rem;
     border: none;
     border-radius: 5px;
-    color: #fff;
+    color: #241d1d;
     cursor: pointer;
 }
 
@@ -239,28 +308,28 @@ th {
 
 .voted-text {
     font-style: italic;
-    color: #555;
+    color: #000 !important;
     margin-top: 1rem;
 }
 
 .typing-container {
     text-align: center;
     font-family: 'Open Sans', sans-serif;
-    color: #ffffff;
+    color: #000000;
     font-size: 70px;
     /* Increased size */
     margin: 60px 0;
 }
 
-#typed-text {
-    color: #05EEFF;
+.typed-text {
+    color: #D6AD60;
     /* Typed word color */
     font-weight: bold;
 }
 
 .cursor {
     display: inline-block;
-    color: #05EEFF;
+    color: #D6AD60;
     font-weight: bold;
     font-size: 70px;
     /* Matches text size */
@@ -355,33 +424,19 @@ th {
 }
 
 input.form-control {
+
     transition: box-shadow 0.3s ease, border-color 0.3s ease;
-    background-color: #2A2860;
-    color: #fff;
+    background-color: #ffffff;
+    color: #000000;
 }
 
-input.form-control:focus {
-    box-shadow: 0 0 12px rgba(5, 238, 255, 0.6);
-    /* Stronger glow on focus */
-    border-color: #05EEFF;
-    background-color: #2A2860;
-    color: #fff;
-    outline: none;
-}
 
 select.form-control {
-    background-color: #2A2860;
-    color: #fff;
+    background-color: #fff;
+    color: #000;
 }
 
-select.form-control:focus {
-    outline: none;
-    color: #fff;
-    border: 1px solid #05EEFF;
-    background-color: #2A2860;
-    /* Optional: custom focus */
-    box-shadow: none;
-}
+
 
 /* From Uiverse.io by cssbuttons-io */
 button {
@@ -399,7 +454,7 @@ button {
 }
 
 button.learn-more {
-    width: 12rem;
+    width: 10rem;
     height: auto;
 }
 
@@ -446,8 +501,7 @@ button.learn-more .circle .icon.arrow::before {
 button.learn-more .button-text {
     transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
     position: absolute;
-    top: 0.5rem;
-    /* Changed from 0 to 0.2rem */
+    top: 0.1rem;
     left: 0;
     right: 0;
     bottom: 0;
@@ -543,20 +597,8 @@ button:hover .button-text {
     content: "HELLO";
 }
 
-.hero-section {
-    margin-left: -8px;
-    margin-top: -7px;
-    position: relative;
-    background: url('vector-spooky-halloween-background-SBI-300354103.jpg') center center / cover no-repeat;
-    height: 1080px;
-    width: 1529px;
-    display: flex;
-    justify-content: center;
-    z-index: 1;
 
-}
-
-.hero-section::before {
+/* .hero-section::before {
     content: "";
     position: absolute;
     top: 0;
@@ -569,13 +611,13 @@ button:hover .button-text {
             rgba(6, 4, 62, 0.95) 85%,
             rgba(6, 4, 62, 1) 100%);
     z-index: -1;
-}
+} */
 
 /* FROM here the code is from the userprofile */
 
 .friend-request,
 .status-box {
-    background-color: #2a2860;
+    background-color: #000000 !important;
     padding: 10px;
     border-radius: 6px;
     margin-bottom: 12px;
@@ -657,16 +699,12 @@ h1,
 h2,
 h3,
 p {
-    color: #fff !important;
+    color: #fff;
 }
 
 .usercontainer {
-    background-color: rgba(25, 23, 75, 0.5);
-    /* semi-transparent */
-    backdrop-filter: blur(1px);
-    /* blur effect */
     padding: 30px;
-    color: #ffffff;
+    color: #000000;
     border-radius: 10px;
     max-width: 900px;
     margin: 40px auto;
@@ -904,8 +942,8 @@ textarea {
     border: none;
     border-radius: 5px;
     margin-bottom: 15px;
-    background-color: #2a2860 !important;
-    color: #ffffff !important;
+    background-color: #fff !important;
+    color: #000 !important;
     overflow: hidden;
     resize: none;
     /* Prevent manual resizing since it's auto-resized */
@@ -913,7 +951,7 @@ textarea {
 }
 
 .container3 {
-    background-color: #19174B;
+    background-color: #B68D40;
     padding: 30px;
     border-radius: 10px;
     max-width: 900px;
@@ -932,7 +970,7 @@ input[type="text"] {
 }
 
 .genButton {
-    background-color: #05EEFF;
+    background-color: #fff;
     color: #000;
     border: none;
     padding: 10px 20px;
@@ -940,7 +978,8 @@ input[type="text"] {
 }
 
 .genButton:hover {
-    background-color: #03bfd4;
+    background-color: #122620;
+    color: #fff;
 }
 
 .chat-box {
@@ -990,15 +1029,18 @@ input[type="text"] {
 
 
 .nav-links a {
-    color: #05EEFF;
+    color: #000000;
     text-decoration: none;
     padding: 6px 12px;
-    background-color: #2a2860;
+    background-color: #ffffff;
     border-radius: 5px;
+        white-space: nowrap;
+
 }
 
 .nav-links a:hover {
-    background-color: #3b386c;
+    background-color: #122620;
+    color: #fff;
 }
 
 /*to here*/
@@ -1006,24 +1048,26 @@ input[type="text"] {
 /*from here for dashboard*/
 
 .container4 {
-    box-shadow: 0 0 15px rgba(0, 183, 255, 0.3);
-    background-color: rgba(25, 23, 75, 0.5);
-    backdrop-filter: blur(1px);
+    background-color: #B68D40;
     padding: 30px;
     border-radius: 10px;
-    max-width: 1000px;
+    max-width: 500px;
     margin: 40px auto;
 }
 
-.form-section,
-.story {
-    background-color: rgba(25, 23, 75, 0.5);
-    /* semi-transparent */
-    backdrop-filter: blur(1px);
+.form-section{
+
+    max-width: 400px;
     padding: 20px;
     border-radius: 8px;
     margin-bottom: 30px;
-    box-shadow: 0 0 15px rgba(0, 183, 255, 0.3);
+}
+
+.story {
+    background-color: #16383b ;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
     /* added shadow */
 }
 
@@ -1053,7 +1097,7 @@ input[type="number"],
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #2A2860;
+    background-color: #030304;
     border: none;
     color: white;
     font-weight: 600;
@@ -1074,7 +1118,7 @@ input[type="number"],
 }
 
 .com {
-    background: rgba(25, 23, 75, 1);
+    background-color: #D6AD60;
     backdrop-filter: blur(12px);
     color: white;
     padding: 0.6rem 1.2rem;
@@ -1086,4 +1130,63 @@ input[type="number"],
 .com:hover {
     transform: scale(1.05);
     box-shadow: 0 0 12px rgba(5, 238, 255, 0.3);
+}
+
+/* Mobile devices */
+@media (max-width: 768px) {
+    .nav ul {
+        flex-direction: column;
+        margin-left: 0;
+        gap: 20px;
+    }
+
+    .typing-container {
+        font-size: 36px;
+    }
+
+    .polls-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .card1 {
+        height: 220px;
+    }
+
+    .container3,
+    .container4,
+    .usercontainer {
+        padding: 15px;
+        margin: 20px;
+    }
+
+    .hero-section {
+        height: auto;
+        padding: 2rem 1rem;
+    }
+}
+
+/* Tablets */
+@media (min-width: 769px) and (max-width: 1024px) {
+    nav ul {
+        gap: 40px;
+    }
+
+    .typing-container {
+        font-size: 50px;
+    }
+}
+
+.ch{
+        color: #000000;
+    text-decoration: none;
+    padding: 6px 12px;
+    background-color: #ffffff;
+    border-radius: 5px;
+        white-space: nowrap;
+
+}
+.ch:hover {
+    background-color: #122620;
+    color: #fff;
 }

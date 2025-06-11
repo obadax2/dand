@@ -6,6 +6,8 @@ use App\Models\Ticket;
 use Illuminate\Http\Request;
 use App\Models\User;
 
+use function Laravel\Prompts\alert;
+
 class TicketController extends Controller
 {
     // User creates ticket + initial message
@@ -20,7 +22,6 @@ class TicketController extends Controller
             'user_id' => auth()->id(),
             'username' => auth()->user()->name,
         ]);
-
         // Create initial message as user message
         $ticket->messages()->create([
             'user_id' => auth()->id(),
@@ -40,26 +41,25 @@ class TicketController extends Controller
     }
 
     // Admin replies to ticket
- public function reply(Request $request, Ticket $ticket)
-{
-    $request->validate([
-        'reply' => 'required|string|max:1000',
-    ]);
+    public function reply(Request $request, Ticket $ticket)
+    {
+        $request->validate([
+            'reply' => 'required|string|max:1000',
+        ]);
 
-   $ticket->messages()->create([
-    'user_id' => $ticket->user_id, // ✅ associate with the ticket owner
-    'message' => $request->input('reply'),
-    'sender' => 'admin',
-]);
+        $ticket->messages()->create([
+            'user_id' => $ticket->user_id, // associate with ticket owner or admin user ID if available
+            'message' => $request->input('reply'),
+            'sender' => 'admin',
+        ]);
 
-    // Return JSON if it's an AJAX request
-    if ($request->ajax()) {
-        return response()->json(['message' => 'Reply sent successfully.']);
+        if ($request->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Reply sent successfully.']);
+        }
+
+        return redirect()->route('tickets.index')->with('success', 'Reply sent successfully.');
     }
 
-    // Fallback for normal requests
-    return redirect()->route('tickets.index')->with('success', 'Reply sent successfully.');
-}
 
     // Show ticket with conversation for user
     public function show(Ticket $ticket)
@@ -95,18 +95,44 @@ class TicketController extends Controller
         return back()->with('success', 'Your reply was sent.');
     }
     public function notifications()
-{
-    $userId = auth()->id();
+    {
+        $userId = auth()->id();
 
-    // Get latest admin replies to user's tickets
-    $messages = \App\Models\Message::whereHas('ticket', function ($query) use ($userId) {
-        $query->where('user_id', $userId);
-    })
-    ->where('sender', 'admin')
-    ->latest()
-    ->take(5)
-    ->get();
+        // Get latest admin replies to user's tickets
+        $messages = \App\Models\Message::whereHas('ticket', function ($query) use ($userId) {
+            $query->where('user_id', $userId);
+        })
+            ->where('sender', 'admin')
+            ->latest()
+            ->take(5)
+            ->get();
 
-    return response()->json($messages);
-}
+        return response()->json($messages);
+    }
+    public function messages(Ticket $ticket)
+    {
+        $messages = $ticket->messages()->latest()->get()->map(function ($msg) {
+            return [
+                'sender' => $msg->sender,
+                'message' => $msg->message,
+                'created_at' => $msg->created_at->format('d M Y, H:i'),
+            ];
+        });
+
+        return response()->json(['messages' => $messages]);
+    }
+
+    public function ajaxReply(Request $request, Ticket $ticket)
+    {
+        $request->validate([
+            'message' => 'required|string',
+        ]);
+
+        $ticket->messages()->create([
+            'sender' => 'user',
+            'message' => $request->message,
+        ]);
+
+        return response()->json(['success' => true]);
+    }
 }
