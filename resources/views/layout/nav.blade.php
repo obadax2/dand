@@ -9,7 +9,7 @@
     }
 
     nav .logo img {
-        max-height: 40px;
+        max-height: 100px;
     }
 
     nav ul {
@@ -287,7 +287,7 @@
 
 <nav>
     <div class="logo">
-        <img src="your-logo.png" alt="Logo Here" />
+      <img src="{{ asset('storage/logo.jpeg') }}" alt="Logo">
     </div>
 
     <button id="navToggle" aria-label="Toggle navigation">☰</button>
