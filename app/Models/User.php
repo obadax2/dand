@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany; 
-
+use Illuminate\Support\Facades\DB;
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
@@ -101,10 +101,23 @@ class User extends Authenticatable
     /**
      * Get the list of friends with accepted status.
      */
-    public function acceptedFriends()
-    {
-        return $this->friends()->wherePivot('status', 'accepted');
-    }
+  public function acceptedFriends()
+{
+    $friendsAsUser1 = DB::table('friends')
+        ->where('user1_id', $this->id)
+        ->where('status', 'accepted')
+        ->pluck('user2_id');
+
+    $friendsAsUser2 = DB::table('friends')
+        ->where('user2_id', $this->id)
+        ->where('status', 'accepted')
+        ->pluck('user1_id');
+
+    $friendIds = $friendsAsUser1->merge($friendsAsUser2)->unique();
+
+    return User::whereIn('id', $friendIds)->get();
+}
+
 
     /**
      * Get the list of friend requests received.
@@ -119,16 +132,18 @@ class User extends Authenticatable
     /**
      * Get the followers of this user.
      */
- public function followers()
-{
-    return $this->hasMany(Follower::class, 'user_id');
-}
-
-// Users this user is following
+// Users this user follows
 public function following()
 {
     return $this->belongsToMany(User::class, 'followers', 'follower_id', 'user_id');
 }
+
+// Users who follow this user
+public function followers()
+{
+    return $this->belongsToMany(User::class, 'followers', 'user_id', 'follower_id');
+}
+
 public function allFriends()
 {
     $friendIds = array_merge(
@@ -170,5 +185,6 @@ public function sentFriendRequests()
 {
     return $this->allFriendsAsUser1()->wherePivot('status', 'pending');
 }
+
 
 }

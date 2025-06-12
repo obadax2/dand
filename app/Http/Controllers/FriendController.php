@@ -11,7 +11,12 @@ class FriendController extends Controller
 {
     $currentUser = auth()->user();
 
-    // Check if a friend request or friendship already exists (pending or accepted)
+    // Prevent sending a friend request to yourself
+    if ($currentUser->id === $user->id) {
+        return response()->json(['error' => 'You cannot send a friend request to yourself.'], 400);
+    }
+
+    // Existing check for friend request or friendship
     $exists = \DB::table('friends')
         ->where(function ($query) use ($currentUser, $user) {
             $query->where('user1_id', $currentUser->id)

@@ -1,6 +1,5 @@
 <?php
 
-// app/Http/Controllers/BlogController.php
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -12,14 +11,12 @@ class BlogController extends Controller
 {
     public function create(Request $request)
     {
-        // Validate input
         $request->validate([
             'story_id' => 'required|exists:stories,id',
             'price' => 'required|numeric|min:0',
             'visibility' => 'required|in:full,partial',
         ]);
 
-        // Create the blog
         $blog = Blog::create([
             'user_id' => Auth::id(),
             'story_id' => $request->story_id,
@@ -29,23 +26,52 @@ class BlogController extends Controller
 
         return redirect()->back()->with('success', 'Blog created successfully.');
     }
-  public function dashboard()
+
+   public function dashboard()
 {
     $user = Auth::user();
 
-    // Get all accepted friends
+    // Get accepted friends' IDs
     $friendIds = $user->allFriends()->pluck('id')->toArray();
 
-    // Fetch stories created by user and friends
+    // Get followers' IDs (excluding mutual friends)
+    $followerIds = $user->followers()
+        ->whereNotIn('users.id', $friendIds)
+        ->pluck('users.id')
+        ->toArray();
+
+    // Get user's own stories
     $myStories = Story::where('user_id', $user->id)->get();
-        
 
-    // Fetch blogs for user and friends
-    $ids = array_merge([$user->id], $friendIds);
-    $blogs = Blog::with('user')
-        ->whereIn('user_id', $ids)
-        ->get();
-
-    return view('dashboard', compact( 'blogs', 'user','myStories'));
+    // Fetch blogs from friends and followers
+    $blogs = Blog::with(['user', 'story', 'upvotes', 'downvotes', 'reviews.user'])
+        ->whereIn('user_id', array_merge($friendIds, $followerIds))
+        ->get()
+        ->sortByDesc(function ($blog) {
+            return $blog->score();
+        })
+        ->map(function ($blog) use ($user, $friendIds) {
+            // Add a flag to indicate if the user can buy
+            $blog->canBuy = in_array($blog->user_id, $friendIds);
+            return $blog;
+        });
+return view('dashboard', [
+    'blogs' => $blogs,
+    'user' => $user,
+    'myStories' => $myStories,
+    'friends' => $friendIds,
+    'following' => $followerIds,
+]);
 }
+
+    public function index()
+    {
+        $blogs = Blog::with(['upvotes', 'downvotes'])
+            ->get()
+            ->sortByDesc(function ($blog) {
+                return $blog->score();
+            });
+
+        return view('blogs.index', compact('blogs'));
+    }
 }

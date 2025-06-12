@@ -9,7 +9,7 @@
     }
 
     nav .logo img {
-        max-height: 100px;
+        max-height: 80px;
     }
 
     nav ul {

@@ -18,7 +18,7 @@ class MapGenerationController extends Controller
         return view('maps.select', compact('stories'));
     }
 
-   public function generateMap(Request $request)
+public function generateMap(Request $request)
 {
     set_time_limit(360); // Extend execution time
 
@@ -28,25 +28,26 @@ class MapGenerationController extends Controller
 
     $story = Story::findOrFail($request->story_id);
 
-  
+    $prompt = $story->places;
 
-  $client = new \GuzzleHttp\Client([
-    'timeout' => 360,
-   
-    'verify' => false,
-    'headers' => ['Content-Type' => 'application/json'],
-]);
+    if (!$prompt) {
+        return back()->with('error', 'No map description available for this story.');
+    }
+
+    $client = new \GuzzleHttp\Client([
+        'timeout' => 360,
+        'verify' => false,
+        'headers' => ['Content-Type' => 'application/json'],
+    ]);
 
     try {
         // POST prompt to FastAPI
-       $response = $client->post('https://1656-188-227-170-2.ngrok-free.app/generate-map', [
-    'json' => [
-        'prompt' => $story->content,
-        'story_id' => (string) $story->id,
-    ],
-]);
-
-       
+        $response = $client->post('https://ed50-188-227-170-2.ngrok-free.app/generate-map', [
+            'json' => [
+                'prompt' => $prompt,
+                'story_id' => (string) $story->id,
+            ],
+        ]);
 
         if ($response->getStatusCode() !== 200) {
             \Log::error("Map generation failed with status: " . $response->getStatusCode());
@@ -55,38 +56,29 @@ class MapGenerationController extends Controller
 
         $data = json_decode($response->getBody()->getContents(), true);
 
-       
-
         if (empty($data['base64_image'])) {
             \Log::error("Map generation response missing base64 image: " . json_encode($data));
             return back()->with('error', 'Invalid response from map generation API.');
         }
 
-        // base64 image string (data URI or raw base64)
         $base64Image = $data['base64_image'];
 
-        // Remove data URI prefix if present (e.g. "data:image/png;base64,...")
         if (strpos($base64Image, ',') !== false) {
             $base64Image = explode(',', $base64Image)[1];
         }
 
-        // Decode base64 to binary image
         $imageContents = base64_decode($base64Image);
 
-        
         if ($imageContents === false) {
             \Log::error("Failed to decode base64 image from map API.");
             return back()->with('error', 'Failed to decode generated image.');
         }
 
-        // Save image locally
         $filename = 'maps/' . \Illuminate\Support\Str::uuid() . '.png';
         \Illuminate\Support\Facades\Storage::disk('public')->put($filename, $imageContents);
 
         \Log::info('Saved map image to ' . $filename);
- 
 
-        // Save DB record
         $map = new \App\Models\Map();
         $map->story_id = $story->id;
         $map->user_id = auth()->id();
@@ -97,7 +89,6 @@ class MapGenerationController extends Controller
         $map->save();
 
         \Log::info('Map saved successfully with ID: ' . $map->id);
-       
 
     } catch (\Exception $e) {
         \Log::error('Error during map generation: ' . $e->getMessage());
@@ -107,7 +98,6 @@ class MapGenerationController extends Controller
 
     return back()->with('success', '✅ Map generated and saved!');
 }
-
     public function uploadForm()
     {
         $stories = Story::where('user_id', auth()->id())->get();
