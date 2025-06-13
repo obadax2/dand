@@ -973,6 +973,14 @@ input[type="text"] {
     margin: 40px auto;
 }
 
+.container5 {
+    background-color: #16383B;
+    padding: 30px;
+    border-radius: 10px;
+    max-width: 800px;
+    margin: 40px auto;
+}
+
 .form-section {
 
     max-width: 400px;
@@ -1073,10 +1081,12 @@ input[type="number"],
 
     .container3,
     .container4,
+    .container5,
     .usercontainer {
         padding: 15px;
         margin: 20px;
     }
+
 
     .hero-section {
         height: auto;

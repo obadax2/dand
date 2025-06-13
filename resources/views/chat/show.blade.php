@@ -63,10 +63,27 @@
 
         /* Characters & Map info */
         .story-info {
+            max-height: 200px;
+            /* Adjust as needed */
+            overflow-y: auto;
+            padding-right: 10px;
             color: #ddd;
             margin-bottom: 1.5rem;
-            /* Removed max-height and overflow */
             font-size: 0.95rem;
+        }
+
+        /* Optional scrollbar styling (for modern browsers) */
+        .story-info::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .story-info::-webkit-scrollbar-track {
+            background: #222;
+        }
+
+        .story-info::-webkit-scrollbar-thumb {
+            background: #555;
+            border-radius: 4px;
         }
 
 
@@ -80,6 +97,19 @@
             overflow-y: auto;
             padding-right: 0.5rem;
             margin-bottom: 1rem;
+        }
+
+        #messages-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #messages-container::-webkit-scrollbar-track {
+            background: #222;
+        }
+
+        #messages-container::-webkit-scrollbar-thumb {
+            background: #555;
+            border-radius: 4px;
         }
 
         .message {
@@ -224,7 +254,7 @@
     <div class="container-chat">
         <form action="{{ route('chat.clear', $conversation) }}" method="POST"
             onsubmit="return confirm('Are you sure you want to clear the chat?');"
-            style="position: absolute; top: 1rem; right: 1rem;">
+            style="position: absolute; top: 0rem; right: 1rem;">
             @csrf
             @method('DELETE')
             <button type="submit" class="btn btn-link text-danger p-0 m-0" title="Clean Chat">

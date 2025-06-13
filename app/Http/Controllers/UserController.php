@@ -5,12 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of users.
-     */
+
     public function index(Request $request)
     {
         // Check if the authenticated user is an HR
@@ -91,5 +91,20 @@ class UserController extends Controller
             ->limit(10)
             ->get(['id', 'name', 'username']); // get only needed fields
         return response()->json($users);
+    }
+
+    public function removeProfilePicture()
+    {
+        $user = Auth::user();
+
+        if ($user->profile_picture) {
+            // Remove image from storage
+            Storage::delete(str_replace('storage/', 'public/', $user->profile_picture));
+
+            // Clear the field in DB
+            $user->update(['profile_picture' => null]);
+        }
+
+        return response()->json(['success' => true]);
     }
 }

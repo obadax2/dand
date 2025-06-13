@@ -132,6 +132,7 @@ Route::middleware(['auth', CheckUserBanStatus::class])->group(function () {
     Route::post('/maps/upload', [MapGenerationController::class, 'uploadImage'])->name('maps.upload.image');
     Route::post('/upload-map-image', [MapGenerationController::class, 'apiUploadImage']);
     Route::delete('/tickets/{ticket}', [TicketController::class, 'destroy'])->name('ticket.destroy');
+    Route::post('/user/remove-profile-picture', [UserController::class, 'removeProfilePicture'])->name('user.removeProfilePicture');
 });
 
 // Admin routes with auth and admin role

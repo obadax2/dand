@@ -11,7 +11,6 @@
     <link rel="stylesheet" href="{{ asset('style.css') }}" />
 
     <style>
-
         a {
             color: #05EEFF;
             text-decoration: none;
@@ -27,7 +26,8 @@
         h3 {
             margin-top: 20px;
         }
-        h3{
+
+        h3 {
             color: #000
         }
 
@@ -43,7 +43,7 @@
         }
 
         /* Profile picture wrapper */
-        .profile-wrapper-with-name {
+        .profile-wrapper {
             display: flex;
             align-items: center;
             gap: 20px;
@@ -79,6 +79,25 @@
             pointer-events: none;
         }
 
+        .delete-icon {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 4px 6px;
+            border-radius: 50%;
+            font-size: 16px;
+            color: #06043e;
+            cursor: pointer;
+            z-index: 10;
+            transition: background 0.3s ease;
+        }
+
+        .delete-icon:hover {
+            background: #ff6b6b;
+            color: #fff;
+        }
+
         input[type="password"],
         input[type="file"] {
             width: 250px;
@@ -99,26 +118,8 @@
         }
 
         /* Buttons */
-        .userButton {
-            background-color: #05eeff;
-            border: none;
-            color: #06043e;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background-color 0.3s ease;
-        }
-
-        .userButton:hover,
-        .userButton:focus {
-            background-color: #b6a7c0;
-            color: #06043e;
-        }
-
         /* Friend request container */
         .friend-request {
-            background: rgba(25, 23, 75, 0.7);
             border-radius: 8px;
             padding: 10px 15px;
             margin-bottom: 10px;
@@ -165,120 +166,180 @@
                 width: 100%;
             }
         }
+
+        input[type="password"] {
+            color: #000;
+        }
+
+        .profile-info-text {
+            white-space: nowrap;
+        }
     </style>
 </head>
 
 <body>
     @if (session('success'))
-        <div class="alert alert-success custom-alert" id="successAlert">{{ session('success') }}</div>
-    @endif
+            <div class="alert alert-success custom-alert bg-custom-success" id="successAlert">
+                {{ session('success') }}
+            </div>
+        @endif
 
-    @if ($errors->any())
-        <div class="alert alert-danger custom-alert" id="errorAlert">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+
+        @if ($errors->any())
+            <div class="alert alert-danger custom-alert" id="successAlert">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
     @include('layout.nav')
-        <div class="container">
-            <main class="container my-4">
-                <div class="usercontainer">
-                    <!-- Column 1: Profile Picture + Stats + Friend Requests -->
-                    <div class="column">
-                        <form action="{{ route('user.updateProfile') }}" method="POST" enctype="multipart/form-data"
-                            id="profileForm">
-                            @csrf
-                            <div class="profile-wrapper-with-name" role="group"
-                                aria-label="Profile Picture and User Info">
-                                <div class="profile-wrapper">
-                                    <img id="profileImage"
-                                        src="{{ $user->profile_picture ? asset('storage/' . str_replace('public/', '', $user->profile_picture)) : 'https://via.placeholder.com/150' }}"
-                                        alt="Profile picture of {{ Auth::user()->name }}" />
-                                    <label for="profilePictureInput" class="edit-icon" title="Change Profile Picture"
-                                        tabindex="0">
-                                        <i class="lni lni-pencil"></i>
-                                    </label>
-                                    <input type="file" name="profile_picture" accept="image/*"
-                                        id="profilePictureInput" class="hidden-file-input"
-                                        onchange="document.getElementById('profileForm').submit();" />
-                                </div>
-                                <div class="profile-info-text">
-                                    <h3 class="profile-username">Name: {{ Auth::user()->name }}</h3>
-                                    <p style="color: #000" class="profile-role">Role: {{ Auth::user()->role }}</p>
-                                </div>
+    <div class="container">
+        <main class="container my-4">
+            <div class="usercontainer">
+                <!-- Column 1: Profile Picture + Stats + Friend Requests -->
+                <div class="column">
+                    <form action="{{ route('user.updateProfile') }}" method="POST" enctype="multipart/form-data"
+                        id="profileForm">
+                        @csrf
+                        <div class="profile-wrapper">
+                            <img id="profileImage"
+                                src="{{ $user->profile_picture
+                                    ? asset('storage/' . str_replace('public/', '', $user->profile_picture))
+                                    : asset('p.jpg') }}"
+                                alt="Profile picture of {{ Auth::user()->name }}" />
+
+                            <!-- Delete Icon -->
+                            @if ($user->profile_picture)
+                                <button type="button" id="deleteProfilePicture" class="delete-icon"
+                                    title="Remove Profile Picture">
+                                    <i class="lni lni-trash-can"></i>
+                                </button>
+                            @endif
+
+                            <!-- Edit Icon -->
+                            <label for="profilePictureInput" class="edit-icon" title="Change Profile Picture"
+                                tabindex="0">
+                                <i class="lni lni-pencil"></i>
+                            </label>
+
+                            <input type="file" name="profile_picture" accept="image/*" id="profilePictureInput"
+                                class="hidden-file-input" onchange="document.getElementById('profileForm').submit();" />
+                            <div class="profile-info-text">
+                                <h3 class="profile-username">Name: {{ Auth::user()->name }}</h3>
+                                <p style="color: #000" class="profile-role">Role: {{ Auth::user()->role }}</p>
                             </div>
-                        </form>
-
-                        <h3>Statistics</h3>
-                        <div class="status-box">
-                            <p>Followers: {{ $followersCount }}</p>
-                            <p>Friends: {{ $friendsCount }}</p>
                         </div>
+                    </form>
 
-                        <h3>Friend Requests</h3>
-                        @if ($friendRequests->isEmpty())
-                            <p style="color: #000">No new friend requests.</p>
-                        @else
-                            @foreach ($friendRequests as $req)
-                                <div class="friend-request">
-                                    <p>{{ $req->name }} wants to be your friend.</p>
-                                    @if ($req->pivot->status == 'pending')
-                                        <form action="{{ route('friend.accept', $req->id) }}" method="POST">
-                                            @csrf
-                                            <button type="submit" class="userButton">Accept Friend Request</button>
-                                        </form>
-                                    @elseif($req->pivot->status == 'accepted')
-                                        <p>You are already friends.</p>
-                                    @endif
-                                </div>
-                            @endforeach
-                        @endif
+                    <h3>Statistics</h3>
+                    <div class="status-box">
+                        <p>Followers: {{ $followersCount }}</p>
+                        <p>Friends: {{ $friendsCount }}</p>
                     </div>
 
-                    <!-- Column 2: Change Password -->
-                    <div class="column">
-                        <h3>Change Password</h3>
-                        <form method="POST" action="{{ route('user.changePassword') }}" novalidate>
-                            @csrf
-                            <label for="current_password">Current Password</label><br />
-                            <input type="password" id="current_password" name="current_password" required
-                                autocomplete="current-password" /><br />
-
-                            <label for="new_password">New Password</label><br />
-                            <input type="password" id="new_password" name="new_password" required
-                                autocomplete="new-password" /><br />
-
-                            <label for="new_password_confirmation">Confirm New Password</label><br />
-                            <input type="password" id="new_password_confirmation" name="new_password_confirmation"
-                                required autocomplete="new-password" /><br />
-
-                            <button type="submit" class="btn btn-dark">Change Password</button>
-                        </form>
-                    </div>
+                    <h3>Friend Requests</h3>
+                    @if ($friendRequests->isEmpty())
+                        <p style="color: #000">No new friend requests.</p>
+                    @else
+                        @foreach ($friendRequests as $req)
+                            <div class="friend-request">
+                                <p>{{ $req->name }} wants to be your friend.</p>
+                                @if ($req->pivot->status == 'pending')
+                                    <form action="{{ route('friend.accept', $req->id) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="btn btn-light">Accept</button>
+                                    </form>
+                                @elseif($req->pivot->status == 'accepted')
+                                    <p>You are already friends.</p>
+                                @endif
+                            </div>
+                        @endforeach
+                    @endif
                 </div>
-            </main>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const successAlert = document.getElementById('successAlert');
-            if (successAlert) {
-                setTimeout(() => {
-                    successAlert.style.opacity = '0';
-                    setTimeout(() => successAlert.remove(), 500);
-                }, 3000);
-            }
-            const errorAlert = document.getElementById('errorAlert');
-            if (errorAlert) {
-                setTimeout(() => {
-                    errorAlert.style.opacity = '0';
-                    setTimeout(() => errorAlert.remove(), 500);
-                }, 5000);
-            }
-        });
-    </script>
+
+                <!-- Column 2: Change Password -->
+                <div class="column">
+                    <h3>Change Password</h3>
+                    <form method="POST" action="{{ route('user.changePassword') }}" novalidate>
+                        @csrf
+                        <label for="current_password">Current Password</label><br />
+                        <input type="password" id="current_password" name="current_password" required
+                            autocomplete="current-password" /><br />
+
+                        <label for="new_password">New Password</label><br />
+                        <input type="password" id="new_password" name="new_password" required
+                            autocomplete="new-password" /><br />
+
+                        <label for="new_password_confirmation">Confirm New Password</label><br />
+                        <input type="password" id="new_password_confirmation" name="new_password_confirmation" required
+                            autocomplete="new-password" /><br />
+
+                        <button type="submit" class="btn btn-dark">Change Password</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const successAlert = document.getElementById('successAlert');
+                if (successAlert) {
+                    setTimeout(() => {
+                        successAlert.style.opacity = '0';
+                        setTimeout(() => successAlert.remove(), 500);
+                    }, 3000);
+                }
+                const errorAlert = document.getElementById('errorAlert');
+                if (errorAlert) {
+                    setTimeout(() => {
+                        errorAlert.style.opacity = '0';
+                        setTimeout(() => errorAlert.remove(), 500);
+                    }, 5000);
+                }
+            });
+
+            document.addEventListener("DOMContentLoaded", function() {
+                const deleteBtn = document.getElementById("deleteProfilePicture");
+                const profileImage = document.getElementById("profileImage");
+                const defaultImageSrc = "{{ asset('p.jpg') }}";
+
+                if (deleteBtn) {
+                    deleteBtn.addEventListener("click", function() {
+                        if (confirm("Are you sure you want to remove your profile picture?")) {
+                            // Send AJAX request to delete the image on server
+                            fetch("{{ route('user.removeProfilePicture') }}", {
+                                    method: "POST",
+                                    headers: {
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                        'Content-Type': 'application/json'
+                                    }
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        // Replace image with default
+                                        profileImage.src = defaultImageSrc;
+
+                                        // Hide the delete button
+                                        deleteBtn.remove();
+
+                                        // Optionally show success message
+                                        alert("Profile picture removed successfully.");
+                                    } else {
+                                        alert("Failed to remove profile picture.");
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error("Error:", error);
+                                    alert("An error occurred while removing the profile picture.");
+                                });
+                        }
+                    });
+                }
+            });
+        </script>
 </body>
 
 </html>

@@ -139,15 +139,6 @@
     <!-- Scripts -->
 
     <script>
-        const alert = document.querySelector('.alert');
-        if (alert) {
-            setTimeout(() => {
-                alert.style.transition = 'opacity 0.5s ease';
-                alert.style.opacity = '0';
-                setTimeout(() => alert.remove(), 500);
-            }, 3000);
-        }
-
         const options = ["Story", "Map", "Character"];
         const typedTextElements = document.querySelectorAll(".typed-text");
 

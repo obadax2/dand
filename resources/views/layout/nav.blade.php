@@ -13,8 +13,7 @@
     nav .logo img {
         margin-left: 10px;
         /* or padding */
-
-        max-height: 40px;
+        height: 20px;
     }
 
     nav ul {
@@ -153,10 +152,20 @@
         display: block;
     }
 
+    .notification-dropdown {
+        text-align: center;
+        /* Center all content inside dropdown */
+    }
+
     .notification-item {
         padding: 12px;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         color: #eee;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
     }
 
     .notification-item:last-child {
@@ -166,15 +175,30 @@
     .notification-item p {
         margin: 0 0 6px 0;
         font-size: 14px;
+        color: #fff;
     }
 
     .notification-item a {
         text-decoration: none;
         color: #D6AD60;
         font-weight: 500;
+        display: inline-block;
+        margin-top: 4px;
+        transition: transform 0.2s ease;
     }
 
     .notification-item a:hover {
+        transform: scale(1.05);
+    }
+
+    .store-now-link {
+        display: inline-block;
+        /* Required for transform to work */
+        color: #D6AD60 !important;
+        transition: transform 0.3s ease;
+    }
+
+    .store-now-link:hover {
         transform: scale(1.05);
     }
 
@@ -332,6 +356,8 @@
             text-align: center;
         }
 
+
+
         .story-dropdown .story-submenu {
             position: static;
             background: transparent;
@@ -372,6 +398,7 @@
             color: #000000;
             margin-right: 20px;
         }
+
 
         .cart-badge {
             position: absolute;
@@ -425,12 +452,36 @@
         pointer-events: none;
         /* so clicks go to input */
     }
+
+    .EmptyCart {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .EmptyCart .store-now-link {
+        font-size: 16px;
+        font-weight: 500;
+        color: #D6AD60 !important;
+        transition: transform 0.3s ease;
+    }
+
+    .EmptyCart .store-now-link:hover {
+        transform: scale(1.05);
+    }
 </style>
 
 <nav>
+    <a href="{{ route('home') }}">
     <div class="logo">
-        <img src="{{ asset('storage/logo.jpeg') }}" alt="Logo">
+        <img src="{{ asset('logo.jpg') }}" alt="Logo">
     </div>
+</a>
+
+
     <div class="search-container">
         <input style="color: #000" type="text" id="ajaxSearchInput" placeholder="Search users" autocomplete="off" />
         <i class="fa fa-search search-icon"></i>
@@ -500,7 +551,7 @@
                 @endif
             </a>
 
-            <ul class="dropdown-menu dropdown-menu-end p-3 shadow" style="width: auto;" aria-labelledby="cartDropdown">
+            <ul class="dropdown-menu dropdown-menu-end p-3 shadow " style="width: auto;" aria-labelledby="cartDropdown">
                 @if ($cartItems->count() > 0)
                     <div class="mb-2">
                         <p style="color: #D6AD60;">Your Cart <i class="fa fa-shopping-cart"></i></p>
@@ -524,7 +575,9 @@
                         </div>
                     </li>
                 @empty
-                    <li class="text-black text-center w-100">Cart is empty</li>
+                    <div class="EmptyCart">
+                        <a href="{{ route('dashboard') }}" class="store-now-link">Store Now!</a>
+                    </div>
                 @endforelse
                 @if ($cartItems->count() > 0)
                     <form method="GET" action="{{ route('paypal.cart.checkout') }}">
@@ -857,11 +910,11 @@
         }
     });
     setTimeout(() => {
-            const alert = document.getElementById('successAlert');
-            if (alert) {
-                alert.style.transition = 'opacity 0.5s ease';
-                alert.style.opacity = '0';
-                setTimeout(() => alert.remove(), 500);
-            }
-        }, 3000);
+        const alert = document.getElementById('successAlert');
+        if (alert) {
+            alert.style.transition = 'opacity 0.5s ease';
+            alert.style.opacity = '0';
+            setTimeout(() => alert.remove(), 500);
+        }
+    }, 3000);
 </script>

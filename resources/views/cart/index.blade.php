@@ -28,22 +28,22 @@
 
 <body>
     @if (session('success'))
-        <div class="alert alert-success custom-alert" id="successAlert">{{ session('success') }}</div>
-    @endif
+            <div class="alert alert-success custom-alert bg-custom-success" id="successAlert">
+                {{ session('success') }}
+            </div>
+        @endif
 
-    @if ($errors->any())
-        <div class="alert alert-danger custom-alert" id="successAlert">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
 
-    <div class="hero-section">
-        <div>
-            <br>
+        @if ($errors->any())
+            <div class="alert alert-danger custom-alert" id="successAlert">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
             @include('layout.nav')
             <div class="d-flex" style="padding: 20px;">
                 <div class="container3 flex-grow-1">
