@@ -35,7 +35,7 @@ public function create()
         . "After the story, provide a list of main characters. For each character, write:\n\n"
         . "Name: [Character's name]\n"
         . "Description: [A short description of the character, including personality, role, and appearance]\n\n"
-        . "Separate each character with a blank line.";
+        . "Separate each character with a blank linen one small paragraph (2 lines at most ) provide a description of a 2d map presenting the world you generated in the story";
 
     try {
         $aiResponse = $this->callPythonAIService($augmentedPrompt);
@@ -51,7 +51,9 @@ public function create()
         }
 
         $characters = $this->extractCharacters($aiGeneratedContent);
+$mapDescription = $this->extractMapDescription($aiGeneratedContent);
 
+Session::put('generated_places', $mapDescription);
         // Debug characters output
       
 
@@ -71,7 +73,7 @@ public function create()
 
     private function callPythonAIService(string $prompt): ?array
     {
-        $url = env('PYTHON_AI_URL', 'http://localhost:8002/generate');
+        $url = env('PYTHON_AI_URL', 'http://localhost:5000/generate');
 
         try {
            $response = Http::timeout(120)->post($url, ['prompt' => $prompt]);
@@ -112,43 +114,48 @@ public function create()
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'genre' => 'required|string|max:255',
-        ]);
+{
+    $request->validate([
+        'title' => 'required|string|max:255',
+        'genre' => 'required|string|max:255',
+    ]);
+$places = Session::get('generated_places');
+    $content = Session::get('generated_content');
+    $characters = Session::get('generated_characters', []);
 
-        $content = Session::get('generated_content');
-        $characters = Session::get('generated_characters', []);
-
-        if (!$content) {
-            dd('Generated content not found in session.');
-        }
-
-        $title = $request->input('title');
-        $genre = $request->input('genre');
-
-        $story = Story::create([
-            'user_id' => Auth::id(),
-            'title' => $title,
-            'content' => $content,
-            'genre' => $genre,
-            'status' => 'draft',
-        ]);
-
-        foreach ($characters as $char) {
-            Character::create([
-                'story_id' => $story->id,
-                'name' => $char['name'],
-                'description' => $char['description'],
-                'image_url' => $char['image_url'],
-            ]);
-        }
-
-        Session::forget(['generated_content', 'generated_characters']);
-
-        return redirect()->route('stories.create')->with('success', 'Story saved successfully!');
+    if (!$content) {
+        dd('Generated content not found in session.');
     }
+
+    // Clean out the <think> ... </think> section from the content
+    $cleanContent = preg_replace('/<think>.*?<\/think>/s', '', $content);
+    $cleanContent = trim($cleanContent); // optional: trim whitespace
+
+    $title = $request->input('title');
+    $genre = $request->input('genre');
+
+  $story = Story::create([
+    'user_id' => Auth::id(),
+    'title' => $title,
+    'content' => $cleanContent,
+    'genre' => $genre,
+    'status' => 'draft',
+    'places' => $places,  // ✅ Save extracted map description
+]);
+
+    foreach ($characters as $char) {
+        Character::create([
+            'story_id' => $story->id,
+            'name' => $char['name'],
+            'description' => $char['description'],
+            'image_url' => $char['image_url'],
+        ]);
+    }
+
+   Session::forget(['generated_content', 'generated_characters', 'generated_places']);
+
+    return redirect()->route('stories.create')->with('success', 'Story saved successfully!');
+}
 
     public function drafts()
     {
@@ -220,4 +227,24 @@ public function show($id)
     $story = Story::findOrFail($id);
     return view('stories.show', compact('story'));
 }
+private function extractMapDescription(string $text): ?string
+{
+    // Split text into sections by '---' delimiter
+    $sections = preg_split('/^-{3,}$/m', $text);
+
+    if (!$sections) {
+        return null;
+    }
+
+    // Search each section for a heading with '2D Map'
+    foreach ($sections as $section) {
+        if (preg_match('/2D\s+Map/i', $section)) {
+            // Return trimmed full section as map description
+            return trim($section);
+        }
+    }
+
+    return null; // no map section found
+}
+
 }

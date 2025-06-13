@@ -429,7 +429,7 @@
 
 <nav>
     <div class="logo">
-        <img src="your-logo.png" />
+        <img src="{{ asset('storage/logo.jpeg') }}" alt="Logo">
     </div>
     <div class="search-container">
         <input style="color: #000" type="text" id="ajaxSearchInput" placeholder="Search users" autocomplete="off" />
