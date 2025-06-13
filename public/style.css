@@ -25,7 +25,7 @@ table {
     overflow-x: auto;
 }
 
-.ntable{
+.ntable {
     width: 75%;
     display: inline-table;
     color: #000000;
@@ -156,9 +156,17 @@ th {
 }
 
 @keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-8px); }
-    100% { transform: translateY(0px); }
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
 }
 
 .submit-complaint-btn {
@@ -209,9 +217,17 @@ th {
 }
 
 @keyframes floatEffect {
-    0% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
-    100% { transform: translateY(0); }
+    0% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
 }
 
 
@@ -487,58 +503,6 @@ button:hover .button-text {
 }
 
 /* From Uiverse.io by eslam-hany */
-.card {
-    position: relative;
-    width: 220px;
-    height: 320px;
-    background: mediumturquoise;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 25px;
-    font-weight: bold;
-    border-radius: 15px;
-    cursor: pointer;
-}
-
-.card::before,
-.card::after {
-    position: absolute;
-    content: "";
-    width: 20%;
-    height: 20%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 25px;
-    font-weight: bold;
-    background-color: lightblue;
-    transition: all 0.5s;
-}
-
-.card::before {
-    top: 0;
-    right: 0;
-    border-radius: 0 15px 0 100%;
-}
-
-.card::after {
-    bottom: 0;
-    left: 0;
-    border-radius: 0 100% 0 15px;
-}
-
-.card:hover::before,
-.card:hover:after {
-    width: 100%;
-    height: 100%;
-    border-radius: 15px;
-    transition: all 0.5s;
-}
-
-.card:hover:after {
-    content: "HELLO";
-}
 
 
 /* .hero-section::before {
@@ -693,7 +657,7 @@ body.register_body,
     border-radius: 12px;
     max-height: 630px;
     padding: 20px 30px 120px;
-    background-color: rgba(25, 23, 75, 0.5);
+    background-color:#787D7F;
     /* semi-transparent */
     backdrop-filter: blur(1px);
     box-shadow: 0 5px 10px rgba(0,
@@ -712,7 +676,7 @@ body.register_body,
     padding: 20px 140px;
     border-radius: 50%;
     height: 100%;
-    background-color: rgba(25, 23, 75, 0.5);
+    background-color: #000;
     /* semi-transparent */
     backdrop-filter: blur(10px);
     transition: all 0.6s ease;
@@ -744,8 +708,23 @@ body.register_body,
     background-color: #e9e9e9 !important;
 }
 
-.wrapper.active .signup header {
+/* .wrapper.active .signup header {
     opacity: 0.6;
+} */
+
+.form-content{
+    margin-top: 80px !important; /* Adjust as needed */
+}
+
+.afaf  {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #787D7F;
+    z-index: 1000;
+    padding: 15px 20px;
+    width: 100%;
 }
 
 .wrapper form {
@@ -755,7 +734,7 @@ body.register_body,
     margin-top: 40px;
 }
 
-.form-register input {
+.form-register input,.form.signup input {
     height: 60px;
     outline: none;
     border: none;
@@ -767,10 +746,7 @@ body.register_body,
     background: #fff;
 }
 
-.form.login input {
-    border: 1px solid #aaa;
-    padding: 20px !important;
-}
+
 
 .form.signup input {
     padding: 20px !important;
@@ -828,11 +804,11 @@ form input[type="submit"] {
     cursor: pointer;
 }
 
-.form.login input[type="submit"] {
+/* .form.login input[type="submit"] {
     background: #4070f4;
     color: #fff;
     border: none;
-}
+} */
 
 .dob {
     margin-bottom: 15px;
@@ -976,7 +952,7 @@ input[type="text"] {
     padding: 6px 12px;
     background-color: #ffffff;
     border-radius: 5px;
-        white-space: nowrap;
+    white-space: nowrap;
 
 }
 
@@ -997,7 +973,7 @@ input[type="text"] {
     margin: 40px auto;
 }
 
-.form-section{
+.form-section {
 
     max-width: 400px;
     padding: 20px;
@@ -1006,7 +982,7 @@ input[type="text"] {
 }
 
 .story {
-    background-color: #16383b ;
+    background-color: #16383b;
     padding: 20px;
     border-radius: 8px;
     margin-bottom: 30px;
@@ -1119,21 +1095,25 @@ input[type="number"],
     }
 }
 
-.ch{
-        color: #000000;
+.ch {
+    color: #000000;
     text-decoration: none;
     padding: 6px 12px;
     background-color: #ffffff;
     border-radius: 5px;
-        white-space: nowrap;
+    white-space: nowrap;
 
 }
+
 .ch:hover {
     background-color: #122620;
     color: #fff;
 }
+
 .bg-custom-success {
     background-color: #D6AD60 !important;
-    color: #000; /* Optional: for contrast */
-    border: none; /* Optional: cleaner look */
+    color: #000;
+    /* Optional: for contrast */
+    border: none;
+    /* Optional: cleaner look */
 }

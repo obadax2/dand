@@ -10,73 +10,74 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+
 class StoryController extends Controller
 {
     // Remove HuggingFaceService injection since we call Python API now
 
-public function create()
-{
-    $stories = Story::where('user_id', Auth::id())->get(); // ✅ Filter by current user
-    return view('stories.create', compact('stories'));
-}
-
-   public function generate(Request $request)
-{
-    set_time_limit(120);
-
-    $request->validate([
-        'prompt' => 'required|string|max:255',
-    ]);
-
-    $userPrompt = $request->input('prompt');
-
-    // Append system instructions to ensure structured character output
-    $augmentedPrompt = $userPrompt . "\n\n"
-        . "After the story, provide a list of main characters. For each character, write:\n\n"
-        . "Name: [Character's name]\n"
-        . "Description: [A short description of the character, including personality, role, and appearance]\n\n"
-        . "Separate each character with a blank linen one small paragraph (2 lines at most ) provide a description of a 2d map presenting the world you generated in the story";
-
-    try {
-        $aiResponse = $this->callPythonAIService($augmentedPrompt);
-
-        if (!$aiResponse) {
-            dd('Failed to get a valid response from AI service.');
-        }
-
-        $aiGeneratedContent = $aiResponse['generated_text'] ?? null;
-
-        if (empty($aiGeneratedContent)) {
-            dd('AI returned empty content.');
-        }
-
-        $characters = $this->extractCharacters($aiGeneratedContent);
-$mapDescription = $this->extractMapDescription($aiGeneratedContent);
-
-Session::put('generated_places', $mapDescription);
-        // Debug characters output
-      
-
-        // Store generated story and characters in session
-        Session::put('generated_content', $aiGeneratedContent);
-        Session::put('generated_characters', $characters);
-
-        return view('stories.create', [
-            'generatedContent' => $aiGeneratedContent,
-            'characters' => $characters,
-            'prompt' => $userPrompt
-        ]);
-    } catch (\Exception $e) {
-        dd('Exception caught in generate(): ' . $e->getMessage(), $e->getTrace());
+    public function create()
+    {
+        $stories = Story::where('user_id', Auth::id())->get(); // ✅ Filter by current user
+        return view('stories.create', compact('stories'));
     }
-}
+
+    public function generate(Request $request)
+    {
+        set_time_limit(120);
+
+        $request->validate([
+            'prompt' => 'required|string|max:255',
+        ]);
+
+        $userPrompt = $request->input('prompt');
+
+        // Append system instructions to ensure structured character output
+        $augmentedPrompt = $userPrompt . "\n\n"
+            . "After the story, provide a list of main characters. For each character, write:\n\n"
+            . "Name: [Character's name]\n"
+            . "Description: [A short description of the character, including personality, role, and appearance]\n\n"
+            . "Separate each character with a blank linen one small paragraph (2 lines at most ) provide a description of a 2d map presenting the world you generated in the story";
+
+        try {
+            $aiResponse = $this->callPythonAIService($augmentedPrompt);
+
+            if (!$aiResponse) {
+                dd('Failed to get a valid response from AI service.');
+            }
+
+            $aiGeneratedContent = $aiResponse['generated_text'] ?? null;
+
+            if (empty($aiGeneratedContent)) {
+                dd('AI returned empty content.');
+            }
+
+            $characters = $this->extractCharacters($aiGeneratedContent);
+            $mapDescription = $this->extractMapDescription($aiGeneratedContent);
+
+            Session::put('generated_places', $mapDescription);
+            // Debug characters output
+
+
+            // Store generated story and characters in session
+            Session::put('generated_content', $aiGeneratedContent);
+            Session::put('generated_characters', $characters);
+
+            return view('stories.create', [
+                'generatedContent' => $aiGeneratedContent,
+                'characters' => $characters,
+                'prompt' => $userPrompt
+            ]);
+        } catch (\Exception $e) {
+            dd('Exception caught in generate(): ' . $e->getMessage(), $e->getTrace());
+        }
+    }
 
     private function callPythonAIService(string $prompt): ?array
     {
         $url = env('PYTHON_AI_URL', 'http://localhost:5000/generate');
 
         try {
-           $response = Http::timeout(120)->post($url, ['prompt' => $prompt]);
+            $response = Http::timeout(120)->post($url, ['prompt' => $prompt]);
 
             if ($response->failed()) {
                 dd('Python AI Service failed:', [
@@ -114,48 +115,48 @@ Session::put('generated_places', $mapDescription);
     }
 
     public function store(Request $request)
-{
-    $request->validate([
-        'title' => 'required|string|max:255',
-        'genre' => 'required|string|max:255',
-    ]);
-$places = Session::get('generated_places');
-    $content = Session::get('generated_content');
-    $characters = Session::get('generated_characters', []);
-
-    if (!$content) {
-        dd('Generated content not found in session.');
-    }
-
-    // Clean out the <think> ... </think> section from the content
-    $cleanContent = preg_replace('/<think>.*?<\/think>/s', '', $content);
-    $cleanContent = trim($cleanContent); // optional: trim whitespace
-
-    $title = $request->input('title');
-    $genre = $request->input('genre');
-
-  $story = Story::create([
-    'user_id' => Auth::id(),
-    'title' => $title,
-    'content' => $cleanContent,
-    'genre' => $genre,
-    'status' => 'draft',
-    'places' => $places,  // ✅ Save extracted map description
-]);
-
-    foreach ($characters as $char) {
-        Character::create([
-            'story_id' => $story->id,
-            'name' => $char['name'],
-            'description' => $char['description'],
-            'image_url' => $char['image_url'],
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'genre' => 'required|string|max:255',
         ]);
+        $places = Session::get('generated_places');
+        $content = Session::get('generated_content');
+        $characters = Session::get('generated_characters', []);
+
+        if (!$content) {
+            dd('Generated content not found in session.');
+        }
+
+        // Clean out the <think> ... </think> section from the content
+        $cleanContent = preg_replace('/<think>.*?<\/think>/s', '', $content);
+        $cleanContent = trim($cleanContent); // optional: trim whitespace
+
+        $title = $request->input('title');
+        $genre = $request->input('genre');
+
+        $story = Story::create([
+            'user_id' => Auth::id(),
+            'title' => $title,
+            'content' => $cleanContent,
+            'genre' => $genre,
+            'status' => 'draft',
+            'places' => $places,  // ✅ Save extracted map description
+        ]);
+
+        foreach ($characters as $char) {
+            Character::create([
+                'story_id' => $story->id,
+                'name' => $char['name'],
+                'description' => $char['description'],
+                'image_url' => $char['image_url'],
+            ]);
+        }
+
+        Session::forget(['generated_content', 'generated_characters', 'generated_places']);
+
+        return redirect()->route('stories.create')->with('success', 'Story saved successfully!');
     }
-
-   Session::forget(['generated_content', 'generated_characters', 'generated_places']);
-
-    return redirect()->route('stories.create')->with('success', 'Story saved successfully!');
-}
 
     public function drafts()
     {
@@ -215,36 +216,35 @@ $places = Session::get('generated_places');
 
         return redirect()->route('stories.drafts')->with('success', 'Story deleted successfully!');
     }
-public function showMyStory()
-{
-     $userId = auth()->id();
-    $stories = Story::where('user_id', $userId)->get();
+    public function showMyStory()
+    {
+        $userId = auth()->id();
+        $stories = Story::where('user_id', $userId)->get();
 
-    return view('stories.my', compact('stories'));
-}
-public function show($id)
-{
-    $story = Story::findOrFail($id);
-    return view('stories.show', compact('story'));
-}
-private function extractMapDescription(string $text): ?string
-{
-    // Split text into sections by '---' delimiter
-    $sections = preg_split('/^-{3,}$/m', $text);
-
-    if (!$sections) {
-        return null;
+        return view('stories.my', compact('stories'));
     }
+    public function show($id)
+    {
+        $story = Story::findOrFail($id);
+        return view('stories.show', compact('story'));
+    }
+    private function extractMapDescription(string $text): ?string
+    {
+        // Split text into sections by '---' delimiter
+        $sections = preg_split('/^-{3,}$/m', $text);
 
-    // Search each section for a heading with '2D Map'
-    foreach ($sections as $section) {
-        if (preg_match('/2D\s+Map/i', $section)) {
-            // Return trimmed full section as map description
-            return trim($section);
+        if (!$sections) {
+            return null;
         }
+
+        // Search each section for a heading with '2D Map'
+        foreach ($sections as $section) {
+            if (preg_match('/2D\s+Map/i', $section)) {
+                // Return trimmed full section as map description
+                return trim($section);
+            }
+        }
+
+        return null; // no map section found
     }
-
-    return null; // no map section found
-}
-
 }

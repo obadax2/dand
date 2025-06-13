@@ -102,7 +102,7 @@
                 @if ($draftStories->isEmpty())
                     <div class="d-flex flex-column justify-content-center align-items-center text-center min-vh-100"
                         style="margin-top: -30vh;">
-                        <p class="text-uppercase fs-3 fw-bold mb-4">
+                        <p class="text-uppercase fs-3 fw-bold mb-4 text-black">
                             You have no draft stories yet
                         </p>
                         <a href="{{ route('stories.create') }}" class="btn create">
