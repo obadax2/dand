@@ -183,9 +183,8 @@
         </div>
     @endif
 
+    @include('layout.nav')
         <div class="container">
-            <br>
-            @include('layout.nav')
             <main class="container my-4">
                 <div class="usercontainer">
                     <!-- Column 1: Profile Picture + Stats + Friend Requests -->
@@ -262,8 +261,6 @@
                     </div>
                 </div>
             </main>
-    </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const successAlert = document.getElementById('successAlert');

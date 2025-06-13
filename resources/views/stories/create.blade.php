@@ -27,9 +27,7 @@
         </div>
     @endif
 
-    <div class="hero-section">
         <div>
-            <br>
             @include('layout.nav')
             <div class="d-flex" style="padding: 20px;">
                 <div class="container3 flex-grow-1">
@@ -106,7 +104,6 @@
                 </div>
             </div>
         </div>
-    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {

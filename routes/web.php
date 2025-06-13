@@ -34,13 +34,9 @@ Route::get('/', function () {
 
 // Use your middleware in route groups
 Route::middleware(['auth', CheckUserBanStatus::class])->group(function () {
-    Route::middleware(['auth', 'role:hr'])->group(function () {
-        Route::get('/users', [UserController::class, 'index'])->name('users.index');
-        Route::post('/users/{user}/role', [UserController::class, 'updateRole'])->name('users.role.update');
-        Route::post('/polls', [PollController::class, 'store'])->name('polls.store');
-    });
-    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 
+
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
     Route::post('/users/{user}/ban', [UserController::class, 'ban'])->name('users.ban');
     Route::get('/stories/drafts', [StoryController::class, 'drafts'])->name('stories.drafts');
 
@@ -69,10 +65,7 @@ Route::middleware(['auth', CheckUserBanStatus::class])->group(function () {
     Route::post('/user/password/change', [UserProfileController::class, 'changePassword'])->name('user.changePassword');
     Route::post('/friends/accept/{user_id}', [FriendController::class, 'acceptFriendRequest'])->name('friend.accept');
     Route::get('/dashboard', [BlogController::class, 'dashboard'])->name('dashboard');
-Route::post('/blogs/{blog}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
-    
     Route::post('/blogs/{blog}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
-    Route::post('/friends/accept/{user_id}', [FriendController::class, 'acceptFriendRequest'])->name('friend.accept');
 
     Route::post('/purchase', [PurchaseController::class, 'purchase'])->name('purchase');
     Route::get('/payment/cancel', [PaymentController::class, 'cancel'])->name('paypal.cancel');
@@ -91,30 +84,36 @@ Route::post('/blogs/{blog}/reviews', [ReviewController::class, 'store'])->name('
     Route::get('/cart/checkout', [PaymentController::class, 'checkoutAndExecuteCart'])->name('paypal.cart.checkout');
     Route::get('/cart/execute', [PaymentController::class, 'checkoutAndExecuteCart'])->name('paypal.cart.execute');
     Route::post('/polls/{poll}/vote/{vote}', [PollController::class, 'vote'])->name('polls.vote')->middleware('auth');
-   Route::middleware(['auth', 'role:user', CheckUserBanStatus::class])->group(function () {
-    Route::get('/tickets/form', fn() => view('tickets.form'))->name('tickets.form');
-    Route::post('/tickets/store', [TicketController::class, 'store'])->name('tickets.store');
-    Route::get('/tickets/{ticket}', [TicketController::class, 'show'])->name('tickets.show');
-    Route::post('/tickets/{ticket}/reply', [TicketController::class, 'userReply'])->name('tickets.userReply');
-});
-Route::post('/characters/generate-images', [CharacterImageController::class, 'generateImages'])->name('characters.generate.images');
-Route::get('my-stories', [StoryController::class, 'showMyStory'])->name('stories.my');
-    Route::get('/my-characters', [CharacterController::class, 'myCharacters'])->name('characters.my');
-    Route::get('/stories/{id}', [StoryController::class, 'show'])->name('stories.show');
-    Route::get('/notifications', [TicketController::class, 'notifications'])->name('notifications');
-    Route::post('/notifications/mark-read', [App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.markRead');
-        Route::get('/maps/generate', [MapGenerationController::class, 'selectStory'])->name('maps.generate');
-    Route::post('/maps/generate', [MapGenerationController::class, 'generateMap'])->name('maps.generate.post');
-    Route::get('/maps/upload', [MapGenerationController::class, 'uploadForm'])->name('maps.upload.form');
-Route::post('/maps/upload', [MapGenerationController::class, 'uploadImage'])->name('maps.upload.image');
-Route::post('/upload-map-image', [MapGenerationController::class, 'apiUploadImage']);
     Route::middleware(['auth', 'role:user', CheckUserBanStatus::class])->group(function () {
         Route::get('/tickets/form', fn() => view('tickets.form'))->name('tickets.form');
         Route::post('/tickets/store', [TicketController::class, 'store'])->name('tickets.store');
         Route::get('/tickets/{ticket}', [TicketController::class, 'show'])->name('tickets.show');
         Route::post('/tickets/{ticket}/reply', [TicketController::class, 'userReply'])->name('tickets.userReply');
     });
+    Route::post('/characters/generate-images', [CharacterImageController::class, 'generateImages'])->name('characters.generate.images');
+    Route::get('my-stories', [StoryController::class, 'showMyStory'])->name('stories.my');
+    Route::get('/my-characters', [CharacterController::class, 'myCharacters'])->name('characters.my');
+    Route::get('/stories/{id}', [StoryController::class, 'show'])->name('stories.show');
+    Route::get('/notifications', [TicketController::class, 'notifications'])->name('notifications');
+    Route::post('/notifications/mark-read', [App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.markRead');
+    Route::get('/maps/generate', [MapGenerationController::class, 'selectStory'])->name('maps.generate');
+    Route::post('/maps/generate', [MapGenerationController::class, 'generateMap'])->name('maps.generate.post');
+    Route::get('/maps/upload', [MapGenerationController::class, 'uploadForm'])->name('maps.upload.form');
+    Route::post('/maps/upload', [MapGenerationController::class, 'uploadImage'])->name('maps.upload.image');
+    Route::post('/upload-map-image', [MapGenerationController::class, 'apiUploadImage']);
+    Route::delete('/tickets/{ticket}', [TicketController::class, 'destroy'])->name('ticket.destroy');
+    Route::delete('/chat/{conversation}/clear', [ChatController::class, 'clear'])->name('chat.clear');
+});
+
+
+
+//HR routes
+Route::middleware(['auth', 'role:hr'])->group(function () {
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::post('/users/{user}/role', [UserController::class, 'updateRole'])->name('users.role.update');
+    Route::post('/polls', [PollController::class, 'store'])->name('polls.store');
     Route::delete('/polls/{poll}', [PollController::class, 'destroy'])->name('polls.destroy');
+
 });
 
 // Admin routes
@@ -124,7 +123,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/admin/users/{id}/unban', [AdminController::class, 'unbanUser'])->name('admin.users.unban');
     Route::get('/admin/tickets', [TicketController::class, 'index'])->name('tickets.index');
     Route::post('/admin/tickets/{ticket}/reply', [TicketController::class, 'reply'])->name('tickets.reply');
-    Route::delete('/polls/{poll}', [PollController::class, 'destroy'])->name('polls.destroy');
     Route::get('my-stories', [StoryController::class, 'showMyStory'])->name('stories.my');
     Route::get('/my-characters', [CharacterController::class, 'myCharacters'])->name('characters.my');
 });
@@ -142,3 +140,6 @@ Route::get('/verify-code', function () {
     return view('auth.verify_code');
 })->name('verify.code.form');
 Route::post('/verify-email', [RegisterController::class, 'verifyEmail'])->name('verify.email');
+Route::fallback(function () {
+    return view('errors.404');
+});

@@ -1,24 +1,33 @@
 <style>
     nav {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 10px 20px;
+        margin: 0 auto;
+        padding: 10px 0;
         position: relative;
-        z-index: 1200;
+        display: flex;
+        justify-content: space-between;
+        /* logo left, menu right */
+        align-items: center;
+        z-index: 1050;
     }
 
     nav .logo img {
+        margin-left: 10px;
+        /* or padding */
+
         max-height: 40px;
     }
 
     nav ul {
         display: flex;
         align-items: center;
-        gap: 35px;
+        gap: 15px;
         list-style: none;
         margin: 0;
         padding: 0;
+        justify-content: space-around;
+        flex-grow: 1;
+        margin-right: 30px;
+        /* Pushes li to the left */
     }
 
     nav ul li {
@@ -27,6 +36,7 @@
 
     nav ul li a,
     nav ul li button {
+        font-family: "Open Sans";
         color: #000000;
         text-decoration: none;
         padding: 8px 12px;
@@ -34,10 +44,16 @@
         transition: background-color 0.3s;
         background: none;
         font-style: italic;
-
         border: none;
         cursor: pointer;
         font-size: 17px;
+        white-space: nowrap;
+
+    }
+
+    nav ul li a:hover {
+        color: #D6AD60;
+
     }
 
     /* nav ul li a.btn.btn-primary:hover {
@@ -117,8 +133,6 @@
         margin-right: 20px;
     }
 
-
-
     .notification-dropdown {
         display: none;
         position: absolute;
@@ -173,6 +187,125 @@
         cursor: pointer;
         display: none;
     }
+
+    /* Container holding the input and results */
+    .search-container {
+        position: relative;
+        left: 0;
+        width: 25%;
+        margin-left: 10px;
+    }
+
+    .search-container input {
+        height: 30px;
+        border: 1px solid #ccc;
+        transform: translateY(30%);
+    }
+
+    /* The results dropdown */
+    #searchResults {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        /* add 10px padding inside */
+        background-color: #ffffff;
+        border: 1px solid #F4EBD0;
+        border-top: none;
+        /* so no double border with input */
+        max-height: 250px;
+        /* max height with scroll */
+        overflow-y: auto;
+        z-index: 1000;
+        /* high enough to overlay other content */
+        display: none;
+        /* hidden by default */
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Make sure list items inside have your search-result-item styling */
+    #searchResults li {
+        padding: 8px 12px;
+        cursor: pointer;
+    }
+
+    /* Optional: hover highlight */
+    #searchResults li:hover {
+        background-color: #767879;
+    }
+
+    /* Container for each search result item */
+    .search-result-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 12px;
+        border-bottom: 1px solid #444;
+        cursor: default;
+    }
+
+    /* User info clickable area */
+    .search-result-userinfo {
+        flex-grow: 1;
+        cursor: pointer;
+        color: #000000;
+        transition: color 0.2s ease;
+    }
+
+    /* Buttons */
+    .search-result-friend-btn {
+        font-size: 12px;
+        margin-right: 10px;
+        padding: 5px 10px;
+        color: #000000;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: background-color 0.2s ease;
+    }
+
+    .search-result-friend-btn:disabled {
+        background-color: #333;
+        border-color: #555;
+        cursor: default;
+        color: #777;
+    }
+
+    .search-result-friend-btn:hover:not(:disabled) {
+        background-color: #16383B;
+        color: white;
+    }
+
+    .search-result-follow-btn {
+        font-size: 12px;
+        padding: 5px 10px;
+        color: #000000;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: background-color 0.2s ease;
+    }
+
+    .search-result-follow-btn:hover {
+        background-color: #16383B;
+        color: white;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+        .search-result-item {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .search-result-friend-btn,
+        .search-result-follow-btn {
+            margin: 5px 0 0 0;
+            width: 100%;
+        }
+    }
+
 
     /* Responsive styles */
     @media (max-width: 768px) {
@@ -271,34 +404,43 @@
             display: block;
         }
 
-        .dropdown-menu {
-            background-color: #06043E;
-            /* your dark theme */
-            color: #fff;
-        }
-
         .dropdown-menu .btn-outline-danger {
             border: none;
             color: #FF5C5C;
         }
+    }
 
+    .search-input {
+        width: 100%;
+        padding-right: 30px;
+        /* space for icon */
+    }
+
+    .search-icon {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #aaa;
+        pointer-events: none;
+        /* so clicks go to input */
     }
 </style>
 
 <nav>
     <div class="logo">
-        <img src="your-logo.png" alt="Logo Here" />
+        <img src="your-logo.png" />
     </div>
+    <div class="search-container">
+        <input style="color: #000" type="text" id="ajaxSearchInput" placeholder="Search users" autocomplete="off" />
+        <i class="fa fa-search search-icon"></i>
 
+        <ul id="searchResults"></ul>
+    </div>
     <button id="navToggle" aria-label="Toggle navigation">☰</button>
 
     <ul>
-        @if (Auth::user()->role === 'admin')
-            <li><a href="{{ route('admin.dashboard') }}">Admin</a></li>
-        @endif
-        @if (Auth::user()->role === 'hr')
-            <li><a href="{{ route('users.index') }}">Management</a></li>
-        @endif
+
 
         <li><a href="{{ route('home') }}">Home</a></li>
 
@@ -308,6 +450,13 @@
                 <li><a href="{{ route('stories.create') }}">Create</a></li>
                 <li><a href="{{ route('dashboard') }}">Store</a></li>
                 <li><a href="{{ route('stories.drafts') }}">Drafts</a></li>
+            </ul>
+        </li>
+
+        <li class="nav-item story-dropdown">
+            <a href="#" class="nav-link">Generate Map ▾</a>
+            <ul class="story-submenu">
+                <li><a href="{{ route('maps.generate') }}">Select Story</a></li>
             </ul>
         </li>
 
@@ -323,6 +472,12 @@
             <a href="#" class="nav-link">Account ▾</a>
             <ul class="story-submenu">
                 <li><a href="{{ route('user.profile') }}">Profile</a></li>
+                @if (Auth::user()->role === 'admin')
+                    <li><a href="{{ route('admin.dashboard') }}">Admin panel</a></li>
+                @endif
+                @if (Auth::user()->role === 'hr')
+                    <li><a href="{{ route('users.index') }}">Management</a></li>
+                @endif
                 <li>
                     <a href="#"
                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
@@ -437,6 +592,9 @@
         <li>
             <button>Try Now <i class="fas fa-rocket"></i></button>
         </li>
+
+
+
         @if (Auth::user()->role === 'user')
             <li>
                 <a href="{{ route('chat.index') }}" class="btn rounded-circle shadow-lg chatbot-btn"
@@ -446,12 +604,7 @@
             </li>
         @endif
     </ul>
-    <li class="nav-item story-dropdown">
-    <a href="#" class="nav-link">Generate Map ▾</a>
-    <ul class="story-submenu">
-        <li><a href="{{ route('maps.generate') }}">Select Story</a></li>
-    </ul>
-</li>
+
 </nav>
 @if (Auth::user()->role === 'user')
     <div class="floating-buttons">
@@ -463,7 +616,8 @@
     </div>
 @endif
 <!-- Submit Complaint Modal -->
-<div class="modal fade" id="complaintModal" tabindex="-1" aria-labelledby="complaintModalLabel" aria-hidden="true">
+<div class="modal fade" id="complaintModal" tabindex="-1" aria-labelledby="complaintModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content" style="background-color: #000; color: #ffffff;"; border-radius: 10px;">
             <div class="modal-header border-0">
@@ -476,8 +630,7 @@
                     @csrf
                     <div class="mb-3">
                         <label for="content" class="form-label">Your Complaint:</label>
-                        <textarea name="content" id="content" rows="5" required class="form-control"
-                            style="background: #0a0a3c; color: white; "></textarea>
+                        <textarea name="content" id="content" rows="5" required class="form-control"></textarea>
                     </div>
                     <button type="submit" class="btn btn-light">Submit</button>
                 </form>
@@ -560,5 +713,147 @@
         tooltipTriggerList.forEach(function(tooltipTriggerEl) {
             new bootstrap.Tooltip(tooltipTriggerEl);
         });
+    });
+
+    const searchInput = document.getElementById('ajaxSearchInput');
+    const resultsBox = document.getElementById('searchResults');
+    let debounceTimer;
+
+    searchInput.addEventListener('input', () => {
+        const query = searchInput.value.trim();
+        clearTimeout(debounceTimer);
+
+        if (query.length < 2) {
+            resultsBox.style.display = 'none';
+            resultsBox.innerHTML = '';
+            return;
+        }
+
+        debounceTimer = setTimeout(() => {
+            fetch(`{{ route('users.ajaxSearch') }}?query=${encodeURIComponent(query)}`, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    resultsBox.innerHTML = '';
+                    if (data.length === 0) {
+                        resultsBox.style.display = 'none';
+                        return;
+                    }
+                    data.forEach(user => {
+                        const li = document.createElement('li');
+                        li.classList.add('search-result-item');
+
+                        const userInfo = document.createElement('div');
+                        userInfo.textContent = `${user.name} (${user.username})`;
+                        userInfo.classList.add('search-result-userinfo');
+                        userInfo.addEventListener('click', () => {
+                            window.location.href = `/users/${user.id}`;
+                        });
+
+                        const friendBtn = document.createElement('button');
+                        friendBtn.classList.add('search-result-friend-btn');
+
+                        switch (user.friendshipStatus) {
+                            case 'friends':
+                                friendBtn.textContent = 'Friends';
+                                friendBtn.disabled = true;
+                                break;
+                            case 'pending_sent':
+                                friendBtn.textContent = 'Request Sent';
+                                friendBtn.disabled = true;
+                                break;
+                            case 'pending_received':
+                                friendBtn.textContent = 'Accept Request';
+                                friendBtn.disabled = false;
+                                friendBtn.addEventListener('click', () => {
+                                    fetch(`/friends/accept/${user.id}`, {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                        }
+                                    }).then(() => {
+                                        friendBtn.textContent = 'Friends';
+                                        friendBtn.disabled = true;
+                                    });
+                                });
+                                break;
+                            case 'none':
+                            default:
+                                friendBtn.textContent = 'Add Friend';
+                                friendBtn.disabled = false;
+                                friendBtn.addEventListener('click', () => {
+                                    fetch(`/friends/request/${user.id}`, {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type': 'application/json',
+                                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                            }
+                                        })
+                                        .then(response => {
+                                            if (!response.ok) {
+                                                return response.json().then(
+                                                    data => {
+                                                        throw new Error(data
+                                                            .error ||
+                                                            'Error');
+                                                    });
+                                            }
+                                            return response.json();
+                                        })
+                                        .then(data => {
+                                            friendBtn.textContent =
+                                                'Request Sent';
+                                            friendBtn.disabled = true;
+                                        })
+                                        .catch(err => {
+                                            alert(err.message);
+                                        });
+                                });
+                                break;
+                        }
+
+                        const followBtn = document.createElement('button');
+                        followBtn.textContent = user.isFollowing ? 'Unfollow' : 'Follow';
+                        followBtn.classList.add('search-result-follow-btn');
+                        followBtn.addEventListener('click', () => {
+                            const url = user.isFollowing ? `/unfollow/${user.id}` :
+                                `/follow/${user.id}`;
+                            fetch(url, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                }
+                            }).then(() => {
+                                user.isFollowing = !user.isFollowing;
+                                followBtn.textContent = user.isFollowing ?
+                                    'Unfollow' : 'Follow';
+                            });
+                        });
+
+                        li.appendChild(userInfo);
+                        li.appendChild(friendBtn);
+                        li.appendChild(followBtn);
+                        resultsBox.appendChild(li);
+                    });
+
+                    resultsBox.style.display = 'block';
+                })
+                .catch(err => {
+                    console.error('Search error:', err);
+                    resultsBox.style.display = 'none';
+                });
+        }, 300);
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!searchInput.contains(e.target) && !resultsBox.contains(e.target)) {
+            resultsBox.style.display = 'none';
+        }
     });
 </script>

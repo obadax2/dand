@@ -5,17 +5,19 @@
     <meta charset="UTF-8" />
     <title>Ticket Details</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: #eee;
             padding: 2rem;
             min-height: 100vh;
-            background-color: #000; /* pure black */
+            background-color: #000;
         }
 
         h2 {
-            color: #fff; /* white heading */
+            color: #fff;
             margin-bottom: 2rem;
             font-weight: 700;
             text-align: center;
@@ -30,8 +32,9 @@
             margin: 0 auto 3rem;
             padding: 2rem;
             border-radius: 15px;
-            border: 1px solid #555; /* subtle dark gray border */
-            background: #111; /* very dark gray background */
+            border: 1px solid #555;
+            background: #111;
+            position: relative;
         }
 
         .messages-wrapper {
@@ -39,7 +42,6 @@
             overflow-y: auto;
             margin-bottom: 1rem;
             padding-right: 0.5rem;
-            /* space for scrollbar */
         }
 
         .ticket form {
@@ -48,7 +50,7 @@
         }
 
         .ticket p strong {
-            color: #ddd; /* light gray */
+            color: #ddd;
             font-weight: 600;
         }
 
@@ -65,14 +67,14 @@
         }
 
         .message.admin {
-            background-color: #222; /* very dark gray */
-            border-left: 6px solid #888; /* medium gray accent */
+            background-color: #222;
+            border-left: 6px solid #888;
             color: #fff;
         }
 
         .message.user {
-            background-color: #1a1a1a; /* slightly lighter dark */
-            border-left: 6px solid #aaa; /* lighter gray accent */
+            background-color: #1a1a1a;
+            border-left: 6px solid #aaa;
             color: #f5f5f5;
         }
 
@@ -186,8 +188,21 @@
     <h2>Ticket Details</h2>
 
     <div class="ticket">
+        <!-- Delete Button -->
+        <form action="{{ route('ticket.destroy', $ticket->id) }}" method="POST"
+            class="position-absolute top-0 end-0 mt-2 me-2">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="btn btn-sm btn-danger"
+                onclick="return confirm('Are you sure you want to delete this poll?')">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        </form>
+
+        <!-- Ticket User Info -->
         <p><strong>User:</strong> {{ $ticket->username }}</p>
 
+        <!-- Ticket Messages -->
         <div class="messages-wrapper">
             @foreach ($ticket->messages as $message)
                 <div class="message {{ $message->sender }}">
@@ -198,6 +213,7 @@
             @endforeach
         </div>
 
+        <!-- Reply Form -->
         <form action="{{ route('tickets.userReply', $ticket->id) }}" method="POST">
             @csrf
             <textarea name="message" rows="1" required placeholder="Write your reply here..."></textarea>
@@ -206,17 +222,18 @@
     </div>
 
     <a href="{{ route('home') }}">← Back to Home Page</a>
+
+    <script>
+        window.addEventListener('load', () => {
+            const form = document.querySelector('form[action^="{{ route('tickets.userReply', $ticket->id) }}"]');
+            if (form) {
+                form.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    </script>
 </body>
-<script>
-    window.addEventListener('load', () => {
-        const form = document.querySelector('form[action^="{{ route('tickets.userReply', $ticket->id) }}"]');
-        if (form) {
-            form.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }
-    });
-</script>
 
 </html>

@@ -60,9 +60,8 @@ class PollController extends Controller
         return redirect()->back()->with('success', 'Thank you for voting!');
     }
     public function destroy(Poll $poll)
-{
-    $poll->delete();
-    return redirect()->back()->with('success', 'Poll deleted successfully.');
-}
-
+    {
+        $poll->delete();
+        return redirect()->back()->with('success', 'Poll deleted successfully.');
+    }
 }

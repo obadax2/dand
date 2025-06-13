@@ -91,8 +91,6 @@
 </head>
 
 <body>
-        <div>
-            <br>
             @include('layout.nav')
             <br>
             <div>
@@ -146,9 +144,6 @@
                         @endforeach
                     </ul>
                 @endif
-            </div>
-
-
         </div>
     <!-- Delete Confirmation Modal -->
     <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel"
@@ -171,7 +166,6 @@
         </div>
     </div>
     <br>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
         let currentStoryId = null;

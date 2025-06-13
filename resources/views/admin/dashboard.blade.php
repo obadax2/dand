@@ -10,9 +10,8 @@
     <link href="https://cdn.lineicons.com/3.0/lineicons.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('style.css') }}">
     <style>
-
-
-        h1 {
+        h1,
+        h2 {
             color: #000000;
         }
 
@@ -25,7 +24,6 @@
             text-align: center;
             font-size: 12px;
             letter-spacing: 1px;
-            text-decoration: none;
             color: #000000;
             background: transparent;
             cursor: pointer;
@@ -33,21 +31,6 @@
             border: 2px solid #000000;
             border-radius: 10px;
             box-shadow: inset 0 0 0 0 #000000;
-        }
-
-        h2 {
-            color: #000000;
-            margin-bottom: 20px;
-            /* space between heading and table */
-        }
-
-        .table-wrapper {
-
-            margin-bottom: 40px;
-        }
-
-        table {
-            text-align: center;
         }
 
         .ban:hover,
@@ -60,156 +43,107 @@
         .unban:active {
             transform: scale(0.9);
         }
+
+        table {
+            text-align: center;
+        }
+
+        .table-wrapper {
+            margin-bottom: 40px;
+        }
     </style>
 </head>
 
 <body>
-    <div>
-        <br>
-        @include('layout.nav')
-        <br>
-        <div class="container">
-            <h1>Admin Dashboard</h1>
-
-            <h2>Users</h2>
-
-            @if ($users->isEmpty())
-                <div class="d-flex justify-content-center align-items-center">
-                    <p style="color: #000;font-style: italic;">No users found ❌</p>
-                </div>
-            @else
-                <div class="table-wrapper">
-
-                    <table class="custom-table">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Username</th>
-                                <th>Email</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($users as $user)
-                                <tr>
-                                    <td>{{ $user->name }}</td>
-                                    <td>{{ $user->username }}</td>
-                                    <td>{{ $user->email }}</td>
-                                    <td>
-                                        <form
-                                            action="{{ $user->banned ? route('admin.users.unban', $user->id) : route('admin.users.ban', $user->id) }}"
-                                            method="POST" style="display:inline;">
-                                            @csrf
-                                            <button type="submit"
-                                                class="btn {{ $user->banned ? 'btn-success' : 'btn-danger' }}">
-                                                {{ $user->banned ? 'Unban' : 'Ban' }}
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-
-            @endif
-
-            <br>
-            <h2>Tickets</h2>
-            <div class="table-wrapper">
-                @if ($tickets->isEmpty())
-                    <p style="color: #000000">No tickets found.</p>
-                @else
-                    <table class="ntable">
-                        <thead>
-                            <tr>
-                                <th>Ticket ID</th>
-                                <th>Username</th>
-                                <th>Conversation</th>
-                                <th>Last Updated</th>
-                                <th>Reply</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($tickets as $ticket)
-                                <tr>
-                                    <td>{{ $ticket->id }}</td>
-                                    <td>{{ $ticket->user->username ?? 'N/A' }}</td>
-                                    <td>
-                                        <button type="button" class="btn btn-dark" data-bs-toggle="modal"
-                                            data-bs-target="#conversationModal-{{ $ticket->id }}">
-                                            View Conversation
-                                        </button>
-                                    </td>
-                                    <td>{{ $ticket->updated_at->format('Y-m-d H:i') }}</td>
-                                    <td>
-                                        @php $lastMessage = $ticket->messages->first(); @endphp
-
-                                        @if (!$lastMessage || $lastMessage->sender === 'user')
-                                            <button type="button" class="ban" data-bs-toggle="modal"
-                                                data-bs-target="#replyModal-{{ $ticket->id }}">
-                                                Reply
-                                            </button>
-                                        @else
-                                            Last reply sent.
-                                        @endif
-
-                                    </td>
-
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+    @include('layout.nav')
+    <br>
+    <div class="container">
+        <h1>Admin Dashboard</h1>
+        <h2>Users</h2>
+        @if ($users->isEmpty())
+            <div class="d-flex justify-content-center align-items-center">
+                <p style="color: #000;font-style: italic;">No users found ❌</p>
             </div>
+        @else
+            <div class="table-wrapper">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($users as $user)
+                            <tr>
+                                <td>{{ $user->name }}</td>
+                                <td>{{ $user->username }}</td>
+                                <td>{{ $user->email }}</td>
+                                <td>
+                                    <form
+                                        action="{{ $user->banned ? route('admin.users.unban', $user->id) : route('admin.users.ban', $user->id) }}"
+                                        method="POST" style="display:inline;">
+                                        @csrf
+                                        <button type="submit"
+                                            class="btn {{ $user->banned ? 'btn-success' : 'btn-danger' }}">
+                                            {{ $user->banned ? 'Unban' : 'Ban' }}
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @endif
+
+        <h2>Tickets</h2>
+        <div class="table-wrapper">
+            @if ($tickets->isEmpty())
+                <p style="color: #000000">No tickets found.</p>
+            @else
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>Ticket ID</th>
+                            <th>Username</th>
+                            <th>Conversation</th>
+                            <th>Last Updated</th>
+                            <th>Reply</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($tickets as $ticket)
+                            <tr>
+                                <td>{{ $ticket->id }}</td>
+                                <td>{{ $ticket->user->username ?? 'N/A' }}</td>
+                                <td>
+                                    <button type="button" class="btn btn-dark" data-bs-toggle="modal"
+                                        data-bs-target="#conversationModal-{{ $ticket->id }}">
+                                        View Conversation
+                                    </button>
+                                </td>
+                                <td>{{ $ticket->updated_at->format('Y-m-d H:i') }}</td>
+                                <td>
+                                    @php $lastMessage = $ticket->messages->first(); @endphp
+                                    @if (!$lastMessage || $lastMessage->sender === 'user')
+                                        <button type="button" class="ban" data-bs-toggle="modal"
+                                            data-bs-target="#replyModal-{{ $ticket->id }}">
+                                            Reply
+                                        </button>
+                                    @else
+                                        Last reply sent.
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             @endif
         </div>
-            <<h2>Tickets</h2>
-<div class="table-wrapper">
-    @if ($tickets->isEmpty())
-        <p style="color: #000000">No tickets found.</p>
-    @else
-        <table class="custom-table">
-            <thead>
-                <tr>
-                    <th>Ticket ID</th>
-                    <th>Username</th>
-                    <th>Conversation</th>
-                    <th>Last Updated</th>
-                    <th>Reply</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($tickets as $ticket)
-                    <tr>
-                        <td>{{ $ticket->id }}</td>
-                        <td>{{ $ticket->user->username ?? 'N/A' }}</td>
-                        <td>
-                            <button type="button" class="btn btn-dark" data-bs-toggle="modal"
-                                data-bs-target="#conversationModal-{{ $ticket->id }}">
-                                View Conversation
-                            </button>
-                        </td>
-                        <td>{{ $ticket->updated_at->format('Y-m-d H:i') }}</td>
-                        <td>
-                            @php $lastMessage = $ticket->messages->first(); @endphp
-                            @if (!$lastMessage || $lastMessage->sender === 'user')
-                                <button type="button" class="ban" data-bs-toggle="modal"
-                                    data-bs-target="#replyModal-{{ $ticket->id }}">
-                                    Reply
-                                </button>
-                                <button class="ban" onclick="openReplyModal({{ $ticket->id }})">Send
-                                    Reply</button>
-                            @else
-                                Last reply sent.
-                            @endif
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    @endif
-</div>
-    </div> <br>
+    </div>
 
     {{-- Reply Modals --}}
     @foreach ($tickets as $ticket)
@@ -241,7 +175,7 @@
     {{-- Conversation Modals --}}
     @foreach ($tickets as $ticket)
         <div class="modal fade" id="conversationModal-{{ $ticket->id }}" tabindex="-1"
-            aria-labelledby="conversationModalLabel-{{ $ticket->id }}" aria-hidden="true">
+            aria-labelledby="conversationModalLabel-{{ $ticket->id }}" aria-hidden="true" style="z-index: 2000">
             <div class="modal-dialog modal-dialog-centered modal-lg">
                 <div class="modal-content" style="background-color: #1f1f2e; color: #ffffff; border-radius: 12px;">
                     <div class="modal-header border-0">
@@ -250,7 +184,7 @@
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                             aria-label="Close"></button>
                     </div>
-                    <div class="modal-body" style="max-height: 400px; overflow-y: auto; padding: 1rem;">
+                    <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
                         @forelse ($ticket->messages as $message)
                             <div class="p-3 mb-3 rounded"
                                 style="background-color: {{ $message->sender === 'admin' ? '#343454' : '#2a2a3c' }};">
@@ -268,6 +202,7 @@
             </div>
         </div>
     @endforeach
+
     <script>
         document.querySelectorAll('.reply-form').forEach(form => {
             form.addEventListener('submit', async (e) => {
@@ -289,10 +224,6 @@
                         body: formData
                     });
 
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-
                     const data = await response.json();
 
                     if (data.success) {
@@ -309,65 +240,7 @@
                 } catch (error) {
                     console.error(error);
                 }
-    </div>
-    <div class="modal fade" id="replyModal" tabindex="-1" aria-labelledby="replyModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content text-light"
-                style="background-color: rgba(25, 23, 75, 0.5); backdrop-filter: blur(12px);">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="replyModalLabel">Send Reply</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="replyForm" method="POST">
-                        @csrf
-                        <div class="mb-3">
-                            <label for="replyText" class="form-label">Reply Message:</label>
-                            <textarea name="reply" id="replyText" rows="4" class="form-control" required></textarea>
-                        </div>
-                        <button type="submit" class="genButton">Send</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        let currentTicketId = null;
-        const replyModal = new bootstrap.Modal(document.getElementById('replyModal'));
-
-        function openReplyModal(ticketId) {
-            currentTicketId = ticketId;
-            const form = document.getElementById('replyForm');
-            form.action = `/admin/tickets/${ticketId}/reply`; // Adjust if using named routes
-            document.getElementById('replyText').value = '';
-            replyModal.show();
-        }
-
-        document.getElementById('replyForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            const form = e.target;
-            const formData = new FormData(form);
-
-            const response = await fetch(form.action, {
-                method: 'POST',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRF-TOKEN': form.querySelector('input[name="_token"]').value
-                },
-                body: formData
             });
-
-            if (response.ok) {
-                replyModal.hide();
-                // Optional: update UI or refresh page
-                alert('Reply sent successfully!');
-            } else {
-                alert('Failed to send reply.');
-            }
         });
     </script>
 

@@ -31,7 +31,7 @@
         /* or adjust the value as needed */
     }
 
-    input[type="text"] {
+    .container input[type="text"]{
         width: 250px;
         padding: 6px 8px;
         margin: 6px 0 12px;
@@ -45,16 +45,14 @@
 </style>
 
 <body>
-    <br>
     @include('layout.nav')
-
     <div class="container">
         <br>
         <h1>User Management</h1>
         <div class="d-flex justify-content-start align-items-end mb-4 flex-wrap">
             <form action="{{ route('polls.store') }}" method="POST" class="me-3">
                 @csrf
-                <p style="color: #000000">Create a poll</p>
+                <label>Create a poll</label>
                 <div class="input-group">
                     <input type="text" class="bb" name="title" id="pollTitle" required placeholder="Enter poll content">
                     <button class="learn-more ms-2">
@@ -68,7 +66,7 @@
                         <!-- Search Form -->
 
             <form action="{{ route('users.index') }}" method="GET">
-                <p style="color: #000000">Search Users</p>
+                <label>Search Users</label>
                 <div class="input-group">
                     <input type="text" class="bb" name="search" value="{{ request()->query('search') }}" placeholder="Enter user name">
                     <button class="learn-more ms-2">
@@ -139,8 +137,6 @@
             </div>
         @endif
     </div>
-
-
 </body>
 <script>
     document.addEventListener('DOMContentLoaded', function() {

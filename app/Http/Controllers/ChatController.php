@@ -28,15 +28,13 @@ class ChatController extends Controller
 
     public function show(Conversation $conversation)
     {
-        $messages = $conversation->messages()->latest()->paginate(10);
+        $messages = $conversation->messages()->oldest()->get(); // NOT paginate()
 
-        if (request()->ajax()) {
-            return view('chat.partials.messages', compact('messages'));
-        }
+        $story = $conversation->story;
 
-        $story = $conversation->story; // your story data to pass
         return view('chat.show', compact('conversation', 'story', 'messages'));
     }
+
 
     public function sendMessage(Request $request, Conversation $conversation)
     {
@@ -78,7 +76,7 @@ class ChatController extends Controller
         ]);
 
         if ($request->ajax()) {
-            $messages = $conversation->messages()->latest()->paginate(10);
+            $messages = $conversation->messages()->oldest()->get();
             $view = view('chat.partials.messages', compact('messages'))->render();
 
             return response()->json([
@@ -86,6 +84,14 @@ class ChatController extends Controller
             ]);
         }
 
+
         return redirect()->route('chat.show', $conversation);
     }
+    public function clear(Conversation $conversation)
+{
+    $conversation->messages()->delete();
+
+    return redirect()->route('chat.show', $conversation)->with('status', 'Chat cleared.');
+}
+
 }

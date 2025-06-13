@@ -100,10 +100,7 @@
             </ul>
         </div>
     @endif
-    <div>
-        <br>
         @include('layout.nav')
-
         <div class="container my-4">
             <div class="row">
                 <!-- Form Container -->
@@ -235,18 +232,13 @@
                                         @endforeach
                                     </div>
                                 @endif
-
                             </div>
                         @empty
                             <p>No blogs available.</p>
                         @endforelse
                     </div>
                 </div>
-
-
             </div>
-        </div>
-
         <br>
     </div>
 

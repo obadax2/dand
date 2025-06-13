@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="{{ asset('style.css') }}">
     <style>
         .form-container {
-            background-color: #122620;
+            background-color: #16383B;
             padding: 30px;
             border-radius: 12px;
             max-width: 700px;
@@ -72,9 +72,7 @@
 
 <body>
         <div>
-            <br>
             @include('layout.nav')
-            <br>
             <div class="form-container">
                 <h1>Edit Story: "{{ $story->title ?: 'Untitled Draft' }}"</h1>
 
