@@ -280,82 +280,44 @@
     </div>
     <a href="{{ route('home') }}" style="margin-top: 2rem; display: block;">← Back to Home Page</a>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+ <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <script>
-        function checkEmptyMessages() {
-            const container = $('#messages-container');
-            if (container.children().length === 0) {
-                container.html(
-                    '<p style="color: #888; font-style: italic; font-size: 1.2rem; text-align: center;">Start chat now</p>'
-                );
-            }
-        }
+<script>
+    $(function() {
+        // Scroll to bottom on initial page load
+        $('#messages-container').scrollTop($('#messages-container')[0].scrollHeight);
 
-        $(document).ready(() => {
-            checkEmptyMessages();
+        // Focus message input when clicking "Start chat now"
+        $('#start-chat-link').on('click', function(e) {
+            e.preventDefault();
+            $('input[name="message"]').focus();
         });
 
-        function scrollToBottom() {
-            const container = document.getElementById('messages-container');
-            if (container) {
-                container.scrollTop = container.scrollHeight;
-            }
-        }
-
-        window.addEventListener('load', scrollToBottom);
-
-        $(function() {
-            $('#chat-form').submit(function(e) {
-                e.preventDefault();
-                let form = $(this);
-
-                $.post(form.attr('action'), form.serialize())
-                    .done(function(response) {
-                        if (response.messages_html) {
-                            $('#messages-container').html(response.messages_html);
-
-                            $('#messages-container').scrollTop($('#messages-container')[0]
-                                .scrollHeight);
-                        }
-                        form.find('input[name=message]').val('').focus();
-                    })
-                    .fail(function() {
-                        alert('Failed to send message.');
-                    });
-            });
-
-            $('#messages-container').scrollTop($('#messages-container')[0].scrollHeight);
-
-            $('#start-chat-link').on('click', function(e) {
-                e.preventDefault();
-                $('input[name="message"]').focus();
-            });
-        });
-
+        // AJAX send message handler with loading spinner
         $('#chat-form').submit(function (e) {
-    e.preventDefault();
-    let form = $(this);
+            e.preventDefault();
+            let form = $(this);
 
-    $('#loading-spinner').show();
+            $('#loading-spinner').show();
 
-    $.post(form.attr('action'), form.serialize())
-        .done(function (response) {
-            if (response.messages_html) {
-                $('#messages-container').html(response.messages_html);
-                $('#messages-container').scrollTop($('#messages-container')[0].scrollHeight);
-            }
-            form.find('input[name=message]').val('').focus();
-        })
-        .fail(function () {
-            alert('Failed to send message.');
-        })
-        .always(function () {
-            $('#loading-spinner').hide();
+            $.post(form.attr('action'), form.serialize())
+                .done(function (response) {
+                    if (response.messages_html) {
+                        $('#messages-container').html(response.messages_html);
+                        $('#messages-container').scrollTop($('#messages-container')[0].scrollHeight);
+                    }
+                    form.find('input[name=message]').val('').focus();
+                })
+                .fail(function () {
+                    alert('Failed to send message.');
+                })
+                .always(function () {
+                    $('#loading-spinner').hide();
+                });
         });
-});
+    });
+</script>
 
-    </script>
 
 </body>
 

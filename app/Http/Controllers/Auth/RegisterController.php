@@ -13,8 +13,6 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\EmailVerification;
 use Illuminate\Support\Facades\Log;
 
-use function Laravel\Prompts\alert;
-
 class RegisterController extends Controller
 {
     public function showRegistrationForm()
@@ -35,13 +33,12 @@ class RegisterController extends Controller
         ]);
 
         if ($validator->fails()) {
-            $messages = $validator->errors()->all();
-            $alertMessage = implode('\n', $messages);
-
-            return response()->view('errors', $request->all() + [
-                'validationAlert' => $alertMessage
-            ]);
+            // Return back with errors and input, standard Laravel form error handling
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
         }
+
         $verificationCode = Str::random(5);
 
         $temporaryUser = TemporaryUser::create([
@@ -62,7 +59,7 @@ class RegisterController extends Controller
             Log::error('Mail failed to send', ['error' => $e->getMessage()]);
         }
 
-        return redirect()->route('verify.code.form');
+        return redirect()->route('verify.code.form')->with('status', 'Please check your email for the verification code to complete your registration.');
     }
 
     public function verifyEmail(Request $request)
@@ -90,6 +87,6 @@ class RegisterController extends Controller
 
         $temporaryUser->delete();
 
-        return redirect()->route('home');
+        return redirect()->route('login')->with('status', 'Registration completed successfully.');
     }
 }

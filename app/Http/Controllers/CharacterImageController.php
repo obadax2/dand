@@ -10,7 +10,7 @@ class CharacterImageController extends Controller
 {
     public function generateImages(Request $request)
     {
-        set_time_limit(300);
+        set_time_limit(400);
 
         $storyId = $request->input('story_id');
         $story = Story::with('characters')->findOrFail($storyId);
@@ -19,11 +19,11 @@ class CharacterImageController extends Controller
             $description = $character->description;
             $characterId = (string) $character->id;
 
-           $response = Http::timeout(120)->post('http://127.0.0.1:8002/generate-image', [
-    'description' => $description,
-    'character_id' => $characterId,
-]);
-
+            // Call FastAPI endpoint
+            $response = Http::timeout(120)->post('http://127.0.0.1:5000/generate-image', [
+                'description' => $description,
+                'character_id' => $characterId,
+            ]);
 
             if (!$response->ok()) {
                 return back()->with('error', "Failed to generate image for {$character->name}: " . $response->body());
@@ -39,7 +39,6 @@ class CharacterImageController extends Controller
             $filename = "character_images/{$characterId}.png";
 
             Storage::disk('public')->put($filename, $imageData);
-
 
             $character->image_url = Storage::url($filename);
             $character->save();
