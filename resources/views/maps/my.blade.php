@@ -44,44 +44,22 @@
 <body>
     @include('layout.nav')
     <div class="container mt-2">
-        <h1 class="mb-4">My Characters</h1>
+        <h2>Your Maps and Stories</h2>
 
-        @forelse($stories as $story)
-            @if ($story->map->isNotEmpty())
-                <h2 class="mt-4 mb-4">{{ $story->title }}</h2>
-
-                <div class="row g-3 mb-4">
-                    @foreach ($story->map as $maps)
-                        <div class="col-12 col-sm-6 col-md-4">
-                            <div class="card mb-4 shadow-sm">
-                                @php
-                                    $imageId = $maps->id;
-                                @endphp
-
-                                @if (Storage::disk('public')->exists("maps_images/{$imageId}.png"))
-                                    <img src="{{ asset("storage/maps_images/{$imageId}.png") }}"
-                                        class="card-img-top" alt="{{ $maps->title }}">
-                                @else
-                                    <img src="{{ asset('images/default-character.png') }}" class="card-img-top"
-                                        alt="No Image">
-                                @endif
-
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ $maps->title }}</h5>
-                                    <p class="card-text">{{ $maps->description }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            @endif
-        @empty
-            <div class="d-flex flex-column justify-content-center align-items-center text-center min-vh-100"
-                style="margin-top: -30vh;">
-                <p class=" fs-3 fw-bold mb-4 text-black">
-                    You haven't created any characters yet.</p>
+        @forelse ($map as $maps)
+            <div class="card mb-3 p-3 text-light bg-dark border border-secondary">
+                <h4>{{ $maps->title }}</h4>
+                <p><strong>Story:</strong> {{ $maps->story->title }}</p>
+                <p>{{ $maps->description }}</p>
+                @if ($maps->image)
+                    <img src="{{ asset($maps->image) }}" alt="Map image" style="max-width: 300px;">
+                @endif
+                <small>Created at: {{ $maps->created_at }}</small>
             </div>
+        @empty
+            <p>No maps found.</p>
         @endforelse
+
 
     </div>
 </body>

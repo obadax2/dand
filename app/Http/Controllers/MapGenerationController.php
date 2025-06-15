@@ -189,13 +189,18 @@ class MapGenerationController extends Controller
         return response()->json(['message' => 'Map uploaded successfully', 'path' => $path]);
     }
 
-    public function show(Request $request) {
-        $stories = Story::with('map')
-            ->where('user_id', auth()->id())
-            ->latest()
+    public function show()
+    {
+        $userId = auth()->id();
+
+        $map = \App\Models\Map::with('story')
+            ->where('user_id', $userId)
+            ->whereNotNull('story_id')
+            ->whereHas('story', function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            })
             ->get();
 
-        return view('maps.my', compact('stories'));
-
+        return view('maps.my', compact('map'));
     }
 }

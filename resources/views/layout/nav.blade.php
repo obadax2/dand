@@ -567,7 +567,6 @@
                 <li><a href="{{ route('stories.my') }}">My Stories</a></li>
                 <li><a href="{{ route('characters.my') }}">My Characters</a></li>
                 <li><a href="{{ route('maps.my') }}">My maps</a></li>
-
             </ul>
         </li>
 
