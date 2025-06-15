@@ -16,8 +16,9 @@ class ChatController extends Controller
         return view('chat.select_story', compact('stories'));
     }
 
-   public function startConversation(Request $request)
+public function startConversation(Request $request)
 {
+     set_time_limit(60);
     $conversation = Conversation::firstOrCreate([
         'user_id' => auth()->id(),
         'story_id' => $request->story_id,
@@ -25,34 +26,34 @@ class ChatController extends Controller
 
     $story = $conversation->story;
 
-    // Prepare story context
-    $storyContext = $story ? $story->title . "\n\n" . $story->content : 'No story context available.';
+    // Combine story and characters into a single text block
+    if ($story) {
+        $storyText = "{$story->title}\n\n{$story->content}\n\n";
 
-    // Prepare characters
-    $charactersText = '';
-    if ($story && $story->characters->count() > 0) {
-        $charactersText = "Characters:\n";
-        foreach ($story->characters as $character) {
-            $charactersText .= "- {$character->name}: {$character->description}\n";
+        if ($story->characters->count() > 0) {
+            $characterDescriptions = $story->characters->map(function ($character) {
+                return "{$character->name}: {$character->description}";
+            })->implode("\n");
+
+            $storyText .= "\nThe story features the following characters:\n{$characterDescriptions}";
+        } else {
+            $storyText .= "\nNo character information is available for this story.";
         }
     } else {
-        $charactersText = "Characters: No character data available.\n";
+        $storyText = "No story or character data available.";
     }
 
-    // Build initial prompt for AI
+    // Final prompt sent to the AI
     $initialPrompt = <<<EOT
-You are an AI assistant helping a user explore and discuss the following story.
+You are an AI assistant helping a user explore and discuss a story.
 
-Story:
-{$storyContext}
+{$storyText}
 
-{$charactersText}
-
-Introduce yourself briefly and invite the user to ask questions or talk about the story.
+Please introduce yourself briefly and invite the user to ask questions or discuss aspects of the story.
 EOT;
 
     // Send to AI
-    $url = env('PYTHON_AI_URL', 'http://localhost:5000/generated');
+    $url = env('PYTHON_AI_GENERATED_URL', 'http://localhost:5000/generated');
 
     try {
         $client = new \GuzzleHttp\Client();
@@ -62,9 +63,12 @@ EOT;
             ],
         ]);
 
-        $apiResponse = json_decode($response->getBody(), true);
-        $botMessage = $apiResponse['generated_text'] ?? 'Hello! I’m ready to chat about your story.';
+        $responseBody = $response->getBody()->getContents();
+        $apiResponse = json_decode($responseBody, true);
+
+        $botMessage = $apiResponse['response'] ?? 'Hello! I’m ready to chat about your story.';
     } catch (\Exception $e) {
+        dd('Error calling API:', $e->getMessage());
         $botMessage = 'Error connecting to AI service.';
     }
 
@@ -81,14 +85,13 @@ EOT;
     public function show(Conversation $conversation)
     {
         $messages = $conversation->messages()->oldest()->get(); // NOT paginate()
-
         $story = $conversation->story;
 
         return view('chat.show', compact('conversation', 'story', 'messages'));
     }
 
-public function sendMessage(Request $request, Conversation $conversation)
-{
+ public function sendMessage(Request $request, Conversation $conversation)
+{ set_time_limit(120);
     $request->validate(['message' => 'required|string']);
 
     $conversation->messages()->create([
@@ -105,7 +108,7 @@ public function sendMessage(Request $request, Conversation $conversation)
         ->map(fn($msg) => ucfirst($msg->sender) . ': ' . $msg->message)
         ->implode("\n");
 
-    // Build prompt with just history and new user message
+    // Build prompt with history and new message
     $fullPrompt = <<<EOT
 Conversation so far:
 {$history}
@@ -115,31 +118,51 @@ Bot:
 EOT;
 
     // Send to AI
-    $url = env('PYTHON_AI_URL', 'http://localhost:5000/generated');
+    $url = env('PYTHON_AI_GENERATED_URL', 'http://localhost:5000/generated');
 
-  try {
-    $client = new \GuzzleHttp\Client();
-    $response = $client->post($url, [
-        'json' => [
-            'prompt' => $fullPrompt,
-        ],
-    ]);
+    try {
+        $client = new \GuzzleHttp\Client();
+        $response = $client->post($url, [
+            'json' => [
+                'prompt' => $fullPrompt,
+            ],
+            // optional headers if needed
+            // 'headers' => [
+            //     'Authorization' => 'Bearer YOUR_API_KEY',
+            // ],
+        ]);
 
-    $apiResponse = json_decode($response->getBody(), true);
-    $botMessage = $apiResponse['generated_text'] ?? 'Sorry, I could not generate a reply at this time.';
+        // Check response status
+        $statusCode = $response->getStatusCode();
+        if ($statusCode !== 200) {
+            // Dump status and body for debugging
+            dd('API responded with status: ' . $statusCode, 'Body:', $response->getBody()->getContents());
+        }
 
-    // Remove <think> block
-    $botMessage = preg_replace('/<think>.*?<\/think>/s', '', $botMessage);
-    $botMessage = trim($botMessage);
-} catch (\Exception $e) {
-    $botMessage = 'Error connecting to AI service.';
-}
+        $responseBody = $response->getBody()->getContents();
+        // Debug the raw response body
+       
+        $apiResponse = json_decode($responseBody, true);
+        // Check if decoding was successful
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            dd('JSON decode error:', json_last_error_msg(), 'Response:', $responseBody);
+        }
 
+        // Assuming API returns 'generated_text'
+       $botMessage = $apiResponse['response'] ?? 'Sorry, I could not generate a reply at this time.';
+    } catch (\Exception $e) {
+        dd('Failed to send message', $e->getMessage(), $e->getTraceAsString());
+        // Optional: set a default message after dd, but dd stops execution
+        $botMessage = 'Error connecting to AI service.';
+    }
+
+    // Save bot message
     $conversation->messages()->create([
         'sender' => 'bot',
         'message' => $botMessage,
     ]);
 
+    // Return response
     if ($request->ajax()) {
         $messages = $conversation->messages()->oldest()->get();
         $view = view('chat.partials.messages', compact('messages'))->render();
@@ -151,12 +174,9 @@ EOT;
 
     return redirect()->route('chat.show', $conversation);
 }
-
     public function clear(Conversation $conversation)
-{
-    $conversation->messages()->delete();
-
-    return redirect()->route('chat.show', $conversation)->with('status', 'Chat cleared.');
-}
-
+    {
+        $conversation->messages()->delete();
+        return redirect()->route('chat.show', $conversation)->with('status', 'Chat cleared.');
+    }
 }

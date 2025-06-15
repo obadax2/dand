@@ -329,27 +329,23 @@
         window.addEventListener('load', scrollToBottom);
 
         $(function() {
-            // AJAX send message handler
-            $('#chat-form').submit(function(e) {
-                e.preventDefault();
-                let form = $(this);
+             AJAX send message handler
+             $('#chat-form').submit(function(e) {
+    e.preventDefault();
+  let form = $(this);
 
-                $.post(form.attr('action'), form.serialize())
-                    .done(function(response) {
-                        if (response.messages_html) {
-                            $('#messages-container').html(response.messages_html);
-
-                            // Scroll to bottom after new messages load
-                            $('#messages-container').scrollTop($('#messages-container')[0]
-                                .scrollHeight);
-                        }
-                        form.find('input[name=message]').val('').focus();
-                    })
-                    .fail(function() {
-                        alert('Failed to send message.');
-                    });
-            });
-
+     $.post(form.attr('action'), form.serialize())
+        .done(function(response) {
+           if (response.messages_html) {
+              $('#messages-container').html(response.messages_html);
+               $('#messages-container').scrollTop($('#messages-container')[0].scrollHeight);
+            }
+            form.find('input[name=message]').val('').focus();
+       })
+     .fail(function() {
+           alert('Failed to send message.');
+        });
+ });
             // Scroll to bottom on initial page load
             $('#messages-container').scrollTop($('#messages-container')[0].scrollHeight);
 
