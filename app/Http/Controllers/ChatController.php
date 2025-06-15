@@ -16,15 +16,67 @@ class ChatController extends Controller
         return view('chat.select_story', compact('stories'));
     }
 
-    public function startConversation(Request $request)
-    {
-        $conversation = Conversation::firstOrCreate([
-            'user_id' => auth()->id(),
-            'story_id' => $request->story_id,
+   public function startConversation(Request $request)
+{
+    $conversation = Conversation::firstOrCreate([
+        'user_id' => auth()->id(),
+        'story_id' => $request->story_id,
+    ]);
+
+    $story = $conversation->story;
+
+    // Prepare story context
+    $storyContext = $story ? $story->title . "\n\n" . $story->content : 'No story context available.';
+
+    // Prepare characters
+    $charactersText = '';
+    if ($story && $story->characters->count() > 0) {
+        $charactersText = "Characters:\n";
+        foreach ($story->characters as $character) {
+            $charactersText .= "- {$character->name}: {$character->description}\n";
+        }
+    } else {
+        $charactersText = "Characters: No character data available.\n";
+    }
+
+    // Build initial prompt for AI
+    $initialPrompt = <<<EOT
+You are an AI assistant helping a user explore and discuss the following story.
+
+Story:
+{$storyContext}
+
+{$charactersText}
+
+Introduce yourself briefly and invite the user to ask questions or talk about the story.
+EOT;
+
+    // Send to AI
+    $url = env('PYTHON_AI_URL', 'http://localhost:5000/generated');
+
+    try {
+        $client = new \GuzzleHttp\Client();
+        $response = $client->post($url, [
+            'json' => [
+                'prompt' => $initialPrompt,
+            ],
         ]);
 
-        return redirect()->route('chat.show', $conversation);
+        $apiResponse = json_decode($response->getBody(), true);
+        $botMessage = $apiResponse['generated_text'] ?? 'Hello! I’m ready to chat about your story.';
+    } catch (\Exception $e) {
+        $botMessage = 'Error connecting to AI service.';
     }
+
+    // Save AI intro message
+    $conversation->messages()->create([
+        'sender' => 'bot',
+        'message' => $botMessage,
+    ]);
+
+    return redirect()->route('chat.show', $conversation);
+}
+
 
     public function show(Conversation $conversation)
     {
@@ -35,58 +87,71 @@ class ChatController extends Controller
         return view('chat.show', compact('conversation', 'story', 'messages'));
     }
 
+public function sendMessage(Request $request, Conversation $conversation)
+{
+    $request->validate(['message' => 'required|string']);
 
-    public function sendMessage(Request $request, Conversation $conversation)
-    {
-        $request->validate(['message' => 'required|string']);
+    $conversation->messages()->create([
+        'sender' => 'user',
+        'message' => $request->message,
+    ]);
 
-        // Save user message
-        $conversation->messages()->create([
-            'sender' => 'user',
-            'message' => $request->message
+    // Get limited chat history
+    $history = $conversation->messages()
+        ->latest()
+        ->take(10)
+        ->get()
+        ->reverse()
+        ->map(fn($msg) => ucfirst($msg->sender) . ': ' . $msg->message)
+        ->implode("\n");
+
+    // Build prompt with just history and new user message
+    $fullPrompt = <<<EOT
+Conversation so far:
+{$history}
+
+User: {$request->message}
+Bot:
+EOT;
+
+    // Send to AI
+    $url = env('PYTHON_AI_URL', 'http://localhost:5000/generated');
+
+  try {
+    $client = new \GuzzleHttp\Client();
+    $response = $client->post($url, [
+        'json' => [
+            'prompt' => $fullPrompt,
+        ],
+    ]);
+
+    $apiResponse = json_decode($response->getBody(), true);
+    $botMessage = $apiResponse['generated_text'] ?? 'Sorry, I could not generate a reply at this time.';
+
+    // Remove <think> block
+    $botMessage = preg_replace('/<think>.*?<\/think>/s', '', $botMessage);
+    $botMessage = trim($botMessage);
+} catch (\Exception $e) {
+    $botMessage = 'Error connecting to AI service.';
+}
+
+    $conversation->messages()->create([
+        'sender' => 'bot',
+        'message' => $botMessage,
+    ]);
+
+    if ($request->ajax()) {
+        $messages = $conversation->messages()->oldest()->get();
+        $view = view('chat.partials.messages', compact('messages'))->render();
+
+        return response()->json([
+            'messages_html' => $view,
         ]);
-
-        // --- AI INTEGRATION PLACEHOLDER ---
-        /*
-       // Prepare data for AI core
-       $story = $conversation->story;
-       $characters = $story->characters; // Collection of characters
-       $map = $story->map;
-
-       // Example: Call your AI core service (replace with actual implementation)
-       $aiReply = AIChatService::getReply([
-           'story' => $story,
-           'characters' => $characters,
-           'map' => $map,
-           'user_message' => $request->message,
-           'conversation_id' => $conversation->id,
-       ]);
-
-       // Save AI reply to messages
-       $conversation->messages()->create([
-           'sender' => 'bot',
-           'message' => $aiReply,
-       ]);
-       */
-
-        // Placeholder bot reply (temporary until AI core is ready)
-        $conversation->messages()->create([
-            'sender' => 'bot',
-            'message' => 'This is a placeholder reply.'
-        ]);
-
-        if ($request->ajax()) {
-            $messages = $conversation->messages()->oldest()->get();
-            $view = view('chat.partials.messages', compact('messages'))->render();
-
-            return response()->json([
-                'messages_html' => $view,
-            ]);
-        }
-
-
-        return redirect()->route('chat.show', $conversation);
     }
+
+    return redirect()->route('chat.show', $conversation);
+}
+
     public function clear(Conversation $conversation)
 {
     $conversation->messages()->delete();

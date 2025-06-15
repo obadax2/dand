@@ -13,8 +13,6 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\EmailVerification;
 use Illuminate\Support\Facades\Log;
 
-use function Laravel\Prompts\alert;
-
 class RegisterController extends Controller
 {
     public function showRegistrationForm()
@@ -23,48 +21,51 @@ class RegisterController extends Controller
     }
 
     public function register(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'username' => 'required|string|max:255|unique:temporary_users',
-            'dob_day' => 'required|integer|between:1,31',
-            'dob_month' => 'required|integer|between:1,12',
-            'dob_year' => 'required|integer|min:1900|max:' . date('Y'),
-            'email' => 'required|string|email|max:255|unique:temporary_users',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
+{
+  
+    $validator = Validator::make($request->all(), [
+        'name' => 'required|string|max:255',
+        'username' => 'required|string|max:255|unique:temporary_users',
+        'dob_day' => 'required|integer|between:1,31',
+        'dob_month' => 'required|integer|between:1,12',
+        'dob_year' => 'required|integer|min:1900|max:' . date('Y'),
+        'email' => 'required|string|email|max:255|unique:temporary_users',
+        'password' => 'required|string|min:8|confirmed',
+    ]);
 
-        if ($validator->fails()) {
-            $messages = $validator->errors()->all();
-            $alertMessage = implode('\n', $messages); // convert to a single alert string
-
-            return response()->view('errors', $request->all() + [
-                'validationAlert' => $alertMessage
-            ]);
-        }
-        $verificationCode = Str::random(5);
-
-        $temporaryUser = TemporaryUser::create([
-            'name' => $request->name,
-            'username' => $request->username,
-            'dob_day' => $request->dob_day,
-            'dob_month' => $request->dob_month,
-            'dob_year' => $request->dob_year,
-            'email' => $request->email,
-            'verification_code' => $verificationCode,
-            'password' => Hash::make($request->password),
-        ]);
-
-        try {
-            Mail::to($temporaryUser->email)->send(new EmailVerification($verificationCode));
-            Log::info('Attempted to send email to ' . $temporaryUser->email);
-        } catch (\Exception $e) {
-            Log::error('Mail failed to send', ['error' => $e->getMessage()]);
-        }
-
-        return redirect()->route('verify.code.form');
+    if ($validator->fails()) {
+        return redirect()->back()
+            ->withErrors($validator)
+            ->withInput();
     }
 
+    $verificationCode = Str::random(5);
+
+    $temporaryUser = TemporaryUser::create([
+        'name' => $request->name,
+        'username' => $request->username,
+        'dob_day' => $request->dob_day,
+        'dob_month' => $request->dob_month,
+        'dob_year' => $request->dob_year,
+        'email' => $request->email,
+        'verification_code' => $verificationCode,
+        'password' => Hash::make($request->password),
+    ]);
+
+ try {
+    Mail::to($temporaryUser->email)->send(new EmailVerification($verificationCode));
+    Log::info('Attempted to send email to ' . $temporaryUser->email);
+
+    
+} catch (\Exception $e) {
+    Log::error('Mail failed to send', ['error' => $e->getMessage()]);
+    
+}
+
+
+  
+    return redirect()->route('verify.code.form')->with('status', 'Please check your email for the verification code to complete your registration.');
+}
     public function verifyEmail(Request $request)
     {
         $request->validate([
@@ -77,7 +78,7 @@ class RegisterController extends Controller
             return back()->withErrors(['verification_code' => 'Invalid verification code.']);
         }
 
-        // Create User
+        
         $user = User::create([
             'name' => $temporaryUser->name,
             'username' => $temporaryUser->username,
@@ -91,6 +92,6 @@ class RegisterController extends Controller
 
         $temporaryUser->delete();
 
-        return redirect()->route('home');
+        return redirect()->route('login')->with('status', 'Registration completed successfully.');
     }
 }
