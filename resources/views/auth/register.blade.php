@@ -16,7 +16,6 @@
         <section class="wrapper">
             <div class="form signup">
                 <header class="afaf">Signup</header>
-
                 <div class="form-content">
                     <form method="POST" action="{{ route('register') }}" class="form-register">
                         @csrf
@@ -54,14 +53,13 @@
                     @csrf
                     <input type="text" name="username" class="login-input" placeholder="Username" required />
                     <input type="password" name="password" class="login-input" placeholder="Password" required />
-                    <a href="#" style="color: #fff" class="reset-link">Forgot password?</a>
                     <input type="submit" class="btn btn-dark" value="Login" />
                 </form>
             </div>
     </div>
     <script>
         const wrapper = document.querySelector(".wrapper"),
-            signupHeader = document.querySelector(".signup header"),
+            signupHeader = document.querySelector(".form header"),
             loginHeader = document.querySelector(".login header");
         loginHeader.addEventListener("click", () => {
             wrapper.classList.add("active");

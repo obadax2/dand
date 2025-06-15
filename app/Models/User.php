@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\HasMany; 
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 class User extends Authenticatable
 {
@@ -26,7 +26,8 @@ class User extends Authenticatable
         'dob_year',
         'banned',
         'email_verified_at',
-       
+        'profile_picture',
+
     ];
 
     /**
@@ -81,7 +82,7 @@ class User extends Authenticatable
      */
     public function stories(): HasMany
     {
-        return $this->hasMany(Story::class);    
+        return $this->hasMany(Story::class);
     }
     public function friends()
 {

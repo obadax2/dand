@@ -47,28 +47,28 @@
         <h1 class="mb-4">My Characters</h1>
 
         @forelse($stories as $story)
-            @if ($story->characters->isNotEmpty())
+            @if ($story->map->isNotEmpty())
                 <h2 class="mt-4 mb-4">{{ $story->title }}</h2>
 
                 <div class="row g-3 mb-4">
-                    @foreach ($story->characters as $character)
+                    @foreach ($story->map as $maps)
                         <div class="col-12 col-sm-6 col-md-4">
                             <div class="card mb-4 shadow-sm">
                                 @php
-                                    $imageId = $character->original_character_id ?? $character->id;
+                                    $imageId = $maps->id;
                                 @endphp
 
-                                @if (Storage::disk('public')->exists("character_images/{$imageId}.png"))
-                                    <img src="{{ asset("storage/character_images/{$imageId}.png") }}"
-                                        class="card-img-top" alt="{{ $character->name }}">
+                                @if (Storage::disk('public')->exists("maps_images/{$imageId}.png"))
+                                    <img src="{{ asset("storage/maps_images/{$imageId}.png") }}"
+                                        class="card-img-top" alt="{{ $maps->title }}">
                                 @else
                                     <img src="{{ asset('images/default-character.png') }}" class="card-img-top"
                                         alt="No Image">
                                 @endif
 
                                 <div class="card-body">
-                                    <h5 class="card-title">{{ $character->name }}</h5>
-                                    <p class="card-text">{{ $character->description }}</p>
+                                    <h5 class="card-title">{{ $maps->title }}</h5>
+                                    <p class="card-text">{{ $maps->description }}</p>
                                 </div>
                             </div>
                         </div>

@@ -20,15 +20,12 @@
             width: 220px;
             height: 320px;
             background: #16383B;
-            display: flex;
-            flex-direction: column;
             justify-content: space-between;
             border-radius: 15px;
             cursor: pointer;
             overflow: hidden;
             padding: 20px;
             text-align: center;
-            z-index: 1;
         }
 
         .card h3,
@@ -52,13 +49,13 @@
         .card::before {
             top: 0;
             right: 0;
-            border-radius: 0 15px 0 100%;
+            border-radius: 0 0 0 100%;
         }
 
         .card::after {
             bottom: 0;
             left: 0;
-            border-radius: 0 100% 0 15px;
+            border-radius: 0 100% 0 0;
         }
 
         .card:hover::before,
@@ -79,12 +76,7 @@
     @include('layout.nav')
     <div class="container mt-2">
         <h1 class="mb-4">My Storeis</h1>
-
         @forelse($stories as $story)
-            @if ($loop->first)
-                <div class="row g-4">
-            @endif
-
             <div class="col-12 col-sm-6 col-md-4 col-lg-3">
                 <div class="card shadow p-3 mb-4">
                     <h3>{{ $story->title }}</h3>
@@ -92,22 +84,17 @@
                     <a href="{{ route('stories.show', $story->id) }}" class="btn btn-dark">View Story</a>
                 </div>
             </div>
-
-            @if ($loop->last)
     </div>
-    @endif
 @empty
     <div class="d-flex flex-column justify-content-center align-items-center text-center min-vh-100"
         style="margin-top: -30vh;">
         <p class=" fs-3 fw-bold mb-4 text-black">
-           You haven't created any stories yet.</p>
+            You haven't created any stories yet.</p>
         <a href="{{ route('stories.create') }}" class="btn create text-white" style="background: #1f2d31">
             Create a new story <i class="fas fa-reply ms-2"></i>
         </a>
     </div>
-    @endforelse
-    </div>
 </body>
-
+@endforelse
 
 </html>

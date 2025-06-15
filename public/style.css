@@ -36,9 +36,7 @@ table {
 th,
 td {
     text-align: center !important;
-    /* Ensures this takes priority */
     padding: 10px !important;
-    /* Ensures padding is applied */
 }
 
 th {
@@ -141,17 +139,14 @@ th {
     align-items: center;
     justify-content: center;
     text-align: center;
-    /* existing styles */
     position: absolute;
     width: 100%;
     font-style: italic;
-
     height: 100%;
     backface-visibility: hidden;
     border-radius: 10px;
     padding: 1.5rem;
     background-color: #F4EBD0;
-    backdrop-filter: blur(1px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -276,22 +271,19 @@ th {
     font-family: 'Open Sans', sans-serif;
     color: #000000;
     font-size: 70px;
-    /* Increased size */
     margin: 60px 0;
 }
 
 .typed-text {
-    color: #D6AD60;
-    /* Typed word color */
+    color: #ADD8E6;
     font-weight: bold;
 }
 
 .cursor {
     display: inline-block;
-    color: #D6AD60;
+    color: #ADD8E6;
     font-weight: bold;
     font-size: 70px;
-    /* Matches text size */
     animation: blink 0.7s infinite;
 }
 
@@ -320,8 +312,6 @@ th {
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
     z-index: 9999;
-    /* Bootstrap uses 1050 for modals */
-    /* Example: green background for success */
     animation: slideDown 0.3s ease-out;
 }
 
@@ -395,9 +385,6 @@ select.form-control {
     color: #000;
 }
 
-
-
-/* From Uiverse.io by cssbuttons-io */
 button {
     position: relative;
     display: inline-block;
@@ -543,13 +530,6 @@ button:hover .button-text {
     height: 120px;
 }
 
-.profile-wrapper img {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
 .edit-icon {
     position: absolute;
     bottom: 6px;
@@ -619,7 +599,6 @@ p {
     flex-wrap: wrap;
     gap: 40px;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    /* optional: light border for frosted glass feel */
 }
 
 .column {
@@ -633,21 +612,13 @@ p {
 
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap");
 
-body.register_body,
-.register_body * {
+body.register_body {
     margin: 0;
     padding: 0;
-    box-sizing: border-box !important;
-    font-family: "Poppins", sans-serif !important;
-}
-
-
-.register_body {
-    min-height: 100vh;
     display: flex;
-    align-items: center;
     justify-content: center;
     background: #f0faff;
+    font-family: "Poppins", sans-serif !important;
 }
 
 .wrapper {
@@ -658,7 +629,6 @@ body.register_body,
     max-height: 630px;
     padding: 20px 30px 120px;
     background-color:#787D7F;
-    /* semi-transparent */
     backdrop-filter: blur(1px);
     box-shadow: 0 5px 10px rgba(0,
             0,
@@ -667,7 +637,7 @@ body.register_body,
     overflow: hidden;
 }
 
-.form.login {
+.login {
     position: absolute;
     left: 50%;
     bottom: -86%;
@@ -677,7 +647,6 @@ body.register_body,
     border-radius: 50%;
     height: 100%;
     background-color: #000;
-    /* semi-transparent */
     backdrop-filter: blur(10px);
     transition: all 0.6s ease;
 }
@@ -713,7 +682,7 @@ body.register_body,
 } */
 
 .form-content{
-    margin-top: 80px !important; /* Adjust as needed */
+    margin-top: 80px !important;
 }
 
 .afaf  {
@@ -734,7 +703,7 @@ body.register_body,
     margin-top: 40px;
 }
 
-.form-register input,.form.signup input {
+.form-register input,.signup input {
     height: 60px;
     outline: none;
     border: none;
@@ -748,7 +717,7 @@ body.register_body,
 
 
 
-.form.signup input {
+.form input {
     padding: 20px !important;
 }
 
@@ -770,20 +739,14 @@ form .checkbox label {
     color: #fff;
 }
 
-.form.signup {
+.signup {
     max-height: 500px;
-    /* Adjust height as needed */
     overflow-y: auto;
-    border-radius: 12px !important;
-    scrollbar-width: none;
-    /* For Firefox */
-    -ms-overflow-style: none;
-    /* For Internet Explorer and Edge */
+    border-radius: 12px;
 }
 
-.form.signup::-webkit-scrollbar {
+.signup::-webkit-scrollbar {
     display: none;
-    /* For Chrome, Safari, and Opera */
 }
 
 
@@ -865,7 +828,6 @@ textarea {
     color: #000 !important;
     overflow: hidden;
     resize: none;
-    /* Prevent manual resizing since it's auto-resized */
     min-height: 100px;
 }
 
@@ -915,14 +877,11 @@ input[type="text"] {
 #genre:focus {
     outline: none;
     box-shadow: 0 0 12px rgba(5, 238, 255, 0.6);
-    /* Stronger glow on focus */
-
 }
 
 #title:focus {
     outline: none;
     box-shadow: 0 0 12px rgba(5, 238, 255, 0.6);
-    /* Stronger glow on focus */
 }
 
 .alert {
@@ -935,7 +894,6 @@ input[type="text"] {
     margin-bottom: 15px;
     font-size: 0.9rem;
     color: #ccc !important;
-    /* or #05EEFF for highlight */
 }
 
 .nav-links {
@@ -994,7 +952,6 @@ input[type="text"] {
     padding: 20px;
     border-radius: 8px;
     margin-bottom: 30px;
-    /* added shadow */
 }
 
 
@@ -1044,7 +1001,7 @@ input[type="number"],
 }
 
 .com {
-    background-color: #D6AD60;
+    background-color: #ADD8E6;
     backdrop-filter: blur(12px);
     color: white;
     padding: 0.6rem 1.2rem;
@@ -1058,7 +1015,6 @@ input[type="number"],
     box-shadow: 0 0 12px rgba(5, 238, 255, 0.3);
 }
 
-/* Mobile devices */
 @media (max-width: 768px) {
     .nav ul {
         flex-direction: column;
@@ -1074,10 +1030,10 @@ input[type="number"],
         flex-direction: column;
         align-items: center;
     }
-
+/*
     .card1 {
         height: 220px;
-    }
+    } */
 
     .container3,
     .container4,
@@ -1094,7 +1050,6 @@ input[type="number"],
     }
 }
 
-/* Tablets */
 @media (min-width: 769px) and (max-width: 1024px) {
     nav ul {
         gap: 40px;
@@ -1121,9 +1076,7 @@ input[type="number"],
 }
 
 .bg-custom-success {
-    background-color: #D6AD60 !important;
+    background-color: #ADD8E6 !important;
     color: #000;
-    /* Optional: for contrast */
     border: none;
-    /* Optional: cleaner look */
 }

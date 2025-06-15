@@ -34,14 +34,10 @@
             @include('layout.nav')
             <div class="d-flex" style="padding: 20px;">
                 <div class="container3 flex-grow-1">
-                    <!-- Header + Nav + Character Image Form -->
                     <div class="page-header mb-4">
                         <div class="d-flex justify-content-between align-items-center flex-wrap w-100">
                             <h1 class="m-0">Create a New Story</h1>
-
                             <div class="d-flex align-items-center gap-4 ms-auto mt-4" style="min-width: 350px;">
-
-                                <!-- Character Image Generator Dropdown -->
                                 @if (isset($stories) && count($stories))
                                     <form method="POST" action="{{ route('characters.generate.images') }}"
                                         class="d-flex align-items-center mb-0">
@@ -59,7 +55,6 @@
                         </div>
                     </div>
 
-                    <!-- Show Generated Characters -->
                     @if (isset($characters) && count($characters))
                         <h3 class="mt-3">Generated Characters</h3>
                         <ul class="list-group mb-4">
@@ -76,7 +71,6 @@
                         </ul>
                     @endif
 
-                    <!-- Generated Story Content -->
                     @if (isset($generatedContent))
                         <h2>Generated Story Content</h2>
                         <div class="chat-box">{{ $generatedContent }}</div>
@@ -119,26 +113,12 @@
             };
 
             if (textarea) {
-                autoResize(textarea);
                 textarea.addEventListener('input', () => {
                     autoResize(textarea);
                     if (charCount) {
                         charCount.textContent = `${textarea.value.length} / 2000 characters`;
                     }
                 });
-
-                if (charCount) {
-                    charCount.textContent = `${textarea.value.length} / 2000 characters`;
-                }
-            }
-
-            const alert = document.querySelector('.alert');
-            if (alert) {
-                setTimeout(() => {
-                    alert.style.transition = 'opacity 0.5s ease';
-                    alert.style.opacity = '0';
-                    setTimeout(() => alert.remove(), 500);
-                }, 3000);
             }
         });
     </script>

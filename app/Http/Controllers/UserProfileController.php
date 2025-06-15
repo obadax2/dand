@@ -14,23 +14,18 @@ class UserProfileController extends Controller
     {
         $user = Auth::user();
 
-        // Fetch friend requests with pivot status
         $friendRequests = $user->friendRequests()
             ->withPivot('status')
             ->wherePivot('status', 'pending')
             ->get();
 
-        // Count followers
         $followersCount = $user->followers()->count();
 
-        // Fetch friends from both relations and merge
         $friends = $user->friends();
         $friendsCount = $user->allFriends()->count();
 
-        // Define senderUser (assuming it's the current user or specify as needed)
-        $senderUser = $user; // or fetch another user as per your logic
+        $senderUser = $user;
 
-        // Pass all variables to the view
         return view('userprofile', compact('user', 'friendRequests', 'followersCount', 'friendsCount', 'senderUser'));
     }
     public function updateProfile(Request $request)
@@ -44,16 +39,10 @@ class UserProfileController extends Controller
         $user = auth()->user();
 
         if ($request->hasFile('profile_picture')) {
-            // Delete old picture if exists
             if ($user->profile_picture) {
                 Storage::delete('public/' . $user->profile_picture);
             }
-
-            // Store new picture in 'public/pictures'
             $path = $request->file('profile_picture')->store('pictures', 'public');
-
-
-            // Save path relative to 'public/'
             $relativePath = str_replace('public/', '', $path);
             $user->profile_picture = $relativePath;
             $user->save();
@@ -86,7 +75,6 @@ class UserProfileController extends Controller
         if ($request->to_user_id !== auth()->id()) {
             abort(403);
         }
-        // Update status to accepted
         $request->status = 'accepted';
         $request->save();
 

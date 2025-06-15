@@ -29,7 +29,7 @@ class AppServiceProvider extends ServiceProvider
                 ->where('item_type', Blog::class)
                 ->get();
         } else {
-            $cartItems = collect(); // empty collection for guests
+            $cartItems = collect();
         }
 
         $view->with('cartItems', $cartItems);

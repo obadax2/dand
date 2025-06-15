@@ -210,44 +210,43 @@ class PaymentController extends Controller
             $originalStory = $blog->story;
 
             $copiedStory = $originalStory->replicate();
-$copiedStory->user_id = Auth::id();
-$copiedStory->status = 'purchased';
-$copiedStory->save();
+            $copiedStory->user_id = Auth::id();
+            $copiedStory->status = 'purchased';
+            $copiedStory->save();
 
-// ✅ Copy characters
-foreach ($originalStory->characters as $character) {
-  $copiedCharacter = $character->replicate();
-$copiedCharacter->story_id = $copiedStory->id;
+            // ✅ Copy characters
+            foreach ($originalStory->characters as $character) {
+                $copiedCharacter = $character->replicate();
+                $copiedCharacter->story_id = $copiedStory->id;
 
-// Set the original_character_id to the ID of the original character
-$copiedCharacter->original_character_id = $character->id;
+                // Set the original_character_id to the ID of the original character
+                $copiedCharacter->original_character_id = $character->id;
 
-if ($character->image && \Storage::disk('public')->exists($character->image)) {
-    $extension = pathinfo($character->image, PATHINFO_EXTENSION);
-    $newImageName = 'character_images/' . uniqid() . '.' . $extension;
-    \Storage::disk('public')->copy($character->image, $newImageName);
-    $copiedCharacter->image = $newImageName;
-}
+                if ($character->image && \Storage::disk('public')->exists($character->image)) {
+                    $extension = pathinfo($character->image, PATHINFO_EXTENSION);
+                    $newImageName = 'character_images/' . uniqid() . '.' . $extension;
+                    \Storage::disk('public')->copy($character->image, $newImageName);
+                    $copiedCharacter->image = $newImageName;
+                }
 
-$copiedCharacter->save();
+                $copiedCharacter->save();
+            }
 
-}
+            $originalMap = $originalStory->map;
+            if ($originalMap) {
+                $copiedMap = $originalMap->replicate();
+                $copiedMap->user_id = $user->id;
+                $copiedMap->story_id = $copiedStory->id;
 
-$originalMap = $originalStory->map;
-if ($originalMap) {
-    $copiedMap = $originalMap->replicate();
-    $copiedMap->user_id = $user->id;
-    $copiedMap->story_id = $copiedStory->id;
-
-    // ✅ Copy the map image if it exists
-    if ($originalMap->image && \Storage::disk('public')->exists($originalMap->image)) {
-        $extension = pathinfo($originalMap->image, PATHINFO_EXTENSION);
-        $newImageName = 'map_images/' . uniqid() . '.' . $extension;
-        \Storage::disk('public')->copy($originalMap->image, $newImageName);
-        $copiedMap->image = $newImageName;  // no leading slash
-    }
-    $copiedMap->save();
-}
+                // ✅ Copy the map image if it exists
+                if ($originalMap->image && \Storage::disk('public')->exists($originalMap->image)) {
+                    $extension = pathinfo($originalMap->image, PATHINFO_EXTENSION);
+                    $newImageName = 'map_images/' . uniqid() . '.' . $extension;
+                    \Storage::disk('public')->copy($originalMap->image, $newImageName);
+                    $copiedMap->image = $newImageName;  // no leading slash
+                }
+                $copiedMap->save();
+            }
 
             Log::info('Story copied for user', [
                 'original_story_id' => $originalStory->id,
@@ -266,215 +265,202 @@ if ($originalMap) {
     {
         return redirect()->route('dashboard')->with('error', 'Payment canceled.');
     }
-public function checkoutAndExecuteCart(Request $request)
-{
-    try {
-        $token = $request->get('token');
+    public function checkoutAndExecuteCart(Request $request)
+    {
+        try {
+            $token = $request->get('token');
 
-        if (!$token) {
-            // Step 1: Create the PayPal order
+            if (!$token) {
+
+                $user = Auth::user();
+                $cartItems = $user->cartItems()->with('item.story')->get();
+
+                if ($cartItems->isEmpty()) {
+                    dd('3: Cart is empty');
+                }
+
+                $items = [];
+                $total = 0;
+
+                foreach ($cartItems as $item) {
+                    $blog = $item->item;
+
+                    if (!$blog) {
+                        Log::warning("Cart item ID {$item->id} has no associated blog.");
+                        continue;
+                    }
+
+                    $alreadyPurchased = Story::where('user_id', $user->id)
+                        ->where('status', 'purchased')
+                        ->where('title', $blog->story->title)
+                        ->exists();
+
+                    if ($alreadyPurchased) {
+                        dd("5: Already purchased - {$blog->story->title}");
+                    }
+
+                    $items[] = [
+                        'name' => $blog->story->title,
+                        'unit_amount' => [
+                            'currency_code' => 'USD',
+                            'value' => number_format($blog->price, 2, '.', ''),
+                        ],
+                        'quantity' => (string) $item->quantity,
+                    ];
+
+                    $total += $blog->price * $item->quantity;
+                }
+
+                if ($total <= 0) {
+                    dd('6: Total amount is zero or invalid.');
+                }
+
+                $accessToken = $this->getAccessToken();
+
+                $orderId = uniqid();
+                $body = [
+                    "intent" => "CAPTURE",
+                    "application_context" => [
+                        "return_url" => route('paypal.cart.execute'),
+                        "cancel_url" => route('paypal.cancel'),
+                    ],
+                    "purchase_units" => [
+                        [
+                            "reference_id" => $orderId,
+                            "amount" => [
+                                "currency_code" => "USD",
+                                "value" => number_format($total, 2, '.', ''),
+                                "breakdown" => [
+                                    "item_total" => [
+                                        "currency_code" => "USD",
+                                        "value" => number_format($total, 2, '.', ''),
+                                    ],
+                                ],
+                            ],
+                            "items" => $items,
+                        ],
+                    ],
+                ];
+
+                $response = Http::withToken($accessToken)
+                    ->withOptions(['verify' => false])
+                    ->post($this->paypalBaseUrl . '/v2/checkout/orders', $body);
+
+                if (!$response->successful()) {
+                    dd('7: PayPal order failed', $response->body());
+                }
+
+                $order = $response->json();
+                $approveLink = collect($order['links'])->firstWhere('rel', 'approve')['href'] ?? null;
+
+                if (!$approveLink) {
+                    dd('8: Approval link not found', $order);
+                }
+
+                Session::put('cart_checkout', true);
+                Session::put('order_id', $order['id']);
+
+                return redirect($approveLink);
+            }
+
+
+            if (!Session::has('cart_checkout')) {
+                dd('10: Session lost');
+            }
 
             $user = Auth::user();
             $cartItems = $user->cartItems()->with('item.story')->get();
 
-            if ($cartItems->isEmpty()) {
-                dd('3: Cart is empty');
+            $accessToken = $this->getAccessToken();
+
+            $orderResponse = Http::withToken($accessToken)
+                ->withOptions(['verify' => false])
+                ->get($this->paypalBaseUrl . "/v2/checkout/orders/{$token}");
+
+            if (!$orderResponse->successful()) {
+                dd('12: Order fetch failed', $orderResponse->body());
             }
 
-            $items = [];
-            $total = 0;
+            $orderDetails = $orderResponse->json();
+            if ($orderDetails['status'] !== 'APPROVED') {
+                dd('13: Order not approved', $orderDetails);
+            }
+
+            $captureResponse = Http::withToken($accessToken)
+                ->withOptions(['verify' => false])
+                ->withHeaders([
+                    'Content-Type' => 'application/json',
+                ])
+                ->send('POST', $this->paypalBaseUrl . "/v2/checkout/orders/{$token}/capture", [
+                    'body' => '{}',
+                ]);
+            if (!$captureResponse->successful()) {
+                dd('14: Capture failed', $captureResponse->body());
+            }
+
+            $captureResult = $captureResponse->json();
+            if (($captureResult['status'] ?? '') !== 'COMPLETED') {
+                dd('15: Capture not completed', $captureResult);
+            }
 
             foreach ($cartItems as $item) {
                 $blog = $item->item;
+                $originalStory = $blog->story;
 
-                if (!$blog) {
-                    Log::warning("Cart item ID {$item->id} has no associated blog.");
-                    continue;
+                $copiedStory = $originalStory->replicate();
+                $copiedStory->user_id = $user->id;
+                $copiedStory->status = 'purchased';
+                $copiedStory->save();
+
+                foreach ($originalStory->characters as $character) {
+                    $copiedCharacter = $character->replicate();
+                    $copiedCharacter->story_id = $copiedStory->id;
+
+                    $copiedCharacter->original_character_id = $character->id;
+
+                    if ($character->image && \Storage::disk('public')->exists($character->image)) {
+                        $extension = pathinfo($character->image, PATHINFO_EXTENSION);
+                        $newImageName = 'character_images/' . uniqid() . '.' . $extension;
+                        \Storage::disk('public')->copy($character->image, $newImageName);
+                        $copiedCharacter->image = $newImageName;
+                    }
+
+                    $copiedCharacter->save();
                 }
 
-                $alreadyPurchased = Story::where('user_id', $user->id)
-                    ->where('status', 'purchased')
-                    ->where('title', $blog->story->title)
-                    ->exists();
+                $originalMap = $originalStory->map;
+                if ($originalMap) {
+                    $copiedMap = $originalMap->replicate();
+                    $copiedMap->user_id = $user->id;
+                    $copiedMap->story_id = $copiedStory->id;
 
-                if ($alreadyPurchased) {
-                    dd("5: Already purchased - {$blog->story->title}");
+                    if ($originalMap->image && \Storage::disk('public')->exists($originalMap->image)) {
+                        $extension = pathinfo($originalMap->image, PATHINFO_EXTENSION);
+                        $newImageName = 'map_images/' . uniqid() . '.' . $extension;
+                        \Storage::disk('public')->copy($originalMap->image, $newImageName);
+                        $copiedMap->image = $newImageName;
+                    }
+                    $copiedMap->save();
                 }
 
-                $items[] = [
-                    'name' => $blog->story->title,
-                    'unit_amount' => [
-                        'currency_code' => 'USD',
-                        'value' => number_format($blog->price, 2, '.', ''),
-                    ],
-                    'quantity' => (string) $item->quantity,
-                ];
-
-                $total += $blog->price * $item->quantity;
+                $existingPayment = PaymentLog::where('transaction_id', $captureResult['id'])->first();
+                if (!$existingPayment) {
+                    PaymentLog::create([
+                        'user_id' => $user->id,
+                        'amount' => $blog->price,
+                        'payment_method' => 'PayPal',
+                        'transaction_id' => $captureResult['id'],
+                        'status' => 'completed',
+                    ]);
+                }
             }
 
-            if ($total <= 0) {
-                dd('6: Total amount is zero or invalid.');
-            }
+            $user->cartItems()->delete();
+            Session::forget(['cart_checkout', 'order_id']);
 
-            $accessToken = $this->getAccessToken();
-
-            $orderId = uniqid();
-            $body = [
-                "intent" => "CAPTURE",
-                "application_context" => [
-                    "return_url" => route('paypal.cart.execute'),
-                    "cancel_url" => route('paypal.cancel'),
-                ],
-                "purchase_units" => [
-                    [
-                        "reference_id" => $orderId,
-                        "amount" => [
-                            "currency_code" => "USD",
-                            "value" => number_format($total, 2, '.', ''),
-                            "breakdown" => [
-                                "item_total" => [
-                                    "currency_code" => "USD",
-                                    "value" => number_format($total, 2, '.', ''),
-                                ],
-                            ],
-                        ],
-                        "items" => $items,
-                    ],
-                ],
-            ];
-
-            $response = Http::withToken($accessToken)
-                ->withOptions(['verify' => false])
-                ->post($this->paypalBaseUrl . '/v2/checkout/orders', $body);
-
-            if (!$response->successful()) {
-                dd('7: PayPal order failed', $response->body());
-            }
-
-            $order = $response->json();
-            $approveLink = collect($order['links'])->firstWhere('rel', 'approve')['href'] ?? null;
-
-            if (!$approveLink) {
-                dd('8: Approval link not found', $order);
-            }
-
-            Session::put('cart_checkout', true);
-            Session::put('order_id', $order['id']);
-
-            return redirect($approveLink);
+            return redirect()->route('dashboard')->with('success', 'Cart purchase successful!');
+        } catch (\Exception $e) {
+            dd('17: Exception occurred', $e->getMessage());
         }
-
-        // Step 2: Execute the order after returning from PayPal
-
-        if (!Session::has('cart_checkout')) {
-            dd('10: Session lost');
-        }
-
-        $user = Auth::user();
-        $cartItems = $user->cartItems()->with('item.story')->get();
-
-        $accessToken = $this->getAccessToken();
-
-        $orderResponse = Http::withToken($accessToken)
-            ->withOptions(['verify' => false])
-            ->get($this->paypalBaseUrl . "/v2/checkout/orders/{$token}");
-
-        if (!$orderResponse->successful()) {
-            dd('12: Order fetch failed', $orderResponse->body());
-        }
-
-        $orderDetails = $orderResponse->json();
-        if ($orderDetails['status'] !== 'APPROVED') {
-            dd('13: Order not approved', $orderDetails);
-        }
-
-      $captureResponse = Http::withToken($accessToken)
-    ->withOptions(['verify' => false])
-    ->withHeaders([
-        'Content-Type' => 'application/json',
-    ])
-    ->send('POST', $this->paypalBaseUrl . "/v2/checkout/orders/{$token}/capture", [
-        'body' => '{}',
-    ]);
-        if (!$captureResponse->successful()) {
-            dd('14: Capture failed', $captureResponse->body());
-        }
-
-        $captureResult = $captureResponse->json();
-        if (($captureResult['status'] ?? '') !== 'COMPLETED') {
-            dd('15: Capture not completed', $captureResult);
-        }
-
-    foreach ($cartItems as $item) {
-    $blog = $item->item;
-    $originalStory = $blog->story;
-
-    // Copy the story for the user
-    $copiedStory = $originalStory->replicate();
-$copiedStory->user_id = $user->id;
-$copiedStory->status = 'purchased';
-$copiedStory->save();
-
-// ✅ Copy characters
-foreach ($originalStory->characters as $character) {
-  $copiedCharacter = $character->replicate();
-$copiedCharacter->story_id = $copiedStory->id;
-
-// Set the original_character_id to the ID of the original character
-$copiedCharacter->original_character_id = $character->id;
-
-if ($character->image && \Storage::disk('public')->exists($character->image)) {
-    $extension = pathinfo($character->image, PATHINFO_EXTENSION);
-    $newImageName = 'character_images/' . uniqid() . '.' . $extension;
-    \Storage::disk('public')->copy($character->image, $newImageName);
-    $copiedCharacter->image = $newImageName;
-}
-
-$copiedCharacter->save();
-
-}
-
-$originalMap = $originalStory->map;
-if ($originalMap) {
-    $copiedMap = $originalMap->replicate();
-    $copiedMap->user_id = $user->id;
-    $copiedMap->story_id = $copiedStory->id;
-
-    // ✅ Copy the map image if it exists
-    if ($originalMap->image && \Storage::disk('public')->exists($originalMap->image)) {
-        $extension = pathinfo($originalMap->image, PATHINFO_EXTENSION);
-        $newImageName = 'map_images/' . uniqid() . '.' . $extension;
-        \Storage::disk('public')->copy($originalMap->image, $newImageName);
-        $copiedMap->image = $newImageName;  // no leading slash
     }
-    $copiedMap->save();
-
-
-}
-
-    // Avoid duplicate logs
-    $existingPayment = PaymentLog::where('transaction_id', $captureResult['id'])->first();
-    if (!$existingPayment) {
-        PaymentLog::create([
-            'user_id' => $user->id,
-            'amount' => $blog->price,
-            'payment_method' => 'PayPal',
-            'transaction_id' => $captureResult['id'],
-            'status' => 'completed',
-        ]);
-    }
-}
-
-        $user->cartItems()->delete();
-        Session::forget(['cart_checkout', 'order_id']);
-
-        return redirect()->route('dashboard')->with('success', 'Cart purchase successful!');
-    } catch (\Exception $e) {
-        dd('17: Exception occurred', $e->getMessage());
-    }
-}
-
-
-
 }

@@ -27,13 +27,11 @@ use App\Models\Blog;
 use App\Models\Story;
 use App\Models\Poll;
 
-// Welcome page with polls, requires auth and not banned
 Route::get('/', function () {
     $polls = Poll::orderBy('created_at', 'desc')->get();
     return view('welcome', compact('polls'));
 })->middleware(['auth', CheckUserBanStatus::class])->name('home');
 
-// Routes for authenticated users with CheckUserBanStatus middleware
 Route::middleware(['auth', CheckUserBanStatus::class])->group(function () {
 
     // HR role group
@@ -79,6 +77,7 @@ Route::middleware(['auth', CheckUserBanStatus::class])->group(function () {
 
     // User profile and password
     Route::get('/user/profile', [UserProfileController::class, 'show'])->name('user.profile');
+    Route::post('/user/remove-profile-picture', [UserController::class, 'removeProfilePicture'])->name('user.removeProfilePicture');
     Route::post('/user/profile/update', [UserProfileController::class, 'updateProfile'])->name('user.updateProfile');
     Route::post('/user/password/change', [UserProfileController::class, 'changePassword'])->name('user.changePassword');
 
@@ -130,9 +129,9 @@ Route::middleware(['auth', CheckUserBanStatus::class])->group(function () {
     Route::post('/maps/generate', [MapGenerationController::class, 'generateMap'])->name('maps.generate.post');
     Route::get('/maps/upload', [MapGenerationController::class, 'uploadForm'])->name('maps.upload.form');
     Route::post('/maps/upload', [MapGenerationController::class, 'uploadImage'])->name('maps.upload.image');
+    Route::get('/maps/show', [MapGenerationController::class, 'show'])->name('maps.my');
     Route::post('/upload-map-image', [MapGenerationController::class, 'apiUploadImage']);
     Route::delete('/tickets/{ticket}', [TicketController::class, 'destroy'])->name('ticket.destroy');
-    Route::post('/user/remove-profile-picture', [UserController::class, 'removeProfilePicture'])->name('user.removeProfilePicture');
 });
 
 // Admin routes with auth and admin role

@@ -13,11 +13,10 @@ use Illuminate\Support\Facades\Log;
 
 class StoryController extends Controller
 {
-    // Remove HuggingFaceService injection since we call Python API now
 
     public function create()
     {
-        $stories = Story::where('user_id', Auth::id())->get(); // ✅ Filter by current user
+        $stories = Story::where('user_id', Auth::id())->get();
         return view('stories.create', compact('stories'));
     }
 
@@ -31,7 +30,6 @@ class StoryController extends Controller
 
         $userPrompt = $request->input('prompt');
 
-        // Append system instructions to ensure structured character output
         $augmentedPrompt = $userPrompt . "\n\n"
             . "After the story, provide a list of main characters. For each character, write:\n\n"
             . "Name: [Character's name]\n"
@@ -55,10 +53,6 @@ class StoryController extends Controller
             $mapDescription = $this->extractMapDescription($aiGeneratedContent);
 
             Session::put('generated_places', $mapDescription);
-            // Debug characters output
-
-
-            // Store generated story and characters in session
             Session::put('generated_content', $aiGeneratedContent);
             Session::put('generated_characters', $characters);
 
@@ -128,9 +122,8 @@ class StoryController extends Controller
             dd('Generated content not found in session.');
         }
 
-        // Clean out the <think> ... </think> section from the content
         $cleanContent = preg_replace('/<think>.*?<\/think>/s', '', $content);
-        $cleanContent = trim($cleanContent); // optional: trim whitespace
+        $cleanContent = trim($cleanContent);
 
         $title = $request->input('title');
         $genre = $request->input('genre');
@@ -141,7 +134,7 @@ class StoryController extends Controller
             'content' => $cleanContent,
             'genre' => $genre,
             'status' => 'draft',
-            'places' => $places,  // ✅ Save extracted map description
+            'places' => $places,
         ]);
 
         foreach ($characters as $char) {
@@ -230,21 +223,18 @@ class StoryController extends Controller
     }
     private function extractMapDescription(string $text): ?string
     {
-        // Split text into sections by '---' delimiter
         $sections = preg_split('/^-{3,}$/m', $text);
 
         if (!$sections) {
             return null;
         }
 
-        // Search each section for a heading with '2D Map'
         foreach ($sections as $section) {
             if (preg_match('/2D\s+Map/i', $section)) {
-                // Return trimmed full section as map description
                 return trim($section);
             }
         }
 
-        return null; // no map section found
+        return null;
     }
 }

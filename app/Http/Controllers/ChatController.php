@@ -12,7 +12,7 @@ class ChatController extends Controller
 {
     public function index()
     {
-        $stories = auth()->user()->stories; // or all if admin
+        $stories = auth()->user()->stories;
         return view('chat.select_story', compact('stories'));
     }
 
@@ -28,7 +28,7 @@ class ChatController extends Controller
 
     public function show(Conversation $conversation)
     {
-        $messages = $conversation->messages()->oldest()->get(); // NOT paginate()
+        $messages = $conversation->messages()->oldest()->get();
 
         $story = $conversation->story;
 
@@ -40,7 +40,6 @@ class ChatController extends Controller
     {
         $request->validate(['message' => 'required|string']);
 
-        // Save user message
         $conversation->messages()->create([
             'sender' => 'user',
             'message' => $request->message
@@ -69,7 +68,6 @@ class ChatController extends Controller
        ]);
        */
 
-        // Placeholder bot reply (temporary until AI core is ready)
         $conversation->messages()->create([
             'sender' => 'bot',
             'message' => 'This is a placeholder reply.'

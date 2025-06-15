@@ -27,42 +27,37 @@ class BlogController extends Controller
         return redirect()->back()->with('success', 'Blog created successfully.');
     }
 
-   public function dashboard()
-{
-    $user = Auth::user();
+    public function dashboard()
+    {
+        $user = Auth::user();
 
-    // Get accepted friends' IDs
-    $friendIds = $user->allFriends()->pluck('id')->toArray();
+        $friendIds = $user->allFriends()->pluck('id')->toArray();
 
-    // Get followers' IDs (excluding mutual friends)
-    $followerIds = $user->followers()
-        ->whereNotIn('users.id', $friendIds)
-        ->pluck('users.id')
-        ->toArray();
+        $followerIds = $user->followers()
+            ->whereNotIn('users.id', $friendIds)
+            ->pluck('users.id')
+            ->toArray();
 
-    // Get user's own stories
-    $myStories = Story::where('user_id', $user->id)->get();
+        $myStories = Story::where('user_id', $user->id)->get();
 
-    // Fetch blogs from friends and followers
-    $blogs = Blog::with(['user', 'story', 'upvotes', 'downvotes', 'reviews.user'])
-        ->whereIn('user_id', array_merge($friendIds, $followerIds))
-        ->get()
-        ->sortByDesc(function ($blog) {
-            return $blog->score();
-        })
-        ->map(function ($blog) use ($user, $friendIds) {
-            // Add a flag to indicate if the user can buy
-            $blog->canBuy = in_array($blog->user_id, $friendIds);
-            return $blog;
-        });
-return view('dashboard', [
-    'blogs' => $blogs,
-    'user' => $user,
-    'myStories' => $myStories,
-    'friends' => $friendIds,
-    'following' => $followerIds,
-]);
-}
+        $blogs = Blog::with(['user', 'story', 'upvotes', 'downvotes', 'reviews.user'])
+            ->whereIn('user_id', array_merge($friendIds, $followerIds))
+            ->get()
+            ->sortByDesc(function ($blog) {
+                return $blog->score();
+            })
+            ->map(function ($blog) use ($user, $friendIds) {
+                $blog->canBuy = in_array($blog->user_id, $friendIds);
+                return $blog;
+            });
+        return view('dashboard', [
+            'blogs' => $blogs,
+            'user' => $user,
+            'myStories' => $myStories,
+            'friends' => $friendIds,
+            'following' => $followerIds,
+        ]);
+    }
 
     public function index()
     {

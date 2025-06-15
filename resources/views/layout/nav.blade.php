@@ -1,18 +1,23 @@
 <style>
+    body {
+        margin: 0;
+        padding: 0;
+        background-image: url('{{ asset('tt.png') }}');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-position: center top 80px;
+    }
+
     nav {
-        margin: 0 auto;
-        padding: 10px 0;
+        padding: 10px 10px;
         position: relative;
         display: flex;
-        justify-content: space-between;
-        /* logo left, menu right */
         align-items: center;
         z-index: 1050;
     }
 
     nav .logo img {
-        margin-left: 10px;
-        /* or padding */
         height: 20px;
     }
 
@@ -25,8 +30,6 @@
         padding: 0;
         justify-content: space-around;
         flex-grow: 1;
-        margin-right: 30px;
-        /* Pushes li to the left */
     }
 
     nav ul li {
@@ -47,24 +50,17 @@
         cursor: pointer;
         font-size: 17px;
         white-space: nowrap;
-
     }
 
     nav ul li a:hover {
-        color: #D6AD60;
-
+        color: #ADD8E6;
     }
 
-    /* nav ul li a.btn.btn-primary:hover {
-        background-color: #03c6db;
-        color: white;
-    } */
     nav ul li button:hover {
         background-color: #122620;
         color: #fff;
     }
 
-    /* Dropdown menu styles */
     .story-dropdown {
         position: relative;
         list-style: none;
@@ -86,17 +82,11 @@
         display: none;
         position: absolute;
         background-color: #fff;
-        backdrop-filter: blur(12px);
         border-radius: 8px;
         list-style: none;
-        top: 40px;
-        right: -40px;
-        margin: 0;
-        padding: 5px 0;
         z-index: 1000;
         min-width: 150px;
         border: 1px solid #000;
-        /* Added black border */
     }
 
 
@@ -109,16 +99,14 @@
         padding: 10px 15px;
         color: #000;
         font-style: italic;
-
         text-decoration: none;
-        transition: background 0.3s;
     }
 
     .story-submenu a:hover {
-        color: #D6AD60;
+        color: #ADD8E6;
     }
 
-    /* Notification styles */
+    /*Notification*/
     .notification-wrapper {
         position: relative;
         display: inline-block;
@@ -141,9 +129,7 @@
         max-height: 300px;
         overflow-y: auto;
         border: 1px solid #000;
-        /* Added black border */
         background-color: #fff;
-        backdrop-filter: blur(5px);
         border-radius: 8px;
         z-index: 1100;
     }
@@ -154,7 +140,6 @@
 
     .notification-dropdown {
         text-align: center;
-        /* Center all content inside dropdown */
     }
 
     .notification-item {
@@ -180,7 +165,7 @@
 
     .notification-item a {
         text-decoration: none;
-        color: #D6AD60;
+        color: #ADD8E6;
         font-weight: 500;
         display: inline-block;
         margin-top: 4px;
@@ -193,8 +178,7 @@
 
     .store-now-link {
         display: inline-block;
-        /* Required for transform to work */
-        color: #D6AD60 !important;
+        color: #ADD8E6 !important;
         transition: transform 0.3s ease;
     }
 
@@ -202,7 +186,6 @@
         transform: scale(1.05);
     }
 
-    /* Hamburger button */
     #navToggle {
         background: none;
         border: none;
@@ -212,7 +195,6 @@
         display: none;
     }
 
-    /* Container holding the input and results */
     .search-container {
         position: relative;
         left: 0;
@@ -226,42 +208,33 @@
         transform: translateY(30%);
     }
 
-    /* The results dropdown */
     #searchResults {
         position: absolute;
         top: 100%;
         left: 0;
         right: 0;
-        /* add 10px padding inside */
         background-color: #ffffff;
         border: 1px solid #F4EBD0;
         border-top: none;
-        /* so no double border with input */
         max-height: 250px;
-        /* max height with scroll */
         overflow-y: auto;
         z-index: 1000;
-        /* high enough to overlay other content */
         display: none;
-        /* hidden by default */
         list-style: none;
         margin: 0;
         padding: 0;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     }
 
-    /* Make sure list items inside have your search-result-item styling */
     #searchResults li {
         padding: 8px 12px;
         cursor: pointer;
     }
 
-    /* Optional: hover highlight */
     #searchResults li:hover {
         background-color: #767879;
     }
 
-    /* Container for each search result item */
     .search-result-item {
         display: flex;
         justify-content: space-between;
@@ -271,7 +244,6 @@
         cursor: default;
     }
 
-    /* User info clickable area */
     .search-result-userinfo {
         flex-grow: 1;
         cursor: pointer;
@@ -279,7 +251,6 @@
         transition: color 0.2s ease;
     }
 
-    /* Buttons */
     .search-result-friend-btn {
         font-size: 12px;
         margin-right: 10px;
@@ -316,7 +287,6 @@
         color: white;
     }
 
-    /* Responsive adjustments */
     @media (max-width: 600px) {
         .search-result-item {
             flex-direction: column;
@@ -330,8 +300,93 @@
         }
     }
 
+    @media (max-width: 768px) {
+        .search-container {
+            width: 90%;
+            margin: 10px auto;
+            position: relative;
+        }
 
-    /* Responsive styles */
+        .search-container input {
+            width: 100%;
+            padding: 8px 30px 8px 12px;
+            font-size: 14px;
+        }
+
+        .search-icon {
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        #searchResults {
+            width: 100%;
+            left: 0;
+            right: 0;
+            max-height: 200px;
+        }
+    }
+
+    @media (max-width: 768px) {
+
+        .cart-dropdown,
+        .notification-dropdown {
+            width: 100%;
+            left: 0;
+            right: 0;
+            box-shadow: none;
+            border-radius: 0;
+        }
+
+        .dropdown-menu-end {
+            right: 0 !important;
+            left: auto !important;
+        }
+    }
+
+    @media (max-width: 768px) {
+        nav ul li button {
+            font-size: 14px;
+            padding: 6px 10px;
+        }
+
+        .chatbot-btn i {
+            font-size: 18px;
+        }
+
+        .floating-buttons {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1050;
+        }
+
+        .submit-complaint-btn strong {
+            font-size: 18px;
+        }
+    }
+
+    @media (max-width: 768px) {
+
+        .story-dropdown.active>.story-submenu,
+        .story-dropdown:hover>.story-submenu {
+            display: block;
+            padding-left: 20px;
+            background-color: #f9f9f9;
+            border-left: 2px solid #ADD8E6;
+        }
+
+        .story-dropdown .nav-link {
+            padding-right: 20px;
+        }
+
+        nav ul li a:hover,
+        .story-submenu a:hover {
+            background-color: transparent;
+            color: #ADD8E6;
+        }
+    }
+
     @media (max-width: 768px) {
         nav ul {
             flex-direction: column;
@@ -340,7 +395,6 @@
             left: 0;
             right: 0;
             display: none;
-            /* hidden by default */
             padding: 10px 0;
             z-index: 9999;
             max-height: calc(100vh - 60px);
@@ -367,7 +421,6 @@
             display: none;
         }
 
-        /* Show submenu on tap (click) on mobile */
         .story-dropdown.active>.story-submenu {
             display: block;
         }
@@ -381,7 +434,6 @@
             backdrop-filter: none;
         }
 
-        /* Show hamburger */
         #navToggle {
             display: block;
         }
@@ -440,7 +492,6 @@
     .search-input {
         width: 100%;
         padding-right: 30px;
-        /* space for icon */
     }
 
     .search-icon {
@@ -450,7 +501,6 @@
         transform: translateY(-50%);
         color: #aaa;
         pointer-events: none;
-        /* so clicks go to input */
     }
 
     .EmptyCart {
@@ -465,7 +515,7 @@
     .EmptyCart .store-now-link {
         font-size: 16px;
         font-weight: 500;
-        color: #D6AD60 !important;
+        color: #ADD8E6 !important;
         transition: transform 0.3s ease;
     }
 
@@ -476,10 +526,10 @@
 
 <nav>
     <a href="{{ route('home') }}">
-    <div class="logo">
-        <img src="{{ asset('logo.jpg') }}" alt="Logo">
-    </div>
-</a>
+        <div class="logo">
+            <img src="{{ asset('logo.jpg') }}" alt="Logo">
+        </div>
+    </a>
 
 
     <div class="search-container">
@@ -516,6 +566,8 @@
             <ul class="story-submenu">
                 <li><a href="{{ route('stories.my') }}">My Stories</a></li>
                 <li><a href="{{ route('characters.my') }}">My Characters</a></li>
+                <li><a href="{{ route('maps.my') }}">My maps</a></li>
+
             </ul>
         </li>
 
@@ -554,7 +606,7 @@
             <ul class="dropdown-menu dropdown-menu-end p-3 shadow " style="width: auto;" aria-labelledby="cartDropdown">
                 @if ($cartItems->count() > 0)
                     <div class="mb-2">
-                        <p style="color: #D6AD60;">Your Cart <i class="fa fa-shopping-cart"></i></p>
+                        <p style="color: #ADD8E6;">Your Cart <i class="fa fa-shopping-cart"></i></p>
                     </div>
                 @endif
                 @forelse ($cartItems as $cart)
@@ -587,7 +639,6 @@
             </ul>
         </li>
 
-        {{-- Notification Icon --}}
         @php
             use App\Models\Ticket;
 
@@ -643,8 +694,13 @@
         @endif
 
         <li>
-            <button>Try Now <i class="fas fa-rocket"></i></button>
+            <a href="{{ route('stories.create') }}">
+                <button>
+                    Try Now <i class="fas fa-rocket"></i>
+                </button>
+            </a>
         </li>
+
 
 
 
@@ -668,7 +724,6 @@
 
     </div>
 @endif
-<!-- Submit Complaint Modal -->
 <div class="modal fade" id="complaintModal" tabindex="-1" aria-labelledby="complaintModalLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -698,12 +753,11 @@
         const openModalBtn = document.getElementById("openComplaintModal");
         const complaintModalEl = document.getElementById("complaintModal");
 
-        // Initialize Bootstrap modal object
         const complaintModal = new bootstrap.Modal(complaintModalEl);
 
         openModalBtn.addEventListener("click", (e) => {
             e.preventDefault();
-            complaintModal.show(); // Open the modal via JS
+            complaintModal.show();
         });
     });
 
@@ -712,12 +766,10 @@
         const navToggle = document.getElementById("navToggle");
         const navUl = document.querySelector("nav ul");
 
-        // Toggle nav visibility on small screens
         navToggle.addEventListener("click", () => {
             navUl.classList.toggle("active");
         });
 
-        // Dropdown toggling for mobile - tap to open submenus
         const storyDropdowns = document.querySelectorAll(".story-dropdown > .nav-link");
         storyDropdowns.forEach((link) => {
             link.addEventListener("click", (e) => {
@@ -729,7 +781,6 @@
             });
         });
 
-        // Notification bell dropdown toggle
         const bell = document.getElementById("notificationIcon");
         const dropdown = document.getElementById("notificationDropdown");
         const badge = document.querySelector(".notification-badge");
@@ -748,7 +799,7 @@
                         body: JSON.stringify({}),
                     });
 
-                    badge.remove(); // remove the red badge visually
+                    badge.remove();
                 } catch (err) {
                     console.error("Failed to mark notifications as read.", err);
                 }
@@ -917,4 +968,29 @@
             setTimeout(() => alert.remove(), 500);
         }
     }, 3000);
+
+    document.addEventListener("click", function(e) {
+        const navUl = document.querySelector("nav ul");
+        const navToggle = document.getElementById("navToggle");
+
+        if (window.innerWidth <= 768) {
+            if (!navUl.contains(e.target) && !navToggle.contains(e.target)) {
+                navUl.classList.remove("active");
+            }
+
+            if (e.target.closest("nav ul li a")) {
+                navUl.classList.remove("active");
+            }
+        }
+    });
+
+    document.querySelectorAll('.story-dropdown > .nav-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            if (window.innerWidth <= 768) {
+                e.preventDefault();
+                const parentLi = this.parentElement;
+                parentLi.classList.toggle('active');
+            }
+        });
+    });
 </script>

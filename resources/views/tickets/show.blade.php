@@ -160,7 +160,6 @@
             text-decoration: underline;
         }
 
-        /* Responsive tweaks */
         @media (max-width: 600px) {
             body {
                 padding: 1rem;
@@ -188,7 +187,6 @@
     <h2>Ticket Details</h2>
 
     <div class="ticket">
-        <!-- Delete Button -->
         <form action="{{ route('ticket.destroy', $ticket->id) }}" method="POST"
             class="position-absolute top-0 end-0 mt-2 me-2">
             @csrf
@@ -199,10 +197,8 @@
             </button>
         </form>
 
-        <!-- Ticket User Info -->
         <p><strong>User:</strong> {{ $ticket->username }}</p>
 
-        <!-- Ticket Messages -->
         <div class="messages-wrapper">
             @foreach ($ticket->messages as $message)
                 <div class="message {{ $message->sender }}">
@@ -213,7 +209,6 @@
             @endforeach
         </div>
 
-        <!-- Reply Form -->
         <form action="{{ route('tickets.userReply', $ticket->id) }}" method="POST">
             @csrf
             <textarea name="message" rows="1" required placeholder="Write your reply here..."></textarea>

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
@@ -7,46 +8,37 @@ use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
-    // Show login form
     public function showLoginForm()
     {
         return view('auth.register');
     }
 
-    // Handle login request
     public function login(Request $request)
     {
-        // Validate the request
         $request->validate([
             'username' => 'required|string',
             'password' => 'required|string',
         ]);
 
-        // Attempt to log the user in
         if (Auth::attempt(['username' => $request->username, 'password' => $request->password])) {
-            // Authentication passed, retrieve the authenticated user
             $user = Auth::user();
 
-            // Redirect based on user role
             if ($user->role === 'admin') {
-                return redirect()->route('admin.dashboard'); // Change this to your actual admin route
+                return redirect()->route('admin.dashboard');
             } elseif ($user->role === 'hr') {
-                return redirect()->route('users.index'); // Change this to your actual users route
+                return redirect()->route('users.index');
             } else {
-                return redirect()->route('home'); // Default redirection for other roles
+                return redirect()->route('home');
             }
         }
-
-        // Authentication failed, redirect back
         return redirect()->back()->withErrors([
             'username' => 'The provided credentials do not match our records.',
         ]);
     }
 
-    // Handle logout
     public function logout(Request $request)
     {
         Auth::logout();
-        return redirect('login'); // Redirect to your desired path after logout
+        return redirect('login');
     }
 }

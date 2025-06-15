@@ -20,14 +20,12 @@ select{
 
     <div class="d-flex" style="padding: 20px;">
     <div class="container5 flex-grow-1">
-        <!-- Header -->
         <div class="page-header mb-4">
             <div class="d-flex justify-content-between align-items-center flex-wrap w-100">
                 <h1 class="m-0">Select a Story to Generate a Map</h1>
             </div>
         </div>
 
-        <!-- Form -->
         <form action="{{ route('maps.generate.post') }}" method="POST">
             @csrf
             <div class="mb-3 w-100" style="max-width: 500px;">

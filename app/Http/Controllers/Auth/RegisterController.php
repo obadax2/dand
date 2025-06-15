@@ -36,7 +36,7 @@ class RegisterController extends Controller
 
         if ($validator->fails()) {
             $messages = $validator->errors()->all();
-            $alertMessage = implode('\n', $messages); // convert to a single alert string
+            $alertMessage = implode('\n', $messages);
 
             return response()->view('errors', $request->all() + [
                 'validationAlert' => $alertMessage
@@ -77,7 +77,6 @@ class RegisterController extends Controller
             return back()->withErrors(['verification_code' => 'Invalid verification code.']);
         }
 
-        // Create User
         $user = User::create([
             'name' => $temporaryUser->name,
             'username' => $temporaryUser->username,

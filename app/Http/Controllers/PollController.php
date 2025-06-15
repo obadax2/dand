@@ -11,12 +11,10 @@ class PollController extends Controller
 {
     public function store(Request $request)
     {
-        // Validate the incoming request
         $request->validate([
             'title' => 'required|string|max:255',
         ]);
 
-        // Create a new poll
         Poll::create([
             'title' => $request->title,
             'yes_count' => 0,
@@ -29,12 +27,10 @@ class PollController extends Controller
     {
         $user = Auth::user();
 
-        // Check if vote is valid
         if (!in_array($vote, ['yes', 'no'])) {
             return redirect()->back()->with('error', 'Invalid vote option.');
         }
 
-        // Check if user already voted on this poll
         $existingVote = PollVote::where('poll_id', $poll->id)
             ->where('user_id', $user->id)
             ->first();
@@ -43,14 +39,12 @@ class PollController extends Controller
             return redirect()->back()->with('error', 'You have already voted on this poll.');
         }
 
-        // Record the vote
         PollVote::create([
             'poll_id' => $poll->id,
             'user_id' => $user->id,
             'vote' => $vote,
         ]);
 
-        // Update poll counts atomically
         if ($vote === 'yes') {
             $poll->increment('yes_count');
         } else {

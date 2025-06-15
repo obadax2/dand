@@ -12,7 +12,7 @@
         .modal-content {
 
             border: 1px solid rgba(129, 125, 125, 0.7) !important;
-            /* your red border */
+
         }
 
         h1 {
@@ -145,7 +145,6 @@
                     </ul>
                 @endif
         </div>
-    <!-- Delete Confirmation Modal -->
     <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -168,23 +167,21 @@
     <br>
 
     <script>
-        let currentStoryId = null;
+    let currentStoryId = null;
 
-        const confirmModal = document.getElementById('confirmDeleteModal');
-        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+    document.addEventListener('DOMContentLoaded', () => {
+        const modal = document.getElementById('confirmDeleteModal');
+        const confirmBtn = document.getElementById('confirmDeleteBtn');
 
-        confirmModal.addEventListener('show.bs.modal', function(event) {
-            const button = event.relatedTarget;
-            currentStoryId = button.getAttribute('data-story-id');
+        modal.addEventListener('show.bs.modal', (e) => {
+            currentStoryId = e.relatedTarget.dataset.storyId;
         });
-
-        confirmDeleteBtn.addEventListener('click', function() {
-            if (currentStoryId) {
-                const form = document.getElementById(`delete-form-${currentStoryId}`);
-                if (form) form.submit();
-            }
+        confirmBtn.addEventListener('click', () => {
+            document.getElementById(`delete-form-${currentStoryId}`)?.submit();
         });
-    </script>
+    });
+</script>
+
 
 </body>
 

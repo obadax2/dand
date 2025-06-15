@@ -12,15 +12,12 @@ public function store(Request $request, Blog $blog)
 {
     $user = auth()->user();
 
-    // If user already upvoted, return error
     if ($blog->upvotes()->where('user_id', $user->id)->exists()) {
         return back()->with('error', 'You already upvoted.');
     }
 
-    // Remove any existing downvote
     $blog->downvotes()->where('user_id', $user->id)->delete();
 
-    // Add upvote
     $blog->upvotes()->create([
         'user_id' => $user->id
     ]);

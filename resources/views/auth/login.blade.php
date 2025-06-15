@@ -1,10 +1,10 @@
-<!-- resources/views/auth/login.blade.php -->
-<!DOCTYPE html>
+{{-- <!DOCTYPE html>
 <html>
+
 <head>
     <title>Login</title>
-    <!-- Add your styles here -->
 </head>
+
 <body>
     <h2>Login</h2>
 
@@ -32,7 +32,6 @@
             <button type="submit">Login</button>
         </div>
     </form>
-
-   
 </body>
-</html>
+
+</html> --}}

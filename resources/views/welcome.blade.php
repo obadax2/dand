@@ -34,7 +34,6 @@
         @endif
 
 
-        <!-- Typing Effect Section -->
         <div class="typing-container">
             <div class="line-one">Your website for</div>
             <div class="line-two">
@@ -42,7 +41,6 @@
             </div>
         </div>
 
-        <!-- Polls Section -->
         <div class="polls-container row">
             @forelse ($polls as $poll)
                 @php
@@ -60,7 +58,7 @@
                                 <h3 class="poll-title">{{ $poll->title }}</h3>
                             </div>
                             <div class="card-back1">
-                                @if (Auth::user() && (Auth::user()->role === 'hr'))
+                                @if (Auth::user() && Auth::user()->role === 'hr')
                                     <form action="{{ route('polls.destroy', $poll->id) }}" method="POST"
                                         class="position-absolute top-0 end-0 mt-2 me-2">
                                         @csrf
@@ -99,21 +97,12 @@
                     </div>
                 </div>
             @empty
-                <p class="text-center text-white">No polls available right now.</p>
             @endforelse
-        </div>
-
-        <!-- Bottom Typing Container -->
-        <div class="typing-container">
-            <div class="line-one">Your website for</div>
-            <div class="line-two">
-                generating a <span class="typed-text"></span><span class="cursor">|</span>
-            </div>
         </div>
     </div>
 
-    <!-- Complaint Modal -->
-    <div class="modal fade" id="complaintModal" tabindex="-1" aria-labelledby="complaintModalLabel" aria-hidden="true">
+    <!-- Complaint -->
+    {{-- <div class="modal fade" id="complaintModal" tabindex="-1" aria-labelledby="complaintModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content text-light"
                 style="background-color: rgba(25, 23, 75, 0.5); backdrop-filter: blur(12px);">
@@ -134,7 +123,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 
     <!-- Scripts -->
 
@@ -175,13 +164,12 @@
 
         document.addEventListener("DOMContentLoaded", typeLoop);
 
-        // Tooltip Init
-        document.addEventListener('DOMContentLoaded', function() {
-            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            tooltipTriggerList.forEach(function(tooltipTriggerEl) {
-                new bootstrap.Tooltip(tooltipTriggerEl);
-            });
-        });
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        //     tooltipTriggerList.forEach(function(tooltipTriggerEl) {
+        //         new bootstrap.Tooltip(tooltipTriggerEl);
+        //     });
+        // });
     </script>
 </body>
 

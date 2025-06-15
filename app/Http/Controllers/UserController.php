@@ -13,21 +13,18 @@ class UserController extends Controller
 
     public function index(Request $request)
     {
-        // Check if the authenticated user is an HR
         if (!Auth::check() || !Auth::user()->isHR()) {
             abort(403, 'Unauthorized action.');
         }
 
         $search = $request->query('search');
 
-        // If a search term is provided, filter users based on the search term.
         if ($search) {
             $users = User::where('name', 'LIKE', "%{$search}%")
                 ->orWhere('username', 'LIKE', "%{$search}%")
                 ->orWhere('email', 'LIKE', "%{$search}%")
                 ->get();
         } else {
-            // Otherwise, retrieve all users.
             $users = User::all();
         }
 
@@ -35,7 +32,6 @@ class UserController extends Controller
     }
 
     /**
-     * Update the specified user's role.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\User  $user
@@ -52,7 +48,6 @@ class UserController extends Controller
             'role' => 'required|string|in:admin,user,hr',
         ]);
 
-        // Update the user's role
         $user->role = $request->role;
         $user->save();
 
@@ -60,24 +55,21 @@ class UserController extends Controller
     }
     public function destroy(User $user)
     {
-        // Check if the authenticated user is an HR
         if (!Auth::check() || !Auth::user()->isHR()) {
             abort(403, 'Unauthorized action.');
         }
 
-        // Ensure the user being deleted is an admin
         if ($user->role !== 'admin') {
             abort(403, 'Unauthorized action. You can only delete admin users.');
         }
 
-        // Delete the user
         $user->delete();
 
         return redirect()->route('users.index')->with('success', 'Admin deleted successfully.');
     }
     public function ban(User $user)
     {
-        $user->banned = !$user->banned; // Toggle the ban status
+        $user->banned = !$user->banned;
         $user->save();
 
         return redirect()->route('users.index')->with('success', $user->banned ? 'User banned successfully!' : 'User unbanned successfully!');
@@ -89,7 +81,7 @@ class UserController extends Controller
         $users = User::where('name', 'LIKE', "%$query%")
             ->orWhere('username', 'LIKE', "%$query%")
             ->limit(10)
-            ->get(['id', 'name', 'username']); // get only needed fields
+            ->get(['id', 'name', 'username']);
         return response()->json($users);
     }
 
@@ -97,14 +89,8 @@ class UserController extends Controller
     {
         $user = Auth::user();
 
-        if ($user->profile_picture) {
-            // Remove image from storage
-            Storage::delete(str_replace('storage/', 'public/', $user->profile_picture));
-
-            // Clear the field in DB
-            $user->update(['profile_picture' => null]);
-        }
-
+        // Just set profile_picture to NULL in the database
+        $user->update(['profile_picture' => null]);
         return response()->json(['success' => true]);
     }
 }

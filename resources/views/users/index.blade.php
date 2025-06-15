@@ -19,7 +19,6 @@
     .table-wrapper {
         display: flex;
         margin-bottom: 40px;
-        /* optional spacing between sections */
     }
 
     h1 {
@@ -28,7 +27,6 @@
 
     .bb {
         margin-top: 10px !important;
-        /* or adjust the value as needed */
     }
 
     .container input[type="text"]{
@@ -63,7 +61,6 @@
                     </button>
                 </div>
             </form>
-                        <!-- Search Form -->
 
             <form action="{{ route('users.index') }}" method="GET">
                 <label>Search Users</label>

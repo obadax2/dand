@@ -1,7 +1,7 @@
 <style>
     .message.bot {
     background-color: #222;
-    border-left: 6px solid red; /* <-- changed from #888 to red */
+    border-left: 6px solid red;
     color: #fff;
 }
 
@@ -14,5 +14,5 @@
 @endforeach
 
 
-{{-- Use unescaped output so pagination HTML renders properly
+{{--
 {!! $messages->links('pagination::bootstrap-4') !!} --}}

@@ -69,7 +69,7 @@
         <div class="card">
             <div id="storyContent">
                 <div id="textContent"></div>
-                <button id="seeMoreBtn" class="btn btn-link mt-3" style="color: #D6AD60;">See More</button>
+                <button id="seeMoreBtn" class="btn btn-link mt-3" style="color: #ADD8E6;">See More</button>
             </div>
         </div>
         <a href="{{ route('stories.my') }}" class="back-link">← Back to My Stories</a>
@@ -94,7 +94,6 @@
             }
         }
 
-        // Initial load
         currentIndex = linesPerClick;
         renderLines();
 

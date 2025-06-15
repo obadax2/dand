@@ -19,7 +19,7 @@ class CartController extends Controller
             [
                 'user_id' => $user->id,
                 'item_id' => $blog->id,
-                'item_type' => Blog::class, // ✅ Use fully qualified class name
+                'item_type' => Blog::class,
             ],
             [
                 'price' => $blog->price,
@@ -34,7 +34,7 @@ class CartController extends Controller
     {
         $cartItems = Cart::with('item')
             ->where('user_id', Auth::id())
-            ->where('item_type', Blog::class) // ✅ Match exactly how you save it
+            ->where('item_type', Blog::class)
             ->get();
 
         return view('cart.index', compact('cartItems'));

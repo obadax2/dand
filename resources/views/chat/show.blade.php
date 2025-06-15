@@ -61,10 +61,8 @@
             height: 80vh;
         }
 
-        /* Characters & Map info */
         .story-info {
             max-height: 200px;
-            /* Adjust as needed */
             overflow-y: auto;
             padding-right: 10px;
             color: #ddd;
@@ -72,7 +70,6 @@
             font-size: 0.95rem;
         }
 
-        /* Optional scrollbar styling (for modern browsers) */
         .story-info::-webkit-scrollbar {
             width: 8px;
         }
@@ -91,7 +88,6 @@
             padding-left: 1.25rem;
         }
 
-        /* Messages container */
         #messages-container {
             flex: 1 1 auto;
             overflow-y: auto;
@@ -141,7 +137,6 @@
             justify-content: center;
             align-items: center;
             height: 100%;
-            /* fill the container height */
         }
 
 
@@ -209,7 +204,6 @@
 
         .container-chat {
             position: relative;
-            /* already existing styles below */
             max-width: 700px;
             margin: 0 auto;
             background: #111;
@@ -223,27 +217,6 @@
 
         #chat-form button:hover {
             background-color: #ddd;
-        }
-
-        /* Responsive tweaks */
-        @media (max-width: 600px) {
-            body {
-                padding: 1rem;
-            }
-
-            .container-chat {
-                padding: 1.5rem;
-                height: 70vh;
-            }
-
-            #chat-form input[type="text"] {
-                font-size: 1rem;
-            }
-
-            #chat-form button {
-                font-size: 1rem;
-                padding: 0.6rem 1.5rem;
-            }
         }
     </style>
 </head>
@@ -292,6 +265,11 @@
             @endif
         </div>
 
+        <div id="loading-spinner" style="display: none; text-align: center; margin-bottom: 1rem;">
+            <div class="spinner-border text-light" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
 
 
         <form id="chat-form" action="{{ route('chat.send', $conversation) }}" method="POST">
@@ -314,7 +292,6 @@
             }
         }
 
-        // Initial check on page load
         $(document).ready(() => {
             checkEmptyMessages();
         });
@@ -329,7 +306,6 @@
         window.addEventListener('load', scrollToBottom);
 
         $(function() {
-            // AJAX send message handler
             $('#chat-form').submit(function(e) {
                 e.preventDefault();
                 let form = $(this);
@@ -339,7 +315,6 @@
                         if (response.messages_html) {
                             $('#messages-container').html(response.messages_html);
 
-                            // Scroll to bottom after new messages load
                             $('#messages-container').scrollTop($('#messages-container')[0]
                                 .scrollHeight);
                         }
@@ -350,15 +325,36 @@
                     });
             });
 
-            // Scroll to bottom on initial page load
             $('#messages-container').scrollTop($('#messages-container')[0].scrollHeight);
 
-            // Focus message input when 'Start chat now' link clicked
             $('#start-chat-link').on('click', function(e) {
                 e.preventDefault();
                 $('input[name="message"]').focus();
             });
         });
+
+        $('#chat-form').submit(function (e) {
+    e.preventDefault();
+    let form = $(this);
+
+    $('#loading-spinner').show();
+
+    $.post(form.attr('action'), form.serialize())
+        .done(function (response) {
+            if (response.messages_html) {
+                $('#messages-container').html(response.messages_html);
+                $('#messages-container').scrollTop($('#messages-container')[0].scrollHeight);
+            }
+            form.find('input[name=message]').val('').focus();
+        })
+        .fail(function () {
+            alert('Failed to send message.');
+        })
+        .always(function () {
+            $('#loading-spinner').hide();
+        });
+});
+
     </script>
 
 </body>

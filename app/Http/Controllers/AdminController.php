@@ -15,7 +15,6 @@ class AdminController extends Controller
 
         $users = User::where('role', 'user')->get();
 
-        // Eager load user and messages (latest first)
         $tickets = Ticket::with(['user', 'messages' => function ($query) {
             $query->orderBy('created_at', 'desc');
         }])->orderBy('created_at', 'desc')->get();

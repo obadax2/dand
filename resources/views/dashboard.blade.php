@@ -100,8 +100,7 @@
 
     <div class="container my-4">
         <div class="row">
-            <!-- Form Container -->
-            <div class="col-md-5 mb-4">
+            <div class="col-md-5">
                 <div class="form-section p-3 rounded">
                     <h3 class="text-dark mb-4">Sell your story</h3>
                     <form method="POST" action="{{ route('blogs.create') }}">
@@ -137,8 +136,6 @@
                     </form>
                 </div>
             </div>
-
-            <!-- Stories Container -->
             <div class="col-md-7">
                 <h2 class="text-dark mb-3">Stories</h2>
                 <div style="max-height: 500px; overflow-y: auto; padding-right: 10px;">
@@ -148,7 +145,7 @@
                             $storyContent = $story->content;
                             $displayContent =
                                 $blog->visibility === 'partial'
-                                    ? mb_substr($storyContent, 0, 50) . '...'
+                                    ? mb_substr($storyContent, 0, 500) . '...'
                                     : $storyContent;
                             $isFriend = in_array($blog->user_id, $friends ?? []);
                             $isFollower = in_array($blog->user_id, $following ?? []);
@@ -230,7 +227,6 @@
                                     </form>
                                 @endif
 
-                                {{-- Display Reviews --}}
                                 @if ($blog->reviews->count())
                                     <div style="margin-top: 20px;">
                                         <h5 style="color: #fff;">Reviews:</h5>
@@ -267,17 +263,14 @@
                     star.addEventListener('click', () => {
                         const value = parseInt(star.getAttribute('data-value'));
 
-                        // Clear all stars
                         stars.forEach(s => s.className = 'far fa-star');
 
-                        // Fill selected stars
                         stars.forEach((s, index) => {
                             if (index < value) {
                                 s.className = 'fas fa-star';
                             }
                         });
 
-                        // Set hidden input value
                         input.value = value;
                     });
                 });

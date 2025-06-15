@@ -35,14 +35,13 @@
             margin-bottom: 20px;
         }
 
-        img {
+        .profile-wrapper img {
             border-radius: 50%;
-            width: 100px;
-            height: 100px;
+            width: 120px;
+            height: 120px;
             object-fit: cover;
         }
 
-        /* Profile picture wrapper */
         .profile-wrapper {
             display: flex;
             align-items: center;
@@ -117,15 +116,12 @@
             outline: 1px solid #000000;
         }
 
-        /* Buttons */
-        /* Friend request container */
         .friend-request {
             border-radius: 8px;
             padding: 10px 15px;
             margin-bottom: 10px;
         }
 
-        /* Statistics box */
         .status-box {
             border-radius: 8px;
             padding: 15px;
@@ -133,7 +129,6 @@
             color: #eee;
         }
 
-        /* Layout columns */
         .usercontainer {
             display: flex;
             gap: 40px;
@@ -146,7 +141,6 @@
             max-width: 450px;
         }
 
-        /* Alert fadeout */
         .custom-alert {
             position: fixed;
             top: 15px;
@@ -179,27 +173,26 @@
 
 <body>
     @if (session('success'))
-            <div class="alert alert-success custom-alert bg-custom-success" id="successAlert">
-                {{ session('success') }}
-            </div>
-        @endif
+        <div class="alert alert-success custom-alert bg-custom-success" id="successAlert">
+            {{ session('success') }}
+        </div>
+    @endif
 
 
-        @if ($errors->any())
-            <div class="alert alert-danger custom-alert" id="successAlert">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+    @if ($errors->any())
+        <div class="alert alert-danger custom-alert" id="successAlert">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
     @include('layout.nav')
     <div class="container">
         <main class="container my-4">
             <div class="usercontainer">
-                <!-- Column 1: Profile Picture + Stats + Friend Requests -->
                 <div class="column">
                     <form action="{{ route('user.updateProfile') }}" method="POST" enctype="multipart/form-data"
                         id="profileForm">
@@ -208,10 +201,8 @@
                             <img id="profileImage"
                                 src="{{ $user->profile_picture
                                     ? asset('storage/' . str_replace('public/', '', $user->profile_picture))
-                                    : asset('p.jpg') }}"
-                                alt="Profile picture of {{ Auth::user()->name }}" />
+                                    : asset('p.jpg') }}" />
 
-                            <!-- Delete Icon -->
                             @if ($user->profile_picture)
                                 <button type="button" id="deleteProfilePicture" class="delete-icon"
                                     title="Remove Profile Picture">
@@ -219,7 +210,6 @@
                                 </button>
                             @endif
 
-                            <!-- Edit Icon -->
                             <label for="profilePictureInput" class="edit-icon" title="Change Profile Picture"
                                 tabindex="0">
                                 <i class="lni lni-pencil"></i>
@@ -260,7 +250,6 @@
                     @endif
                 </div>
 
-                <!-- Column 2: Change Password -->
                 <div class="column">
                     <h3>Change Password</h3>
                     <form method="POST" action="{{ route('user.changePassword') }}" novalidate>
@@ -282,64 +271,78 @@
                 </div>
             </div>
         </main>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const successAlert = document.getElementById('successAlert');
-                if (successAlert) {
-                    setTimeout(() => {
-                        successAlert.style.opacity = '0';
-                        setTimeout(() => successAlert.remove(), 500);
-                    }, 3000);
-                }
-                const errorAlert = document.getElementById('errorAlert');
-                if (errorAlert) {
-                    setTimeout(() => {
-                        errorAlert.style.opacity = '0';
-                        setTimeout(() => errorAlert.remove(), 500);
-                    }, 5000);
-                }
-            });
+        <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content bg-dark text-light border border-2 border-danger">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-danger" id="confirmDeleteModalLabel">Confirm Deletion</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to delete your profile picture? This action cannot be undone.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Yes, Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-            document.addEventListener("DOMContentLoaded", function() {
-                const deleteBtn = document.getElementById("deleteProfilePicture");
-                const profileImage = document.getElementById("profileImage");
-                const defaultImageSrc = "{{ asset('p.jpg') }}";
 
-                if (deleteBtn) {
-                    deleteBtn.addEventListener("click", function() {
-                        if (confirm("Are you sure you want to remove your profile picture?")) {
-                            // Send AJAX request to delete the image on server
-                            fetch("{{ route('user.removeProfilePicture') }}", {
-                                    method: "POST",
-                                    headers: {
-                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                        'Content-Type': 'application/json'
-                                    }
-                                })
-                                .then(response => response.json())
-                                .then(data => {
-                                    if (data.success) {
-                                        // Replace image with default
-                                        profileImage.src = defaultImageSrc;
-
-                                        // Hide the delete button
-                                        deleteBtn.remove();
-
-                                        // Optionally show success message
-                                        alert("Profile picture removed successfully.");
-                                    } else {
-                                        alert("Failed to remove profile picture.");
-                                    }
-                                })
-                                .catch(error => {
-                                    console.error("Error:", error);
-                                    alert("An error occurred while removing the profile picture.");
-                                });
-                        }
-                    });
-                }
-            });
-        </script>
 </body>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const successAlert = document.getElementById('successAlert');
+        if (successAlert) {
+            setTimeout(() => {
+                successAlert.style.opacity = '0';
+                setTimeout(() => successAlert.remove(), 500);
+            }, 3000);
+        }
+        const errorAlert = document.getElementById('errorAlert');
+        if (errorAlert) {
+            setTimeout(() => {
+                errorAlert.style.opacity = '0';
+                setTimeout(() => errorAlert.remove(), 500);
+            }, 5000);
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteBtn = document.getElementById('deleteProfilePicture');
+        const confirmDeleteModal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+
+        deleteBtn.addEventListener('click', () => {
+            confirmDeleteModal.show();
+        });
+
+        confirmDeleteBtn.addEventListener('click', () => {
+            fetch("{{ route('user.removeProfilePicture') }}", {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        deleteBtn.style.display = 'none';
+                        confirmDeleteModal.hide();
+                        location.reload();
+
+                    } else {
+                        alert('Failed to remove profile picture.');
+                    }
+                })
+                .catch(() => alert('An error occurred.'));
+        });
+    });
+</script>
 
 </html>
