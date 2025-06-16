@@ -280,43 +280,39 @@
     </div>
     <a href="{{ route('home') }}" style="margin-top: 2rem; display: block;">← Back to Home Page</a>
 
- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<script>
-    $(function() {
-        // Scroll to bottom on initial page load
-        $('#messages-container').scrollTop($('#messages-container')[0].scrollHeight);
+    <script>
+        $(function() {
+            $('#messages-container').scrollTop($('#messages-container')[0].scrollHeight);
+            $('#start-chat-link').on('click', function(e) {
+                e.preventDefault();
+                $('input[name="message"]').focus();
+            });
+            $('#chat-form').submit(function(e) {
+                e.preventDefault();
+                let form = $(this);
 
-        // Focus message input when clicking "Start chat now"
-        $('#start-chat-link').on('click', function(e) {
-            e.preventDefault();
-            $('input[name="message"]').focus();
+                $('#loading-spinner').show();
+
+                $.post(form.attr('action'), form.serialize())
+                    .done(function(response) {
+                        if (response.messages_html) {
+                            $('#messages-container').html(response.messages_html);
+                            $('#messages-container').scrollTop($('#messages-container')[0]
+                            .scrollHeight);
+                        }
+                        form.find('input[name=message]').val('').focus();
+                    })
+                    .fail(function() {
+                        alert('Failed to send message.');
+                    })
+                    .always(function() {
+                        $('#loading-spinner').hide();
+                    });
+            });
         });
-
-        // AJAX send message handler with loading spinner
-        $('#chat-form').submit(function (e) {
-            e.preventDefault();
-            let form = $(this);
-
-            $('#loading-spinner').show();
-
-            $.post(form.attr('action'), form.serialize())
-                .done(function (response) {
-                    if (response.messages_html) {
-                        $('#messages-container').html(response.messages_html);
-                        $('#messages-container').scrollTop($('#messages-container')[0].scrollHeight);
-                    }
-                    form.find('input[name=message]').val('').focus();
-                })
-                .fail(function () {
-                    alert('Failed to send message.');
-                })
-                .always(function () {
-                    $('#loading-spinner').hide();
-                });
-        });
-    });
-</script>
+    </script>
 
 
 </body>
