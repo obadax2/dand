@@ -51,9 +51,9 @@
                 <h4>{{ $maps->title }}</h4>
                 <p><strong>Story:</strong> {{ $maps->story->title }}</p>
                 <p>{{ $maps->description }}</p>
-                @if ($maps->image)
-                    <img src="{{ asset($maps->image) }}" alt="Map image" style="max-width: 300px;">
-                @endif
+               @if ($maps->image)
+    <img src="{{ asset('storage/maps/' . basename($maps->image)) }}" alt="Map image" style="max-width: 300px;">
+@endif
                 <small>Created at: {{ $maps->created_at }}</small>
             </div>
         @empty
